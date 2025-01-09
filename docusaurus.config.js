@@ -23,7 +23,7 @@ const config = {
   trailingSlash: false,
 
   organizationName: 'bpftrace',
-  projectName: 'bpftrace.github.io',
+  projectName: 'website',
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
 
