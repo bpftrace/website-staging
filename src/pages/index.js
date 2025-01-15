@@ -27,7 +27,7 @@ function HomepageHeader() {
           <div class="col col--6">
             <div class="col-demo hero--video">
             <video width="600" autoplay controls>
-              <source src="img/bpftrace-homepage.mp4" type="video/mp4" />
+              <source src="img/bpftrace-homepage2.mp4" type="video/mp4" />
             Your browser does not support the video tag.
             </video>
             </div>
