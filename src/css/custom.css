@@ -75,8 +75,10 @@
 }
 
 .hero--primary a {
-  background-color: #1c1e21;
-  padding: 3px;
+  background-color: var(--ifm-hero-text-color);
+  padding: 2px;
+  border-radius: 8px;
+  border: 2px solid var(--ifm-hero-text-color);
 }
 
 .hero__subtitle {
@@ -89,7 +91,7 @@
 
 .hero--video video {
   border-radius: 30px;
-  border: 6px solid #1c1e21;
+  border: 6px solid var(--ifm-hero-text-color);
 }
 
 .footer--dark {
