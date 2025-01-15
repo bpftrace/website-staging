@@ -11,7 +11,7 @@ import {themes as prismThemes} from 'prism-react-renderer';
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'bpftrace',
-  tagline: 'Dynamic Tracing for the Linux Platform',
+  tagline: 'Dynamic Tracing for Linux',
   favicon: 'img/bpftrace_Icon-Black-Yellow_BG.svg',
 
   // Set the production url of your site here
