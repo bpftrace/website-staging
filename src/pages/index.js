@@ -42,7 +42,7 @@ export default function Home() {
   const {siteConfig} = useDocusaurusContext();
   return (
     <Layout
-      title={`${siteConfig.title}: dynamic tracing for the Linux platform`}
+      title={`${siteConfig.title}: dynamic tracing for Linux`}
       description="Description will go into a meta tag in <head />">
       <HomepageHeader />
     </Layout>
