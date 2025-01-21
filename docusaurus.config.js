@@ -68,6 +68,14 @@ const config = {
             to: 'https://docs.bpftrace.org/latest',
             from: '/docs',
           },
+          {
+            to: 'https://docs.bpftrace.org/next',
+            from: '/docs/master',
+          },
+          {
+            to: 'https://docs.bpftrace.org/',
+            from: '/docs/v0.21.x',
+          },
         ],
       },
     ],
