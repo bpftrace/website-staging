@@ -99,7 +99,7 @@ const config = {
                 to: '/docs/pre-release'
               },
               {
-                label: '0.22 (latest)ds',
+                label: '0.22 (latest)',
                 to: '/docs/0.22'
               },
               {
