@@ -26,3 +26,23 @@ This staging website is hosted in a fork: https://github.com/bpftrace/website-st
 The easiest way to deploy changes to the staging site is to use the GitHub comment command `/stage`:
 1. Create a PR against the main website repository, as normal
 2. Create a comment containing just the text `/stage`
+
+## Updating the Docs
+
+From the main bpftrace repo (https://github.com/bpftrace/bpftrace):
+```bash
+$ asciidoctor man/adoc/bpftrace.adoc -b html5 -o adoc.html
+```
+
+From this repo:
+```bash
+$ ./make-doc.js PATH/TO/adoc.html
+```
+
+This will update the pre-release docs. To update a different version,
+checkout the specific branch of the main repro and re-run the asciidoctor
+command above then add the version to make-doc command above e.g.
+
+```bash
+$ ./make-doc.js PATH/TO/adoc.html 0.22
+``` 
