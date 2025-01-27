@@ -90,10 +90,23 @@ const config = {
             position: 'left',
           },
           {
-            to: 'https://docs.bpftrace.org/latest',
+            type: 'dropdown',
             label: 'Docs',
-            target: '_self', // open external link in current window
             position: 'left',
+            items: [
+              {
+                label: 'pre-release',
+                to: '/docs/pre-release'
+              },
+              {
+                label: '0.22 (latest)',
+                to: '/docs/0.22'
+              },
+              {
+                label: '0.21',
+                to: '/docs/0.21'
+              },
+            ],
           },
           {to: '/blog', label: 'Blog', position: 'left'},
           {
