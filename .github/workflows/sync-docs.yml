@@ -4,6 +4,7 @@ on:
   schedule:
    # run daily at 8am
     - cron:  '0 8 * * *'
+  workflow_dispatch:
     
 jobs:
   sync:
