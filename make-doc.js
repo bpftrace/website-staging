@@ -87,7 +87,7 @@ async function processAdoc() {
 			return;
 		}
 		
-		const versionHeader = "<h1> Version: " + versionArg + "</h1>"
+		const versionHeader = "<h1>Version: " + versionArg + "</h1>"
 		var versionPage = data.replace("<div id=\"version-content\" />", versionHeader)
 				.replace("<div id=\"body-content\" />", body.join("\n"))
 				.replace("<div id=\"toc-content\" />", toc.join("\n"))
