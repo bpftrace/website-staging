@@ -13,7 +13,7 @@ export default function Home() {
     <Layout title="docs">
 	    <div className="container docs-container padding-top--md padding-bottom--lg">
       <div id="docs-header">
-              <h1> Version: 0.21</h1>
+              <h1>Version: 0.21</h1>
             </div>
         <div className="row docs-row">
         <div className="col col--3">
