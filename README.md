@@ -29,7 +29,7 @@ The easiest way to deploy changes to the staging site is to use the GitHub comme
 
 ## Updating the Docs
 
-From the main bpftrace repo (https://github.com/bpftrace/bpftrace):
+From the bpftrace repo (https://github.com/bpftrace/bpftrace):
 ```bash
 $ asciidoctor man/adoc/bpftrace.adoc -b html5 -o adoc.html
 ```
