@@ -56,8 +56,10 @@ export default function Home() {
 <h2 id="_description">Description</h2>
 <div className="sectionbody">
 <div className="paragraph">
-<p>bpftrace is a high-level tracing language and runtime for Linux based on eBPF.
-It supports static and dynamic tracing for both the kernel and user-space.</p>
+<p>bpftrace is a high-level tracing language for Linux. bpftrace uses LLVM as
+a backend to compile scripts to eBPF-bytecode and makes use of libbpf and bcc
+for interacting with the Linux BPF subsystem, as well as existing Linux
+tracing capabilities.</p>
 </div>
 </div>
 </div>
