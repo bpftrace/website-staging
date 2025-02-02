@@ -1699,7 +1699,7 @@ ello</pre>
 </div>
 </div>
 <div className="paragraph">
-<p>Script example, bsize.d:</p>
+<p>Script example, bsize.bt:</p>
 </div>
 <div className="listingblock">
 <div className="content">
