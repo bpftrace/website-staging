@@ -166,7 +166,6 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © 2019 Alastair Robertson.`,
       },
       prism: {
         theme: prismThemes.github,

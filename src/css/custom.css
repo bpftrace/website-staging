@@ -95,6 +95,10 @@
   border: 6px solid var(--ifm-hero-text-color);
 }
 
+.footer {
+  padding-bottom: 4rem;
+}
+
 .footer--dark {
   --ifm-footer-background-color: #18252D;
 }
