@@ -1351,16 +1351,6 @@ if ($a == 1) &#123;
 <p>If no assignment is specified variables will initialize to 0.</p>
 </div>
 <div className="paragraph">
-<p>You can also specify the type in the declaration e.g.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre className="highlight"><code>let $x: uint8;
-let $y: uint8 = 7;
-let $a: string = "hiya";</code></pre>
-</div>
-</div>
-<div className="paragraph">
 <p>'map' variables use BPF 'maps'.
 These exist for the lifetime of <code>bpftrace</code> itself and can be accessed from all action blocks and user-space.
 Map names always start with a <code>@</code>, e.g. <code>@mymap</code>.</p>
