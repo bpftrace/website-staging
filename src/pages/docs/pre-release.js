@@ -2435,10 +2435,10 @@ You can also pass the address type (e.g. AF_INET) explicitly as the first parame
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>offsetof(STRUCT, FIELD)</code></p>
+<p><code>offsetof(STRUCT, FIELD[.SUBFIELD])</code></p>
 </li>
 <li>
-<p><code>offsetof(EXPRESSION, FIELD)</code></p>
+<p><code>offsetof(EXPRESSION, FIELD[.SUBFIELD])</code></p>
 </li>
 </ul>
 </div>
@@ -2447,8 +2447,27 @@ You can also pass the address type (e.g. AF_INET) explicitly as the first parame
 </div>
 <div className="paragraph">
 <p>Returns offset of the field offset bytes in struct.
-Similar to kernel <code>offsetof</code> operator.
-Note that subfields are not yet supported.</p>
+Similar to kernel <code>offsetof</code> operator.</p>
+</div>
+<div className="paragraph">
+<p>Support any number of sub field levels, for example:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>struct Foo &#123;
+  struct &#123;
+    struct &#123;
+      struct &#123;
+        int d;
+      &#125; c;
+    &#125; b;
+  &#125; a;
+&#125;
+BEGIN &#123;
+  @x = offsetof(struct Foo, a.b.c.d);
+  exit();
+&#125;</pre>
+</div>
 </div>
 </div>
 <div className="sect2">
