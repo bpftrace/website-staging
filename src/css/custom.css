@@ -133,6 +133,23 @@
   flex-direction: row-reverse;
 }
 
+.video-row {
+  justify-content: center;
+}
+
+.video-list {
+  list-style: none;
+  padding-top: 72px;
+}
+
+.video-list a {
+  cursor: pointer;
+}
+
+.video-list a:hover {
+  text-decoration: underline;
+}
+
 @media (min-width: 997px) {
 
   .docs-left-col {

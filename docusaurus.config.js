@@ -86,9 +86,27 @@ const config = {
         },
         items: [
           {
-            to: '/learn',
+            type: 'dropdown',
             label: 'Learn',
             position: 'left',
+            items: [
+              {
+                label: 'One-Liners',
+                to: '/one-liners'
+              },
+              {
+                label: 'One-Liner Tutorial',
+                to: '/tutorial-one-liners'
+              },
+              {
+                label: 'Glossary',
+                to: '/glossary'
+              },
+              {
+                label: 'Videos',
+                to: '/videos'
+              },
+            ],
           },
           {
             type: 'dropdown',
@@ -134,7 +152,7 @@ const config = {
                 to: '/docs/latest',
               },
               {
-                label: 'One-Liner Introduction Tutorial',
+                label: 'One-Liner Tutorial',
                 to: '/tutorial-one-liners',
               },
             ],
@@ -147,7 +165,7 @@ const config = {
                 href: 'https://webchat.oftc.net/?nick=&channels=%23bpftrace',
               },
               {
-                label: 'Talks',
+                label: 'Videos',
                 href: '/videos',
               },
             ],
