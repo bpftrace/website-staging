@@ -1,14 +1,10 @@
-# The bpftrace One-Liner Tutorial
+# One-Liner Tutorial
 
-This teaches you bpftrace for Linux in 12 easy lessons, where each lesson is a one-liner you can try running. This series of one-liners introduces concepts which are summarized as bullet points. For a full reference to bpftrace, see the [man page](https://bpftrace.org/docs)
+This teaches you bpftrace for Linux in 12 easy lessons, where each lesson is a one-liner you can try running. This series of one-liners introduces concepts which are summarized as bullet points. For a full reference to bpftrace, see the [latest docs](https://bpftrace.org/docs)
 
 Contributed by Brendan Gregg, Netflix (2018), based on his FreeBSD [DTrace Tutorial](https://wiki.freebsd.org/DTrace/Tutorial).
 
-Note: bpftrace 0.19 changed the way probe arguments are accessed (using
-`args.xxx` instead of `args->xxx`). If you are using an older version of
-bpftrace, you will need to use `args->xxx` in the below examples.
-
-# Lesson 1. Listing Probes
+## Lesson 1. Listing Probes
 
 ```
 bpftrace -l 'tracepoint:syscalls:sys_enter_*'
@@ -20,7 +16,7 @@ bpftrace -l 'tracepoint:syscalls:sys_enter_*'
 - The supplied search term supports wildcards/globs (`*` and `?`)
 - "bpftrace -l" can also be piped to grep(1) for full regular expression searching.
 
-# Lesson 2. Hello World
+## Lesson 2. Hello World
 
 ```
 # bpftrace -e 'BEGIN { printf("hello world\n"); }'
@@ -34,7 +30,7 @@ This prints a welcome message. Run it, then hit Ctrl-C to end.
 - The word `BEGIN` is a special probe that fires at the start of the program (like awk's BEGIN). You can use it to set variables and print headers.
 - An action can be associated with probes, in { }. This example calls printf() when the probe fires.
 
-# Lesson 3. File Opens
+## Lesson 3. File Opens
 
 ```
 # bpftrace -e 'tracepoint:syscalls:sys_enter_openat { printf("%s %s\n", comm, str(args.filename)); }'
@@ -57,7 +53,7 @@ members of this struct can be found with: `bpftrace -vl tracepoint:syscalls:sys_
   `filename` member.
 - `str()` turns a pointer into the string it points to.
 
-# Lesson 4. Syscall Counts By Process
+## Lesson 4. Syscall Counts By Process
 
 ```
 bpftrace -e 'tracepoint:raw_syscalls:sys_enter { @[comm] = count(); }'
@@ -78,7 +74,7 @@ This summarizes syscalls by process name, printing a report on Ctrl-C.
 
 Maps are automatically printed when bpftrace ends (eg, via Ctrl-C).
 
-# Lesson 5. Distribution of read() Bytes
+## Lesson 5. Distribution of read() Bytes
 
 ```
 # bpftrace -e 'tracepoint:syscalls:sys_exit_read /pid == 18644/ { @bytes = hist(args.ret); }'
@@ -104,7 +100,7 @@ This summarizes the return value of the sys_read() kernel function for PID 18644
 - hist(): This is a map function which summarizes the argument as a power-of-2 histogram. The output shows rows that begin with interval notation, where, for example `[128, 256)` means that the value is: 128 $\le$ value < 256. The next number is the count of occurrences, and then an ASCII histogram is printed to visualize that count. The histogram can be used to study multi-modal distributions.
 - Other map functions include lhist() (linear hist), count(), sum(), avg(), min(), and max().
 
-# Lesson 6. Kernel Dynamic Tracing of read() Bytes
+## Lesson 6. Kernel Dynamic Tracing of read() Bytes
 
 ```
 # bpftrace -e 'kretprobe:vfs_read { @bytes = lhist(retval, 0, 2000, 200); }'
@@ -131,7 +127,7 @@ Summarize read() bytes as a linear histogram, and traced using kernel dynamic tr
 - It begins with the probe `kretprobe:vfs_read`: this is the kretprobe probe type (kernel dynamic tracing of function returns) instrumenting the `vfs_read()` kernel function. There is also the kprobe probe type (shown in the next lesson), to instrument when functions begin execution (are entered). These are powerful probe types, letting you trace tens of thousands of different kernel functions. However, these are "unstable" probe types: since they can trace any kernel function, there is no guarantee that your kprobe/kretprobe will work between kernel versions, as the function names, arguments, return values, and roles may change. Also, since it is tracing the raw kernel, you'll need to browse the kernel source to understand what these probes, arguments, and return values, mean.
 - lhist(): this is a linear histogram, where the arguments are: value, min, max, step. The first argument (`retval`) of vfs_read() is the return value: the number of bytes read.
 
-# Lesson 7. Timing read()s
+## Lesson 7. Timing read()s
 
 ```
 # bpftrace -e 'kprobe:vfs_read { @start[tid] = nsecs; } kretprobe:vfs_read /@start[tid]/ { @ns[comm] = hist(nsecs - @start[tid]); delete(@start, tid); }'
@@ -170,7 +166,7 @@ Summarize the time spent in read(), in nanoseconds, as a histogram, by process n
 
 - delete(@start, tid): this frees the variable.
 
-# Lesson 8. Count Process-Level Events
+## Lesson 8. Count Process-Level Events
 
 ```
 # bpftrace -e 'tracepoint:sched:sched* { @[probe] = count(); } interval:s:5 { exit(); }'
@@ -195,7 +191,7 @@ Count process-level events for five seconds, printing a summary.
 - interval:s:5: This is a probe that fires once every 5 seconds, on one CPU only. It is used for creating script-level intervals or timeouts.
 - exit(): This exits bpftrace.
 
-# Lesson 9. Profile On-CPU Kernel Stacks
+## Lesson 9. Profile On-CPU Kernel Stacks
 
 ```
 # bpftrace -e 'profile:hz:99 { @[kstack] = count(); }'
@@ -225,7 +221,7 @@ Profile kernel stacks at 99 Hertz, printing a frequency count.
 - profile:hz:99: This fires on all CPUs at 99 Hertz. Why 99 and not 100 or 1000? We want frequent enough to catch both the big and small picture of execution, but not too frequent as to perturb performance. 100 Hertz is enough. But we don't want 100 exactly, as sampling may occur in lockstep with other timed activities, hence 99.
 - kstack: Returns the kernel stack trace. This is used as a key for the map, so that it can be frequency counted. The output of this is ideal to be visualized as a flame graph. There is also `ustack` for the user-level stack trace.
 
-# Lesson 10. Scheduler Tracing
+## Lesson 10. Scheduler Tracing
 
 ```
 # bpftrace -e 'tracepoint:sched:sched_switch { @[kstack] = count(); }'
@@ -259,7 +255,7 @@ This counts stack traces that led to context switching (off-CPU) events. The abo
 - kstack: A kernel stack trace.
 - sched_switch fires in thread context, so that the stack refers to the thread who is leaving. As you use other probe types, pay attention to context, as comm, pid, kstack, etc, may not refer to the target of the probe.
 
-# Lesson 11. Block I/O Tracing
+## Lesson 11. Block I/O Tracing
 
 ```
 # bpftrace -e 'tracepoint:block:block_rq_issue { @ = hist(args.bytes); }'
@@ -296,7 +292,7 @@ Block I/O requests by size in bytes, as a histogram.
 
 The context of this probe is important: this fires when the I/O is issued to the device. This often happens in process context, where builtins like comm will show you the process name, but it can also happen from kernel context (eg, readahead) when the pid and comm will not show the application you expect.
 
-# Lesson 12. Kernel Struct Tracing
+## Lesson 12. Kernel Struct Tracing
 
 ```
 # cat path.bt
