@@ -2234,7 +2234,7 @@ The pointer type is left unchanged.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>kstack([StackMode mode, ][int limit])</code></p>
+<p><code>kstack_t kstack([StackMode mode, ][int limit])</code></p>
 </li>
 </ul>
 </div>
@@ -2387,7 +2387,7 @@ This buffer can be printed in the canonical string format using the <code>%s</co
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>nsecs([TimestampMode mode])</code></p>
+<p><code>timestamp nsecs([TimestampMode mode])</code></p>
 </li>
 </ul>
 </div>
@@ -2458,10 +2458,10 @@ You can also pass the address type (e.g. AF_INET) explicitly as the first parame
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>offsetof(STRUCT, FIELD[.SUBFIELD])</code></p>
+<p><code>uint64 offsetof(STRUCT, FIELD[.SUBFIELD])</code></p>
 </li>
 <li>
-<p><code>offsetof(EXPRESSION, FIELD[.SUBFIELD])</code></p>
+<p><code>uint64 offsetof(EXPRESSION, FIELD[.SUBFIELD])</code></p>
 </li>
 </ul>
 </div>
@@ -2499,7 +2499,7 @@ BEGIN &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>override(uint64 rc)</code></p>
+<p><code>void override(uint64 rc)</code></p>
 </li>
 </ul>
 </div>
@@ -2867,7 +2867,7 @@ BEGIN &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>reg(const string name)</code></p>
+<p><code>uint64 reg(const string name)</code></p>
 </li>
 </ul>
 </div>
@@ -2893,10 +2893,10 @@ Valid names depend on the CPU architecture.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>signal(const string sig)</code></p>
+<p><code>void signal(const string sig)</code></p>
 </li>
 <li>
-<p><code>signal(uint32 signum)</code></p>
+<p><code>void signal(uint32 signum)</code></p>
 </li>
 </ul>
 </div>
@@ -2937,10 +2937,10 @@ Trace/breakpoint trap (core dumped)</pre>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>sizeof(TYPE)</code></p>
+<p><code>uint64 sizeof(TYPE)</code></p>
 </li>
 <li>
-<p><code>sizeof(EXPRESSION)</code></p>
+<p><code>uint64 sizeof(EXPRESSION)</code></p>
 </li>
 </ul>
 </div>
@@ -3020,7 +3020,7 @@ dropped privs to tcpdump
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>str(char * data [, uint32 length)</code></p>
+<p><code>string str(char * data [, uint32 length)</code></p>
 </li>
 </ul>
 </div>
@@ -3305,7 +3305,7 @@ The pointer type is left unchanged.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>ustack([StackMode mode, ][int limit])</code></p>
+<p><code>ustack_t ustack([StackMode mode, ][int limit])</code></p>
 </li>
 </ul>
 </div>
@@ -3552,7 +3552,7 @@ The data type associated with these functions are only for internal use and are 
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>avg(int64 n)</code></p>
+<p><code>avg_t avg(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3583,7 +3583,7 @@ cpus to collect and sum BOTH count and total.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>clear(map m)</code></p>
+<p><code>void clear(map m)</code></p>
 </li>
 </ul>
 </div>
@@ -3612,7 +3612,7 @@ interval:s:10 &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>count()</code></p>
+<p><code>count_t count()</code></p>
 </li>
 </ul>
 </div>
@@ -3671,10 +3671,10 @@ interval:s:10 &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>delete(map m, mapkey k)</code></p>
+<p><code>void delete(map m, mapkey k)</code></p>
 </li>
 <li>
-<p>deprecated <code>delete(mapkey k)</code></p>
+<p>deprecated <code>void delete(mapkey k)</code></p>
 </li>
 </ul>
 </div>
@@ -3747,7 +3747,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>hist(int64 n[, int k])</code></p>
+<p><code>hist_t hist(int64 n[, int k])</code></p>
 </li>
 </ul>
 </div>
@@ -3788,7 +3788,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>len(map m)</code></p>
+<p><code>int64 len(map m)</code></p>
 </li>
 </ul>
 </div>
@@ -3802,7 +3802,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>lhist(int64 n, int64 min, int64 max, int64 step)</code></p>
+<p><code>lhist_t lhist(int64 n, int64 min, int64 max, int64 step)</code></p>
 </li>
 </ul>
 </div>
@@ -3847,7 +3847,7 @@ interval:s:5 &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>max(int64 n)</code></p>
+<p><code>max_t max(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3892,7 +3892,7 @@ be returned.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>min(int64 n)</code></p>
+<p><code>min_t min(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3910,7 +3910,7 @@ Similar to <code>count</code> this uses a PER_CPU map (thread-safe, fast writes,
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>stats(int64 n)</code></p>
+<p><code>stats_t stats(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3939,7 +3939,7 @@ Similar to <code>count</code> this uses a PER_CPU map (thread-safe, fast writes,
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>sum(int64 n)</code></p>
+<p><code>sum_t sum(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3999,7 +3999,7 @@ interval:s:10 &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>zero(map m)</code></p>
+<p><code>void zero(map m)</code></p>
 </li>
 </ul>
 </div>
