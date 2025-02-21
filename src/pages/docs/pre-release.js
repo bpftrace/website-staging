@@ -5194,7 +5194,7 @@ If there are many processes running, it will consume a lot of a memory.</p>
 <div className="sect2">
 <h3 id="_max_bpf_progs">max_bpf_progs</h3>
 <div className="paragraph">
-<p>Default: 512</p>
+<p>Default: 1024</p>
 </div>
 <div className="paragraph">
 <p>This is the maximum number of BPF programs (functions) that bpftrace can generate.
@@ -5225,7 +5225,7 @@ There are some cases where you will want to, for example: sampling stack traces,
 <div className="sect2">
 <h3 id="_max_probes">max_probes</h3>
 <div className="paragraph">
-<p>Default: 512</p>
+<p>Default: 1024</p>
 </div>
 <div className="paragraph">
 <p>This is the maximum number of probes that bpftrace can attach to.
