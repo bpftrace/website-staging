@@ -22,7 +22,8 @@ function HomepageHeader() {
                 alt="bpftrace docs"
               />
             <p className="hero__subtitle">{siteConfig.tagline}</p>
-            <p>bpftrace uses LLVM as a backend to compile scripts to <Link to="https://ebpf.io/what-is-ebpf/" target="_self">eBPF</Link>-bytecode and makes use of <Link to="https://github.com/libbpf/libbpf" target="_self">libbpf</Link> and <Link to="https://github.com/iovisor/bcc" target="_self">bcc</Link> for interacting with the Linux BPF subsystem, as well as existing Linux tracing capabilities: kernel dynamic tracing (kprobes), user-level dynamic tracing (uprobes), tracepoints, etc. The bpftrace language is inspired by awk, C, and predecessor tracers such as DTrace and SystemTap. <br />bpftrace was created by Alastair Robertson.</p>
+            <p>bpftrace is a high-level tracing language for Linux and provides a quick and easy way for people to write observability-based <Link to="https://ebpf.io/what-is-ebpf/" target="_self">eBPF</Link> programs, especially those unfamiliar with the complexities of eBPF.</p> 
+            <p><Link to="/tutorial-one-liners" target="_self">Learn</Link> more about bpftrace, check out all the great <Link to="https://github.com/bpftrace/bpftrace/blob/master/tools/README.md" target="_self">tools</Link> built with bpftrace, and please <Link to="https://github.com/bpftrace/bpftrace/blob/master/CONTRIBUTING.md" target="_self">contribute!</Link></p>
           </div>
           <div class="col col--6">
             <div class="col-demo hero--video">

@@ -87,6 +87,34 @@ const config = {
         items: [
           {
             type: 'dropdown',
+            label: 'About',
+            to: 'about',
+            position: 'left',
+            items: [
+              {
+                label: 'About bpftrace',
+                to: '/about'
+              },
+              {
+                label: 'Release Schedule',
+                to: '/release-schedule'
+              },
+              { 
+                label: 'Tools',
+                href: 'https://github.com/bpftrace/bpftrace/blob/master/tools/README.md'
+              },
+              {
+                label: 'How to Contribute',
+                href: 'https://github.com/bpftrace/bpftrace/blob/master/CONTRIBUTING.md',
+              },
+              {
+                href: 'https://github.com/bpftrace/bpftrace/discussions',
+                label: 'Discussions',
+            },
+            ],
+          },
+          {
+            type: 'dropdown',
             label: 'Learn',
             position: 'left',
             items: [
@@ -129,11 +157,6 @@ const config = {
             ],
           },
           {to: '/blog', label: 'Blog', position: 'left'},
-          {
-              href: 'https://github.com/bpftrace/bpftrace/discussions',
-              label: 'Discussions',
-              position: 'left',
-          },
           {
             href: 'https://github.com/bpftrace/bpftrace',
             label: 'GitHub',
