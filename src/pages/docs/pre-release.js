@@ -267,9 +267,10 @@ Errors are still written to stderr.</p>
 <div className="sect2">
 <h3 id="_p_pid"><strong>-p</strong> <em>PID</em></h3>
 <div className="paragraph">
-<p>Attach to the process with <em>PID</em>.
+<p>Attach to the process with or filter actions by <em>PID</em>.
 If the process terminates, bpftrace will also terminate.
-When using USDT probes, uprobes, and uretprobes they will be attached to only this process.
+When using USDT, uprobes, uretprobes, hardware, software, profile, interval, watchpoint, or asyncwatchpoint probes they will be attached to only this process.
+For all other probes, except BEGIN/END, the pid will act like a predicate to filter out events not from that pid.
 For listing uprobes/uretprobes set the target to '*' and the process&#8217;s address space will be searched for the symbols.</p>
 </div>
 </div>
