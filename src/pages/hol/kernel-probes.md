@@ -153,7 +153,7 @@ carbon-global-s libmcrouter.fb-
 
 Expand the above script to print the parent directory for the file being unlinked. 
 
-Top tip: We can use the `print()` BpfScript function to print out members in an object without explicitly specifying them. For example, the arguments for a `vfs_write()` call are:
+Top tip: We can use the `print()` function to print out members in an object without explicitly specifying them. For example, the arguments for a `vfs_write()` call are:
 
 ```sh
 $ sudo bpftrace -lv 'kfunc:vfs_write'

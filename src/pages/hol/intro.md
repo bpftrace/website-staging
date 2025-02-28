@@ -1,5 +1,3 @@
-# NOTE THIS SECTION IS UNDER CONSTRUCTION
-
 # bpftrace Hands On Lab
 
 This hands-on lab is designed to be completed in half a day though that may vary depending upon how thorough you want to be with the exercises. It has been written as a "hands-on bootstrapping" guide for the bpftrace beginner and aims to give you enough information to kick-start your productivity with bpftrace. Note that it is by no means a complete treatment of the subject and many things are missed out for the sake of brevity.
@@ -16,7 +14,9 @@ Finally, note that the lab is designed to be ran stand alone and without a lectu
 
 1. You must have the `bpftrace` executable installed on your system and the package name will vary slightly between distros. 
 2. Unless specified differently, all commands will be executed as the `root` user so ensure you have the appropriate access.
-3. You must also have the load generator tarball installed. Download it from XXX and unpack the archive:
+3. You must also have the load generator tarball installed. [Download it](https://github.com/bpftrace/lab-vm/blob/master/bpftrace-hol.tar.gz) and unpack the archive.
+
+**Warning**: This binary was compiled on a specific kernel verison and distro so YMMV when using it. We're working on making it more hermetic with nix - but let us know if you're having issues.
 
 ```sh
 $ tar -xvzf bpftrace-hol.tar.gz
