@@ -1,6 +1,6 @@
 # 1. Core language features
 
-In this lab we will work through some of the key features of the bpftrace tracing technology and its language which is known as `BpfScript`. It is not an exhaustive treatment of the language but rather the key concepts. Please refer to the [docs 📖](/docs/pre-release) for details on all language features.
+In this lab we will work through some of the key features of the bpftrace tracing technology and its language. It is not an exhaustive treatment of the language but rather the key concepts. Please refer to the [docs 📖](/docs/pre-release) for details on all language features.
 
 **bpftrace** is specifically designed for tracing user and kernel software. Its primary purpose is to facilitate observation of software behaviour. As such, it provides a number of key language primitives that enable us to gain detailed insights into the real runtime behaviour of the code we write (which is rarely what we think it actually is!). In this section we will look at the key language primitives and some techniques which enable us to obtain fresh insights.
 
@@ -19,7 +19,7 @@ bpftrace solves these problems by allowing us to safely and dynamically modify o
 
 ## Action Blocks
 
-bpftrace scripts (written in the *BpfScript* tracing language) are made up of one or more *Action Blocks*. An action block contains 3 parts in the following order:
+bpftrace scripts are made up of one or more *Action Blocks*. An action block contains 3 parts in the following order:
 
 * **A probe**: this is a place of interest where we interrupt the executing thread. There are numerous probe types but examples include the location of a userland function (e.g, strcmp(3)), when a system call is executed (e.g, write(2)), an event such as a performance counter overflow event, or a periodic timer. The key point here is that you are subscribing to an *event* and will be notified every time it gets triggered.
 * **An optional predicate** (sometimes called a *filter*). This is a logical condition which allows us to decide if we are interested in recording data for this event. For example, is the current process named 'bash' or is the file we are writing to located in `/tmp`. Predicates are contained in between two forward slash characters.
