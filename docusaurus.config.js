@@ -127,6 +127,10 @@ const config = {
                 to: '/tutorial-one-liners'
               },
               {
+                label: 'Hands On Lab',
+                to: '/hol/intro'
+              },
+              {
                 label: 'Glossary',
                 to: '/glossary'
               },
