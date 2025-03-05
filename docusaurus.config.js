@@ -72,6 +72,13 @@ const config = {
         ],
       },
     ],
+    [
+      '@docusaurus/plugin-google-gtag',
+      {
+        trackingID: 'GTM-TRL9WWBX',
+        anonymizeIP: true,
+      },
+    ],
   ],
 
   themeConfig:
