@@ -14,7 +14,7 @@ Finally, note that the lab is designed to be ran stand alone and without a lectu
 
 1. You must have the `bpftrace` executable installed on your system and the package name will vary slightly between distros. 
 2. Unless specified differently, all commands will be executed as the `root` user so ensure you have the appropriate access.
-3. You must also have the load generator tarball installed. [Download it](https://github.com/bpftrace/lab-vm/blob/master/bpftrace-hol.tar.gz) and unpack the archive.
+3. You must also have the load generator tarball installed. [Download it](/bpftrace-hol.tar.gz) and unpack the archive.
 
 **Warning**: This binary was compiled on a specific kernel verison and distro so YMMV when using it. We're working on making it more hermetic with nix - but let us know if you're having issues.
 
@@ -64,7 +64,7 @@ Simply select the integer value corresponding to the area you have been told to 
 
 Some of the lab exercises will give you a small hint as to what bpftrace language primitive to use to solve them. If this is the case then it is generally expected that you will look up the language feature in the [docs 📖](/docs/pre-release).
 
-Example solutions for all lab exercises are provided in the [solutions document](https://internalfb.com/intern/wiki/Bpftrace_hands-on-lab/6._Solutions_to_lab_exercises/).
+Example solutions for all lab exercises are provided in the [solutions document](./lab-solutions).
 
 Please use your instructor (if there is one) to discuss any issues or problems you may have. Everyone, including them, is on a learning curve with bpftrace so your question or problem will always be valuable.
 
