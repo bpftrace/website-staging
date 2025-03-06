@@ -14,7 +14,7 @@ Finally, note that the lab is designed to be ran stand alone and without a lectu
 
 1. You must have the `bpftrace` executable installed on your system and the package name will vary slightly between distros. 
 2. Unless specified differently, all commands will be executed as the `root` user so ensure you have the appropriate access.
-3. You must also have the load generator tarball installed. [Download it](https://github.com/bpftrace/lab-vm/blob/master/bpftrace-hol.tar.gz) and unpack the archive.
+3. You must also have the load generator tarball installed. [Download it](bpftrace-hol.tar.gz) and unpack the archive.
 
 **Warning**: This binary was compiled on a specific kernel verison and distro so YMMV when using it. We're working on making it more hermetic with nix - but let us know if you're having issues.
 
