@@ -41,15 +41,18 @@ Although we haven't been formally introduced to any bpftrace details, can you gu
 
 #### Starter Example
 
-We'll start with the classic example of looking at system calls (see the [syscalls lab](https://internalfb.com/intern/wiki/Bpftrace_hands-on-lab/2._Working_with_system_calls/) for further details).
+We'll start with the classic example of looking at system calls (see the [syscalls lab](./system-calls) for further details).
 
 1. First let's see what system calls are being made. Run this bpftrace invocation for 15-20 seconds and then terminate it with `<Ctrl-c>`.
 
 ```sh
-$ sudo bpftrace -e 'tracepoint:syscalls:sys_enter_*{@calls[probe] = count();}'
+sudo bpftrace -e 'tracepoint:syscalls:sys_enter_*{@calls[probe] = count();}'
+```
+Example output:
+```sh
 Attaching 311 probes...
 ^C
-<output elided>
+...
 @calls[tracepoint:syscalls:sys_enter_write]: 1323
 @calls[tracepoint:syscalls:sys_enter_close]: 1581
 @calls[tracepoint:syscalls:sys_enter_read]: 1680
@@ -72,10 +75,13 @@ NOTE: Maps are a key data structure that you'll use very frequently!
 2. Now let's iterate using the data we just acquired to drill down and discover who is making those `close(2)` syscalls! Again, let's give it 15-20 seconds before issuing a `<Ctrl-c>`:
 
 ```sh
-$ sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close{@calls[comm] = count();}'
+sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close{@calls[comm] = count();}'
+```
+Example output:
+```sh
 ^C
 
-<output elided>
+...
 @calls[bpftrace]: 1
 @calls[abrt-dump-journ]: 2
 @calls[chronyd]: 2
@@ -92,13 +98,16 @@ $ sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close{@calls[comm] = count();}
 The result of this tracing iteration tell us that a process named `systemd-oomd` is making the most `close` calls so we may want to drill down this process to see where in the code these calls are being made from (Note: replace `system-oomd` in the following example with a process name from the above script invocation on **your** system!):
 
 ```sh
-$ sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close /comm == "systemd-oomd"/
+sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close /comm == "systemd-oomd"/
 {
   @calls[ustack] = count();
 }'
+```
+Example output:
+```sh
 Attaching 1 probe...
 ^C
-<output elided>
+...
 @calls[
     __close_nocancel+24
     _IO_file_close_it@@GLIBC_2.17+116
@@ -133,7 +142,10 @@ Write a script to keep count of the number of system calls each process makes. I
 We often want to periodically display data held in aggregations and this can be done with [the 📖 `interval` probes](/docs/pre-release#probes-interval) which provide periodic interval timers. For example, to print the date and time every 10 seconds:
 
 ```sh
-$ sudo bpftrace -e 'interval:s:10 { time("%c\n"); }'
+sudo bpftrace -e 'interval:s:10 { time("%c\n"); }'
+```
+Example output:
+```sh
 Attaching 1 probe...
 Thu Sep 26 10:18:35 2024
 Thu Sep 26 10:18:45 2024
@@ -143,7 +155,7 @@ Thu Sep 26 10:19:05 2024
 
 ### Exercises 1.3
 
-1. Expand the script written previously to print the per-process system call counts every 10 seconds (hint: [see 📖 Probes](/docs/pre-release#_probes).
+1. Expand the script written previously to print the per-process system call counts every 10 seconds (hint: use `print()`, [see 📖 Functions](/docs/pre-release#_functions)).
 1. Add the ability to only display the top 10 per process counts (hint: use `print()`, [see 📖 Functions](/docs/pre-release#_functions))
 1. Delete all per-process syscall stats every 10 secs (hint: use `clear()`, [see 📖 Functions](/docs/pre-release#_functions));
 1. Finally, exit the script after 3 iterations (or 30 seconds if you prefer it that way)
@@ -177,7 +189,8 @@ which yields:
 
 ```
 Attaching 3 probes...
-^Cthe value is: 6
+^C
+the value is: 6
 ```
 
 
@@ -194,6 +207,7 @@ NOTE: threads inherit the name from their parent but many set their own thread n
 
 ### Exercises 1.4
 
+Make sure you are inside the `bpftrace-hol` directory: `cd bpftrace-hol`.
 Run the `bpfhol` load generator executable and select option `1. core`:
 
 1. Count the syscalls made by each `<pid, tid, comm>` tuple for every thread in the main `core` process (use `pgrep -f core` to find the main process pid and predicate using that),
@@ -272,6 +286,6 @@ Note that the `interval` based probes we have used previously only fire on a sin
 
 A [📖 `profile` probe](/docs/pre-release#probes-profile) is the same format as the `interval` probe that we have seen previously. Write a script which uses a 10 millisecond `profile` probe (`profile:ms:10`)  to count the number of times a non-root thread (`uid` != 0) was running when the probe fired. (Hints: key the map with the `cpu` builtin variable and you'll also need the `uid` builtin variable. Bonus points for use of the `if` statement instead of a predicate (it's not any better here but just provides variation!).
 
-Now that we've covered some of the basic building blocks of bpftrace, we'll continue the voyage of discovery by looking at the fundamental interface between userland code and the kernel: the [system call](https://internalfb.com/intern/wiki/Bpftrace_hands-on-lab/2._Working_with_system_calls/).
+Now that we've covered some of the basic building blocks of bpftrace, we'll continue the voyage of discovery by looking at the fundamental interface between userland code and the kernel: the [system call](./system-calls).
 
 ## [Back to HOL Intro](./intro)

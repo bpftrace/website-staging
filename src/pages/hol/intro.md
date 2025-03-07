@@ -19,8 +19,10 @@ Finally, note that the lab is designed to be ran stand alone and without a lectu
 **Warning**: This binary was compiled on a specific kernel verison and distro so YMMV when using it. We're working on making it more hermetic with nix - but let us know if you're having issues.
 
 ```sh
-$ tar -xvzf bpftrace-hol.tar.gz
-$ cd ~
+tar -xvzf bpftrace-hol.tar.gz && cd ~
+```
+Expected output:
+```sh
 bpftrace-hol/
 bpftrace-hol/load_generators/
 bpftrace-hol/load_generators/core/
@@ -42,7 +44,10 @@ bpftrace-hol/load_generators/usdt/usdt-passwd
 bpftrace-hol/load_generators/utils/
 bpftrace-hol/load_generators/utils/allprobes.py
 bpftrace-hol/bpfhol
-$ cd bpftrace-hol
+```
+Drop into the directory:
+```sh
+cd bpftrace-hol
 ```
 
 ## Load Generators

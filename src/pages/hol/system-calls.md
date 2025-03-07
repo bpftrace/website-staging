@@ -5,13 +5,16 @@ In this lab you will experiment with tracing system call interfaces. As this is 
 The number of system calls may vary from kernel to kernel and we can see which exist on our system with `bpftrace -l`:
 
 ```sh
-$ sudo bpftrace -l 'tracepoint:syscalls:sys_enter*'
+sudo bpftrace -l 'tracepoint:syscalls:sys_enter*'
+```
+Example output:
+```sh
 tracepoint:syscalls:sys_enter_accept
 tracepoint:syscalls:sys_enter_accept4
 tracepoint:syscalls:sys_enter_access
 tracepoint:syscalls:sys_enter_add_key
 tracepoint:syscalls:sys_enter_adjtimex
-<elided>
+...
 ```
 
 You should have in excess of 300 system calls to choose from!
@@ -42,7 +45,10 @@ Does `t:syscalls:sys_exit_exit` exist? If so, when will it fire?
 The arguments for a system call probe are made available through [the 📖 `args` builtin structure](/docs/pre-release#_builtins). For example, according to the man page for `write(2)`, the syscall has 3 arguments: `int fd`, `const char * buf` and `size_t count`. We can verify that with the `-lv` options to `bpftrace`:
 
 ```sh
-$ sudo bpftrace -lv 't:syscalls:sys_enter_write'
+sudo bpftrace -lv 't:syscalls:sys_enter_write'
+```
+Example output:
+```sh
 tracepoint:syscalls:sys_enter_write
     int __syscall_nr
     unsigned int fd
@@ -58,8 +64,8 @@ Things to note:
 
 To access an argument, we reference it through [the 📖 `args` builtin](/docs/pre-release#_builtins) using its name, e.g, `args.buf`. In the following example we capture the first 32KB bytes (or less) of any buffer being sent to file descriptor 2 which is usually `stderr` (although it's obviously not guaranteed to be that).
 
+Create a new file named `write.bt` and paste this code:
 ```
-$ cat write.bt
 config = {
   max_strlen = 32768; /* 32KB - max string size */
 }
@@ -70,8 +76,13 @@ tracepoint:syscalls:sys_enter_write
 {
         printf("%s: %s\n", comm,  str(args.buf));
 }
+```
 
-$ sudo bpftrace ./write.bt
+```sh
+sudo bpftrace ./write.bt
+```
+Example output:
+```sh
 Collection-27: D0926 06:01:22.474303 128492 SchedulerThread.cpp:144] SCHEDULABLE BEING REFIRED id=*NoisyCollectors* interval=1000000000 ns offset=783221187 ns now=@1378369044761823 ns fireTime=@1378369044696482 ns nextFireTime=1378370044761823 ns
 tFireTime=1378428569540704 ns
 235 ns
@@ -130,7 +141,7 @@ NOTE: before attempting the tasks in this section select the `syscalls` option f
 
 1. Find all `close(2)` system calls that were passed invalid file descriptors.
 
-In the next section we take a dive into tracing [kernel functions](https://internalfb.com/intern/wiki/Bpftrace_hands-on-lab/3._Working_with_kernel_probes/).
+In the next section we take a dive into tracing [kernel functions](./kernel-probes).
 
 
 ## Further Reading

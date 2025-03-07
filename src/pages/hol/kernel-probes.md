@@ -28,7 +28,10 @@ This lab assumes that the kernel you are running on has type information availab
 BTF is available on your system:
 
 ```sh
-$ sudo bpftrace --info |& grep -i btf
+sudo bpftrace --info |& grep -i btf
+```
+Example output:
+```sh
   btf: yes
   module btf: yes
 ```
@@ -49,8 +52,11 @@ NOTE: before attempting the tasks in this section select the `kernel` option fro
 To list all available kfunc probes beginning with the pattern `vfs_` and displaying their input and return parameter types we can use a wildcard search:
 
 ```sh
-$ sudo bpftrace -lv 'kfunc:vfs_*'
-<chop>
+sudo bpftrace -lv 'kfunc:vfs_*'
+```
+Example output:
+```sh
+...
 kfunc:vmlinux:vfs_unlink
     struct user_namespace * mnt_userns
     struct inode * dir
@@ -71,7 +77,7 @@ kfunc:vmlinux:vfs_write
     size_t count
     loff_t * pos
     ssize_t retval
-<chop>
+...
 ```
 
 Let's take the *vfs_unlink* probe shown above and see if we can extract the name of a
@@ -79,7 +85,10 @@ file being removed (unlinked from its parent directory). The directory entry bei
 unlinked is stored under the `dentry` parameter:
 
 ```sh
-$ sudo bpftrace -lv 'struct dentry'
+sudo bpftrace -lv 'struct dentry'
+```
+Example output:
+```sh
 struct dentry {
         unsigned int d_flags;
         seqcount_spinlock_t d_seq;
@@ -111,7 +120,10 @@ The `d_name` member (of type `struct qstr`) will usually hold the name of the di
 by this `struct dentry`. A 'struct qstr` looks like:
 
 ```sh
-$ sudo bpftrace -lv 'struct qstr'
+sudo bpftrace -lv 'struct qstr'
+```
+Example output:
+```sh
 struct qstr {
         union {
                 struct {
@@ -130,13 +142,19 @@ using the parameter name they have in the source code, e.g, `args.dentry` in thi
 Let's now see what files are being unlinked. Along with the file we print the name of the userland thread issuing the unlink:
 
 ```sh
-$ cat vfs_unlink.bt
 kfunc:vfs_unlink
 {
   printf("%-16s %s\n", comm, str(args.dentry->d_name.name));
 }
+```
 
-$ sudo bpftrace ./vfs_unlink.bt
+Name this file: `vfs_unlink.bt`.
+
+```sh
+sudo bpftrace ./vfs_unlink.bt
+```
+Example output:
+```sh
 Attaching 1 probe...
 systemd-journal system@3274dec3739849b1a6f31a597646aa6c-0000000018d30c31-000622..
 chefctl         chef.cur.out
@@ -156,15 +174,22 @@ Expand the above script to print the parent directory for the file being unlinke
 Top tip: We can use the `print()` function to print out members in an object without explicitly specifying them. For example, the arguments for a `vfs_write()` call are:
 
 ```sh
-$ sudo bpftrace -lv 'kfunc:vfs_write'
+sudo bpftrace -lv 'kfunc:vfs_write'
+```
+Example output:
+```sh
 kfunc:vmlinux:vfs_write
     struct file * file
     const char __attribute__((btf_type_tag("user"))) * buf
     size_t count
     loff_t * pos
     ssize_t retval
-
-$ sudo bpftrace -e  'kfunc:vfs_write{print(args)}'
+```
+```sh
+sudo bpftrace -e  'kfunc:vfs_write{print(args)}'
+```
+Example output:
+```sh
 Attaching 1 probe...
 { .file = 0xffff88a79ffa6900, .buf = 0x7f77b8ff9730, .count = 8, .pos = 0xffffc900268f7ef8 }
 { .file = 0xffff88a79ffa7d00, .buf = 0x7f77b8ff9730, .count = 8, .pos = 0xffffc900268f7ef8 }
@@ -183,7 +208,10 @@ Attaching 1 probe...
 We can also use print to display the contents of whole objects. For example, to dump the `struct file` that is passed as the first entry to a `vfs_write()` call:
 
 ```sh
-$ sudo bpftrace -e  'kfunc:vfs_write{print(*args.file)}'
+sudo bpftrace -e  'kfunc:vfs_write{print(*args.file)}'
+```
+Example output:
+```sh
 Attaching 1 probe...
 { .f_u = , .f_path = { .mnt = 0xffff88810b488020, .dentry = 0xffff888109431b00 }, .f_inode = 0xffff8881079a1bd0, .f_op = 0xffffffff82214268, .f_lock = { .rlock = { .raw_lock = { .val = , .locked = 0, .pending = 0, .locked_pending = 0, .tail = 0 } } }, .f_count = , .f_flags = 32770, .f_mode = 917535, .f_pos_lock = { .owner = , .wait_lock = { .raw_lock = { .val = , .locked = 0, .pending = 0, .locked_pending = 0, .tail = 0 } }, .osq = { .tail =  }, .wait_list = { .next = 0xffff8886da8fdd58, .prev = 0xffff8886da8fdd58 } }, .f_pos = 0, .f_owner = { .lock = , .pid = 0x0, .pid_type = 0, .uid = , .euid = , .signum = 0 }, .f_cred = 0xffff88bb3dc1c480, .f_ra = { .start = 0, .size = 0, .async_size = 0, .ra_pages = 0, .mmap_miss = 0, .prev_pos = -1 }, .f_version = 0, .f_security = 0x0, .private_data = 0x0, .f_ep = 0x0, .f_mapping = 0xffff8881079a1d48, .f_wb_err = 0, .f_sb_err = 0 }
 ```
@@ -193,13 +221,17 @@ Attaching 1 probe...
 
 The typed return argument from a function is available through the `retval` variable in a `kretfunc` probe. The following example displays how easy it is to use with the kernel `fget()` function (`fget()` is used for incrementing reference counts on files). This function returns a 'struct file' for a given file descriptor so we can use that to extract filenames:
 
+```sh
+sudo bpftrace -lv 'kretfunc:fget'
 ```
-$ sudo bpftrace -lv 'kretfunc:fget'
+Example output:
+```sh
 kretfunc:vmlinux:fget
     unsigned int fd
     struct file * retval
-
-$ cat fget.bt
+```
+Make a new file named `fget.bt` and paste this code:
+```sh
 kretfunc:fget
 /retval/
 {
@@ -210,7 +242,10 @@ kretfunc:fget
 ```
 Run the above script and in another terminal execute `man ls`:
 ```
-$ sudo bpftrace ./fget.bt
+sudo bpftrace fget.bt
+```
+Example output:
+```sh
 Attaching 1 probe...
 preconv (fd3):  libstdc++.so.6.0.33
 preconv (fd3):  libstdc++.so.6.0.33
@@ -244,7 +279,10 @@ On a typical system we have in the order of more than 2000 static tracepoints. G
 In order to understand how we can use tracepoints we'll look at a couple of them which are designed to be used in a pair in order to understand kernel lock contention:
 
 ```sh
-$ sudo bpftrace -lv 'tracepoint:lock:contention*'
+sudo bpftrace -lv 'tracepoint:lock:contention*'
+```
+Example output:
+```sh
 tracepoint:lock:contention_begin
     void * lock_addr
     unsigned int flags
@@ -320,7 +358,7 @@ NOTE: ensure the `kernel` option from the `bpfhol` menu is still selected (just 
 1. Is `kprobeme` leaking file descriptors? (HINT: use an associative map)
 
 
-After this excursion in to the kernel we're going back up into userland with [uprobes](https://internalfb.com/intern/wiki/Bpftrace_hands-on-lab/4._Working_with_dynamic_user_probes/).
+After this excursion in to the kernel we're going back up into userland with [uprobes](./user-probes).
 
 ---
 

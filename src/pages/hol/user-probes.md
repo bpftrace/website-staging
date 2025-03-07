@@ -27,21 +27,32 @@ The optional `:cpp` component is specific to C++ application tracing and is disc
 To list the probe sites that are available we simply specify a path to a given library or executable. For example, all the function sites that can be probed in `libc.so`:
 
 ```sh
-$ sudo bpftrace -l 'uprobe:/nix/store/nq*2.40-36/lib/libc.so*:*'
+sudo bpftrace -l 'uprobe:/nix/store/nq*2.40-36/lib/libc.so*:*'
+```
+Example output:
+```sh
 uprobe:/nix/store/nqb2ns2d1lahnd5ncwmn6k84qfd7vx2k-glibc-2.40-36/lib/libc.so.6:_Exit
 uprobe:/nix/store/nqb2ns2d1lahnd5ncwmn6k84qfd7vx2k-glibc-2.40-36/lib/libc.so.6:_Fork
 uprobe:/nix/store/nqb2ns2d1lahnd5ncwmn6k84qfd7vx2k-glibc-2.40-36/lib/libc.so.6:_IO_adjust_column
 uprobe:/nix/store/nqb2ns2d1lahnd5ncwmn6k84qfd7vx2k-glibc-2.40-36/lib/libc.so.6:_IO_adjust_wcolumn
 uprobe:/nix/store/nqb2ns2d1lahnd5ncwmn6k84qfd7vx2k-glibc-2.40-36/lib/libc.so.6:_IO_cleanup
-<chop>
+...
 ```
 
 To list probes available in a running process we can simply specify a path to the `procfs` executable image for that process:
 
 ```sh
-$ pgrep dhcpcd
+pgrep dhcpcd
+```
+Example output:
+```sh
 1531
-$ sudo bpftrace -l 'uprobe:/proc/1531/exe:*'
+```
+```sh
+sudo bpftrace -l 'uprobe:/proc/1531/exe:*'
+```
+Example output:
+```sh
 uprobe:/proc/1531/exe:MD5Final
 uprobe:/proc/1531/exe:MD5Init
 uprobe:/proc/1531/exe:MD5Transform
@@ -50,7 +61,7 @@ uprobe:/proc/1531/exe:SHA256_Final
 uprobe:/proc/1531/exe:SHA256_Init
 uprobe:/proc/1531/exe:SHA256_Transform
 uprobe:/proc/1531/exe:SHA256_Update
-<chop>
+...
 ```
 
 
@@ -59,7 +70,7 @@ uprobe:/proc/1531/exe:SHA256_Update
 Run on your devserver:
 
 ```sh
-$ sudo bpftrace -e 'uprobe:/nix/store/nq*2.40-36/lib/libc.so*:exit
+sudo bpftrace -e 'uprobe:/nix/store/nq*2.40-36/lib/libc.so*:exit
 {
     printf("%s exited with code %d\n", comm, arg0);
 }'
@@ -79,7 +90,10 @@ average particular processes live.
 First let's find an appropriate start function to trace:
 
 ```sh
-$ sudo bpftrace -l 'uprobe:/nix/store/nq*2.40-36/lib/libc.so*:*' | grep libc_start
+sudo bpftrace -l 'uprobe:/nix/store/nq*2.40-36/lib/libc.so*:*' | grep libc_start
+```
+Example output:
+```sh
 uprobe:/nix/store/nqb2ns2d1lahnd5ncwmn6k84qfd7vx2k-glibc-2.40-36/lib/libc.so.6:__libc_start_call_main
 uprobe:/nix/store/nqb2ns2d1lahnd5ncwmn6k84qfd7vx2k-glibc-2.40-36/lib/libc.so.6:__libc_start_main
 ```
@@ -90,7 +104,6 @@ Now let's create a bpftrace script that will track in histograms how long
 each process lives for:
 
 ```sh
-$ cat process_lifetime.bt
 uprobe:/nix/store/nq*2.40-36/lib/libc.so*:__libc_start_main
 {
   @start_times[pid] = nsecs;
@@ -108,6 +121,7 @@ END
   clear(@start_times);
 }
 ```
+Name this file: `process_lifetime.bt`.
 
 This script records the start time in bpftrace-relative nanoseconds for each
 pid. Then on process exit, we correlate the end time with the start time.
@@ -116,7 +130,10 @@ The resulting data (in nanoseconds) should be printed to the console.
 
 Let's see what happens when we run the script for ~30 seconds (**NOTE**: generate some activity yourself by logging in and running some random commands):
 ```sh
-$ sudo bpftrace process_lifetime.bt
+sudo bpftrace process_lifetime.bt
+```
+Example output:
+```sh
 Attaching 3 probes...
 ^C
 @lifetime_hist[dig]:
