@@ -130,7 +130,7 @@ NOTE: before attempting the tasks in this section select the `syscalls` option f
 
 1. Find all `close(2)` system calls that were passed invalid file descriptors.
 
-In the next section we take a dive into tracing [kernel functions](https://internalfb.com/intern/wiki/Bpftrace_hands-on-lab/3._Working_with_kernel_probes/).
+In the next section we take a dive into tracing [kernel functions](./kernel-probes).
 
 
 ## Further Reading

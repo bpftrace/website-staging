@@ -320,7 +320,7 @@ NOTE: ensure the `kernel` option from the `bpfhol` menu is still selected (just 
 1. Is `kprobeme` leaking file descriptors? (HINT: use an associative map)
 
 
-After this excursion in to the kernel we're going back up into userland with [uprobes](https://internalfb.com/intern/wiki/Bpftrace_hands-on-lab/4._Working_with_dynamic_user_probes/).
+After this excursion in to the kernel we're going back up into userland with [uprobes](./user-probes).
 
 ---
 

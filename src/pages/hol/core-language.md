@@ -41,7 +41,7 @@ Although we haven't been formally introduced to any bpftrace details, can you gu
 
 #### Starter Example
 
-We'll start with the classic example of looking at system calls (see the [syscalls lab](https://internalfb.com/intern/wiki/Bpftrace_hands-on-lab/2._Working_with_system_calls/) for further details).
+We'll start with the classic example of looking at system calls (see the [syscalls lab](./system-calls) for further details).
 
 1. First let's see what system calls are being made. Run this bpftrace invocation for 15-20 seconds and then terminate it with `<Ctrl-c>`.
 
@@ -272,6 +272,6 @@ Note that the `interval` based probes we have used previously only fire on a sin
 
 A [📖 `profile` probe](/docs/pre-release#probes-profile) is the same format as the `interval` probe that we have seen previously. Write a script which uses a 10 millisecond `profile` probe (`profile:ms:10`)  to count the number of times a non-root thread (`uid` != 0) was running when the probe fired. (Hints: key the map with the `cpu` builtin variable and you'll also need the `uid` builtin variable. Bonus points for use of the `if` statement instead of a predicate (it's not any better here but just provides variation!).
 
-Now that we've covered some of the basic building blocks of bpftrace, we'll continue the voyage of discovery by looking at the fundamental interface between userland code and the kernel: the [system call](https://internalfb.com/intern/wiki/Bpftrace_hands-on-lab/2._Working_with_system_calls/).
+Now that we've covered some of the basic building blocks of bpftrace, we'll continue the voyage of discovery by looking at the fundamental interface between userland code and the kernel: the [system call](./system-calls).
 
 ## [Back to HOL Intro](./intro)
