@@ -143,7 +143,7 @@ Thu Sep 26 10:19:05 2024
 
 ### Exercises 1.3
 
-1. Expand the script written previously to print the per-process system call counts every 10 seconds (hint: [see 📖 Probes](/docs/pre-release#_probes).
+1. Expand the script written previously to print the per-process system call counts every 10 seconds (hint: use `print()`, [see 📖 Functions](/docs/pre-release#_functions)).
 1. Add the ability to only display the top 10 per process counts (hint: use `print()`, [see 📖 Functions](/docs/pre-release#_functions))
 1. Delete all per-process syscall stats every 10 secs (hint: use `clear()`, [see 📖 Functions](/docs/pre-release#_functions));
 1. Finally, exit the script after 3 iterations (or 30 seconds if you prefer it that way)
@@ -194,6 +194,7 @@ NOTE: threads inherit the name from their parent but many set their own thread n
 
 ### Exercises 1.4
 
+Make sure you are inside the `bpftrace-hol` directory: `cd bpftrace-hol`.
 Run the `bpfhol` load generator executable and select option `1. core`:
 
 1. Count the syscalls made by each `<pid, tid, comm>` tuple for every thread in the main `core` process (use `pgrep -f core` to find the main process pid and predicate using that),
