@@ -46,10 +46,13 @@ We'll start with the classic example of looking at system calls (see the [syscal
 1. First let's see what system calls are being made. Run this bpftrace invocation for 15-20 seconds and then terminate it with `<Ctrl-c>`.
 
 ```sh
-$ sudo bpftrace -e 'tracepoint:syscalls:sys_enter_*{@calls[probe] = count();}'
+sudo bpftrace -e 'tracepoint:syscalls:sys_enter_*{@calls[probe] = count();}'
+```
+Example output:
+```sh
 Attaching 311 probes...
 ^C
-<output elided>
+...
 @calls[tracepoint:syscalls:sys_enter_write]: 1323
 @calls[tracepoint:syscalls:sys_enter_close]: 1581
 @calls[tracepoint:syscalls:sys_enter_read]: 1680
@@ -72,10 +75,13 @@ NOTE: Maps are a key data structure that you'll use very frequently!
 2. Now let's iterate using the data we just acquired to drill down and discover who is making those `close(2)` syscalls! Again, let's give it 15-20 seconds before issuing a `<Ctrl-c>`:
 
 ```sh
-$ sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close{@calls[comm] = count();}'
+sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close{@calls[comm] = count();}'
+```
+Example output:
+```sh
 ^C
 
-<output elided>
+...
 @calls[bpftrace]: 1
 @calls[abrt-dump-journ]: 2
 @calls[chronyd]: 2
@@ -92,13 +98,16 @@ $ sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close{@calls[comm] = count();}
 The result of this tracing iteration tell us that a process named `systemd-oomd` is making the most `close` calls so we may want to drill down this process to see where in the code these calls are being made from (Note: replace `system-oomd` in the following example with a process name from the above script invocation on **your** system!):
 
 ```sh
-$ sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close /comm == "systemd-oomd"/
+sudo bpftrace -e 'tracepoint:syscalls:sys_enter_close /comm == "systemd-oomd"/
 {
   @calls[ustack] = count();
 }'
+```
+Example output:
+```sh
 Attaching 1 probe...
 ^C
-<output elided>
+...
 @calls[
     __close_nocancel+24
     _IO_file_close_it@@GLIBC_2.17+116
@@ -133,7 +142,10 @@ Write a script to keep count of the number of system calls each process makes. I
 We often want to periodically display data held in aggregations and this can be done with [the 📖 `interval` probes](/docs/pre-release#probes-interval) which provide periodic interval timers. For example, to print the date and time every 10 seconds:
 
 ```sh
-$ sudo bpftrace -e 'interval:s:10 { time("%c\n"); }'
+sudo bpftrace -e 'interval:s:10 { time("%c\n"); }'
+```
+Example output:
+```sh
 Attaching 1 probe...
 Thu Sep 26 10:18:35 2024
 Thu Sep 26 10:18:45 2024
@@ -177,7 +189,8 @@ which yields:
 
 ```
 Attaching 3 probes...
-^Cthe value is: 6
+^C
+the value is: 6
 ```
 
 
