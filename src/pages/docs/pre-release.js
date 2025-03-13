@@ -1043,6 +1043,25 @@ Scratch variables must be initialized before using these operators.</p>
 <p>Note <code>&#43;&#43;</code>/<code>--</code> on a shared global variable can lose updates. See <a href="#map-functions-count"><code>count()</code></a> for more details.</p>
 </div>
 </div>
+<div className="sect3">
+<h4 id="_block_expressions">Block Expressions</h4>
+<div className="paragraph">
+<p>A block can be used as expression, as long as the last statement of the block
+is an expression with no trailing semi-colon.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre className="highlight"><code>let $a = &#123;
+  let $b = 1;
+  $b
+&#125;;
+// $a is 1</code></pre>
+</div>
+</div>
+<div className="paragraph">
+<p>This can be used anywhere an expression can be used.</p>
+</div>
+</div>
 </div>
 <div className="sect2">
 <h3 id="_preamble">Preamble</h3>
