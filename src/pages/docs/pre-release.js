@@ -1263,6 +1263,42 @@ Map names always start with a <code>@</code>, e.g. <code>@mymap</code>.</p>
 <p>The data type of a variable is automatically determined during first assignment and cannot be changed afterwards.</p>
 </div>
 <div className="sect3">
+<h4 id="_maps_declarations">Maps Declarations</h4>
+<div className="paragraph">
+<p>Maps can also be declared in the global scope, before probes and after the config e.g.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>config = &#123;
+    unstable_map_decl=1;
+&#125;
+
+let @a = hash(100);
+let @b = percpulruhash(20);
+
+BEGIN &#123; ... &#125;</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>The utility of this is that you can specify different underlying BPF map types.
+Currently these are available in bpftrace:
+- hash (BPF_MAP_TYPE_HASH)
+- lruhash (BPF_MAP_TYPE_LRU_HASH)
+- percpuhash (BPF_MAP_TYPE_PERCPU_HASH)
+- percpulruhash (BPF_MAP_TYPE_LRU_PERCPU_HASH)
+- percpuarray (BPF_MAP_TYPE_PERCPU_ARRAY)</p>
+</div>
+<div className="paragraph">
+<p>Additionally, map declarations must supply a single argument: <strong>max entries</strong> e.g. <code>let @a = lruhash(100);</code>
+All maps that are not declared in the global scope utilize the default set in the config variable "max_map_keys".
+However, it&#8217;s best practice to declare maps up front as using the default can lead to lost map update events (if the map is full) or over allocation of memory if the map is intended to only store a few entries.</p>
+</div>
+<div className="paragraph">
+<p><strong>Warning</strong> this feature is experimental and may be subject to changes.
+It also requires the 'unstable_map_decl' config being set to 1.</p>
+</div>
+</div>
+<div className="sect3">
 <h4 id="_maps_without_explicit_keys">Maps without Explicit Keys</h4>
 <div className="paragraph">
 <p>Values can be assigned directly to maps without a key (sometimes refered to as scalar maps).
