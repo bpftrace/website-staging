@@ -5123,6 +5123,15 @@ If there are many processes running, it will consume a lot of a memory.</p>
 <p>For user space symbols, symbolicate lazily/on-demand (1) or symbolicate everything ahead of time (0).</p>
 </div>
 </div>
+</div>
+<div className="sect2">
+<h3 id="_license">license</h3>
+<div className="paragraph">
+<p>Default: "GPL"</p>
+</div>
+<div className="paragraph">
+<p>The license bpftrace will use to load BPF programs into the linux kernel.</p>
+</div>
 <div className="sect3">
 <h4 id="_log_size">log_size</h4>
 <div className="paragraph">
@@ -5397,6 +5406,15 @@ BEGIN &#123; @=*uptr(kaddr("do_poweroff")) &#125;
 <div className="paragraph">
 <p>bpftrace tries to automatically set the correct address space for a pointer based on the probe type, but might fail in cases where it is unclear.
 The address space can be changed with the <a href="#functions-kptr">kptrs</a> and <a href="#functios-uptr">uptr</a> functions.</p>
+</div>
+</div>
+<div className="sect2">
+<h3 id="_bpf_license">BPF License</h3>
+<div className="paragraph">
+<p>By default bpftrace uses "GPL", which is actually "GPL version 2", as the license it uses to load BPF programs into the kernel.
+Some other examples of compatible licenses are: "GPL v2" and "Dual MPL/GPL".
+You can specify a different license using the "license" config variable.
+<a href="https://docs.kernel.org/bpf/bpf_licensing.html#using-bpf-programs-in-the-linux-kernel">#Read more about BPF programs and licensing</a>.</p>
 </div>
 </div>
 <div className="sect2">
