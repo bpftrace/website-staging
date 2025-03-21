@@ -2301,17 +2301,6 @@ a full path. The path will be then automatically resolved using <code>/etc/ld.so
 </div>
 </div>
 <div className="paragraph">
-<p>If the traced binary has DWARF included, function arguments are available in the <code>args</code> struct which can be inspected with verbose listing, see the <a href="#_listing_probes">Listing Probes</a> section for more details.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace -lv 'uprobe:/bin/bash:rl_set_prompt'
-
-uprobe:/bin/bash:rl_set_prompt
-    const char* prompt</pre>
-</div>
-</div>
-<div className="paragraph">
 <p>When tracing C&#43;&#43; programs, it&#8217;s possible to turn on automatic symbol demangling by using the <code>:cpp</code> prefix:</p>
 </div>
 <div className="listingblock">
@@ -2575,7 +2564,7 @@ For string arguments use the <code>str()</code> call to retrieve the value.</p><
 <td className="tableblock halign-left valign-top"><p className="tableblock">struct args</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">The struct of all arguments of the traced function. Available in <code>tracepoint</code>, <code>fentry</code>, <code>fexit</code>, and <code>uprobe</code> (with DWARF) probes. Use <code>args.x</code> to access argument <code>x</code> or <code>args</code> to get a record with all arguments.</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">The struct of all arguments of the traced function. Available in <code>tracepoint</code>, <code>fentry</code> and <code>fexit</code>.. Use <code>args.x</code> to access argument <code>x</code> or <code>args</code> to get a record with all arguments.</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">cgroup</p></td>
@@ -5293,32 +5282,6 @@ Set to empty string to disable truncation trailers.</p>
 <p>Controls whether maps are printed on exit. Set to <code>0</code> in order to change the default behavior and not automatically print maps at program exit.</p>
 </div>
 </div>
-<div className="sect3">
-<h4 id="_symbol_source">symbol_source</h4>
-<div className="paragraph">
-<p>Default: <code>dwarf</code> if <code>bpftrace</code> is compiled with LLDB, <code>symbol_table</code> otherwise</p>
-</div>
-<div className="paragraph">
-<p>Choose how bpftrace will resolve all <code>uprobe</code> symbol locations.</p>
-</div>
-<div className="paragraph">
-<p>Available options:</p>
-</div>
-<div className="ulist">
-<ul>
-<li>
-<p><code>dwarf</code> - locate uprobes using DebugInfo, which yields more accurate stack traces (<code>ustack</code>). Fall back to the Symbol Table if it can&#8217;t locate the probe using DebugInfo.</p>
-</li>
-<li>
-<p><code>symbol_table</code> - don&#8217;t use DebugInfo and rely on the ELF Symbol Table instead.</p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>If the DebugInfo was rewritten by a post-linkage optimisation tool (like BOLT or AutoFDO), it might yield an incorrect address for a probe location.
-This config can force using the Symbol Table, for when the DebugInfo returns invalid addresses.</p>
-</div>
-</div>
 </div>
 <div className="sect2">
 <h3 id="_environment_variables">Environment Variables</h3>
@@ -5768,10 +5731,6 @@ tracepoint:syscalls:sys_enter_openat
     const char * filename
     int flags
     umode_t mode
-
-# bpftrace -l 'uprobe:/bin/bash:rl_set_prompt' -v    # works only if /bin/bash has DWARF
-uprobe:/bin/bash:rl_set_prompt
-    const char *prompt
 
 # bpftrace -lv 'struct css_task_iter'
 struct css_task_iter &#123;
