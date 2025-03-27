@@ -2080,32 +2080,27 @@ These operate using perf_events (a Linux kernel facility, which is also used by 
 </ul>
 </div>
 <div className="paragraph">
-<p>The hook point triggered by <code>tracepoint</code> and <code>rawtracepoint</code> is the same.
-<code>tracepoint</code> and <code>rawtracepoint</code> are nearly identical in terms of functionality.
-The only difference is in the program context.
-<code>rawtracepoint</code> offers raw arguments to the tracepoint while <code>tracepoint</code> applies further processing to the raw arguments.
-The additional processing is defined inside the kernel.</p>
+<p>Raw tracepoints are attached to the same tracepoints as normal tracepoint programs.
+The reason why you might want to use raw tracepoints over normal tracepoints is due to the performance improvement - <a href="https://docs.ebpf.io/linux/program-type/BPF_PROG_TYPE_RAW_TRACEPOINT/">Read More</a>.</p>
+</div>
+<div className="paragraph">
+<p><code>rawtracepoint</code> arguments can be accessed via the <code>argN</code> builtins AND via the <code>args</code> builtin.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>rawtracepoint:block_rq_insert &#123;
-  printf("%llx %llx\n", arg0, arg1);
+<pre>rawtracepoint:kfree_skb &#123;
+  printf("%llx %llx\n", arg0, args.skb);
 &#125;</pre>
 </div>
 </div>
 <div className="paragraph">
-<p>Tracepoint arguments are available via the <code>argN</code> builtins.
-Each arg is a 64-bit integer.
-The available arguments can be found in the relative path of the kernel source code <code>include/trace/events/</code>. For example:</p>
+<p><code>arg0</code> and <code>args.skb</code> will print the same address.</p>
 </div>
-<div className="listingblock">
-<div className="content">
-<pre>include/trace/events/block.h
-DEFINE_EVENT(block_rq, block_rq_insert,
-	TP_PROTO(struct request_queue *q, struct request *rq),
-	TP_ARGS(q, rq)
-);</pre>
-</div>
+<div className="paragraph">
+<p><code>rawtracepoint</code> probes make use of BTF type information to derive the type of function arguments at compile time.
+This removes the need for manual type casting and makes the code more resilient against small signature changes in the kernel.
+The arguments accessible by a <code>rawtracepoint</code> are different from the arguments you can access from the <code>tracepoint</code> of the same name.
+The function arguments are available in the <code>args</code> struct which can be inspected by doing verbose listing (see <a href="#_listing_probes">Listing Probes</a>).</p>
 </div>
 </div>
 <div className="sect2">
