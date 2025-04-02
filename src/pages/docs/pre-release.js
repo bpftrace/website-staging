@@ -2067,7 +2067,7 @@ These operate using perf_events (a Linux kernel facility, which is also used by 
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>rawtracepoint:event</code></p>
+<p><code>rawtracepoint[:module]:event</code></p>
 </li>
 </ul>
 </div>
@@ -2088,7 +2088,7 @@ The reason why you might want to use raw tracepoints over normal tracepoints is 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>rawtracepoint:kfree_skb &#123;
+<pre>rawtracepoint:vmlinux:kfree_skb &#123;
   printf("%llx %llx\n", arg0, args.skb);
 &#125;</pre>
 </div>
@@ -2293,6 +2293,17 @@ a full path. The path will be then automatically resolved using <code>/etc/ld.so
 <div className="listingblock">
 <div className="content">
 <pre>uprobe:libc:malloc &#123; printf("Allocated %d bytes\n", arg0); &#125;</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>If the traced binary has DWARF included, function arguments are available in the <code>args</code> struct which can be inspected with verbose listing, see the <a href="#_listing_probes">Listing Probes</a> section for more details.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre># bpftrace -lv 'uprobe:/bin/bash:rl_set_prompt'
+
+uprobe:/bin/bash:rl_set_prompt
+    const char* prompt</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2559,7 +2570,7 @@ For string arguments use the <code>str()</code> call to retrieve the value.</p><
 <td className="tableblock halign-left valign-top"><p className="tableblock">struct args</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">The struct of all arguments of the traced function. Available in <code>tracepoint</code>, <code>fentry</code> and <code>fexit</code>.. Use <code>args.x</code> to access argument <code>x</code> or <code>args</code> to get a record with all arguments.</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">The struct of all arguments of the traced function. Available in <code>tracepoint</code>, <code>fentry</code>, <code>fexit</code>, and <code>uprobe</code> (with DWARF) probes. Use <code>args.x</code> to access argument <code>x</code> or <code>args</code> to get a record with all arguments.</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">cgroup</p></td>
@@ -5726,6 +5737,10 @@ tracepoint:syscalls:sys_enter_openat
     const char * filename
     int flags
     umode_t mode
+
+# bpftrace -l 'uprobe:/bin/bash:rl_set_prompt' -v    # works only if /bin/bash has DWARF
+uprobe:/bin/bash:rl_set_prompt
+    const char *prompt
 
 # bpftrace -lv 'struct css_task_iter'
 struct css_task_iter &#123;
