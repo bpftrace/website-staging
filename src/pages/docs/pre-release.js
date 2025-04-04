@@ -5826,10 +5826,9 @@ iscsid is sleeping.
 </div>
 <div className="sect2">
 <h3 id="_systemd_support">Systemd support</h3>
-<div className="dlist">
-<dl>
-<dt className="hdlist1">To run bpftrace in the background using systemd</dt>
-</dl>
+<div className="paragraph">
+<p>If bpftrace has been built with <code>-DENABLE_SYSTEMD=1</code>, one can run bpftrace in
+the background using systemd::</p>
 </div>
 <div className="listingblock">
 <div className="content">
