@@ -13,7 +13,7 @@ export default function Home() {
     <Layout title="docs">
 	    <div className="container docs-container padding-top--md padding-bottom--lg">
         <div id="docs-header">
-          <h1>Version: latest</h1>
+          <h1>Version: 0.23</h1>
         </div>
         <div className="row docs-row">
           <div className="col col--3">
@@ -267,10 +267,9 @@ Errors are still written to stderr.</p>
 <div className="sect2">
 <h3 id="_p_pid"><strong>-p</strong> <em>PID</em></h3>
 <div className="paragraph">
-<p>Attach to the process with or filter actions by <em>PID</em>.
+<p>Attach to the process with <em>PID</em>.
 If the process terminates, bpftrace will also terminate.
-When using USDT, uprobes, uretprobes, hardware, software, profile, interval, watchpoint, or asyncwatchpoint probes they will be attached to only this process.
-For all other probes, except BEGIN/END, the pid will act like a predicate to filter out events not from that pid.
+When using USDT probes, uprobes, and uretprobes they will be attached to only this process.
 For listing uprobes/uretprobes set the target to '*' and the process&#8217;s address space will be searched for the symbols.</p>
 </div>
 </div>
@@ -1043,25 +1042,6 @@ Scratch variables must be initialized before using these operators.</p>
 <p>Note <code>&#43;&#43;</code>/<code>--</code> on a shared global variable can lose updates. See <a href="#map-functions-count"><code>count()</code></a> for more details.</p>
 </div>
 </div>
-<div className="sect3">
-<h4 id="_block_expressions">Block Expressions</h4>
-<div className="paragraph">
-<p>A block can be used as expression, as long as the last statement of the block
-is an expression with no trailing semi-colon.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>{`let $a = {
-  let $b = 1;
-  $b
-};
-// $a is 1`}</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>This can be used anywhere an expression can be used.</p>
-</div>
-</div>
 </div>
 <div className="sect2">
 <h3 id="_preamble">Preamble</h3>
@@ -1261,42 +1241,6 @@ Map names always start with a <code>@</code>, e.g. <code>@mymap</code>.</p>
 </div>
 <div className="paragraph">
 <p>The data type of a variable is automatically determined during first assignment and cannot be changed afterwards.</p>
-</div>
-<div className="sect3">
-<h4 id="_maps_declarations">Maps Declarations</h4>
-<div className="paragraph">
-<p>Maps can also be declared in the global scope, before probes and after the config e.g.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>{`config = {
-    unstable_map_decl=1;
-}
-
-let @a = hash(100);
-let @b = percpulruhash(20);
-
-BEGIN { ... }`}</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>The utility of this is that you can specify different underlying BPF map types.
-Currently these are available in bpftrace:
-- hash (BPF_MAP_TYPE_HASH)
-- lruhash (BPF_MAP_TYPE_LRU_HASH)
-- percpuhash (BPF_MAP_TYPE_PERCPU_HASH)
-- percpulruhash (BPF_MAP_TYPE_LRU_PERCPU_HASH)
-- percpuarray (BPF_MAP_TYPE_PERCPU_ARRAY)</p>
-</div>
-<div className="paragraph">
-<p>Additionally, map declarations must supply a single argument: <strong>max entries</strong> e.g. <code>let @a = lruhash(100);</code>
-All maps that are not declared in the global scope utilize the default set in the config variable "max_map_keys".
-However, it&#8217;s best practice to declare maps up front as using the default can lead to lost map update events (if the map is full) or over allocation of memory if the map is intended to only store a few entries.</p>
-</div>
-<div className="paragraph">
-<p><strong>Warning</strong> this feature is experimental and may be subject to changes.
-It also requires the 'unstable_map_decl' config being set to 1.</p>
-</div>
 </div>
 <div className="sect3">
 <h4 id="_maps_without_explicit_keys">Maps without Explicit Keys</h4>
@@ -2067,7 +2011,7 @@ These operate using perf_events (a Linux kernel facility, which is also used by 
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>rawtracepoint[:module]:event</code></p>
+<p><code>rawtracepoint:event</code></p>
 </li>
 </ul>
 </div>
@@ -2080,27 +2024,32 @@ These operate using perf_events (a Linux kernel facility, which is also used by 
 </ul>
 </div>
 <div className="paragraph">
-<p>Raw tracepoints are attached to the same tracepoints as normal tracepoint programs.
-The reason why you might want to use raw tracepoints over normal tracepoints is due to the performance improvement - <a href="https://docs.ebpf.io/linux/program-type/BPF_PROG_TYPE_RAW_TRACEPOINT/">Read More</a>.</p>
-</div>
-<div className="paragraph">
-<p><code>rawtracepoint</code> arguments can be accessed via the <code>argN</code> builtins AND via the <code>args</code> builtin.</p>
+<p>The hook point triggered by <code>tracepoint</code> and <code>rawtracepoint</code> is the same.
+<code>tracepoint</code> and <code>rawtracepoint</code> are nearly identical in terms of functionality.
+The only difference is in the program context.
+<code>rawtracepoint</code> offers raw arguments to the tracepoint while <code>tracepoint</code> applies further processing to the raw arguments.
+The additional processing is defined inside the kernel.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`rawtracepoint:vmlinux:kfree_skb {
-  printf("%llx %llx\\n", arg0, args.skb);
+<pre>{`rawtracepoint:block_rq_insert {
+  printf("%llx %llx\\n", arg0, arg1);
 }`}</pre>
 </div>
 </div>
 <div className="paragraph">
-<p><code>arg0</code> and <code>args.skb</code> will print the same address.</p>
+<p>Tracepoint arguments are available via the <code>argN</code> builtins.
+Each arg is a 64-bit integer.
+The available arguments can be found in the relative path of the kernel source code <code>include/trace/events/</code>. For example:</p>
 </div>
-<div className="paragraph">
-<p><code>rawtracepoint</code> probes make use of BTF type information to derive the type of function arguments at compile time.
-This removes the need for manual type casting and makes the code more resilient against small signature changes in the kernel.
-The arguments accessible by a <code>rawtracepoint</code> are different from the arguments you can access from the <code>tracepoint</code> of the same name.
-The function arguments are available in the <code>args</code> struct which can be inspected by doing verbose listing (see <a href="#_listing_probes">Listing Probes</a>).</p>
+<div className="listingblock">
+<div className="content">
+<pre>{`include/trace/events/block.h
+DEFINE_EVENT(block_rq, block_rq_insert,
+	TP_PROTO(struct request_queue *q, struct request *rq),
+	TP_ARGS(q, rq)
+);`}</pre>
+</div>
 </div>
 </div>
 <div className="sect2">
@@ -2548,8 +2497,8 @@ The 'Kernel' column indicates the minimum kernel version required and the 'BPF H
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">The nth positional parameter passed to the bpftrace program.
-If less than n parameters are passed this evaluates to <code>0</code> in an action block or an empty string in a probe.
-For string arguments in an action block use the <code>str()</code> call to retrieve the value.</p></td>
+If less than n parameters are passed this evaluates to <code>0</code>.
+For string arguments use the <code>str()</code> call to retrieve the value.</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>$#</code></p></td>
@@ -5118,15 +5067,6 @@ If there are many processes running, it will consume a lot of a memory.</p>
 <p>For user space symbols, symbolicate lazily/on-demand (1) or symbolicate everything ahead of time (0).</p>
 </div>
 </div>
-</div>
-<div className="sect2">
-<h3 id="_license">license</h3>
-<div className="paragraph">
-<p>Default: "GPL"</p>
-</div>
-<div className="paragraph">
-<p>The license bpftrace will use to load BPF programs into the linux kernel.</p>
-</div>
 <div className="sect3">
 <h4 id="_log_size">log_size</h4>
 <div className="paragraph">
@@ -5288,6 +5228,32 @@ Set to empty string to disable truncation trailers.</p>
 <p>Controls whether maps are printed on exit. Set to <code>0</code> in order to change the default behavior and not automatically print maps at program exit.</p>
 </div>
 </div>
+<div className="sect3">
+<h4 id="_symbol_source">symbol_source</h4>
+<div className="paragraph">
+<p>Default: <code>dwarf</code> if <code>bpftrace</code> is compiled with LLDB, <code>symbol_table</code> otherwise</p>
+</div>
+<div className="paragraph">
+<p>Choose how bpftrace will resolve all <code>uprobe</code> symbol locations.</p>
+</div>
+<div className="paragraph">
+<p>Available options:</p>
+</div>
+<div className="ulist">
+<ul>
+<li>
+<p><code>dwarf</code> - locate uprobes using DebugInfo, which yields more accurate stack traces (<code>ustack</code>). Fall back to the Symbol Table if it can&#8217;t locate the probe using DebugInfo.</p>
+</li>
+<li>
+<p><code>symbol_table</code> - don&#8217;t use DebugInfo and rely on the ELF Symbol Table instead.</p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>If the DebugInfo was rewritten by a post-linkage optimisation tool (like BOLT or AutoFDO), it might yield an incorrect address for a probe location.
+This config can force using the Symbol Table, for when the DebugInfo returns invalid addresses.</p>
+</div>
+</div>
 </div>
 <div className="sect2">
 <h3 id="_environment_variables">Environment Variables</h3>
@@ -5375,15 +5341,6 @@ BEGIN { @=*uptr(kaddr("do_poweroff")) }
 <div className="paragraph">
 <p>bpftrace tries to automatically set the correct address space for a pointer based on the probe type, but might fail in cases where it is unclear.
 The address space can be changed with the <a href="#functions-kptr">kptrs</a> and <a href="#functios-uptr">uptr</a> functions.</p>
-</div>
-</div>
-<div className="sect2">
-<h3 id="_bpf_license">BPF License</h3>
-<div className="paragraph">
-<p>By default bpftrace uses "GPL", which is actually "GPL version 2", as the license it uses to load BPF programs into the kernel.
-Some other examples of compatible licenses are: "GPL v2" and "Dual MPL/GPL".
-You can specify a different license using the "license" config variable.
-<a href="https://docs.kernel.org/bpf/bpf_licensing.html#using-bpf-programs-in-the-linux-kernel">#Read more about BPF programs and licensing</a>.</p>
 </div>
 </div>
 <div className="sect2">
@@ -5826,9 +5783,10 @@ iscsid is sleeping.
 </div>
 <div className="sect2">
 <h3 id="_systemd_support">Systemd support</h3>
-<div className="paragraph">
-<p>If bpftrace has been built with <code>-DENABLE_SYSTEMD=1</code>, one can run bpftrace in
-the background using systemd::</p>
+<div className="dlist">
+<dl>
+<dt className="hdlist1">To run bpftrace in the background using systemd</dt>
+</dl>
 </div>
 <div className="listingblock">
 <div className="content">
