@@ -12,11 +12,11 @@ export default function Home() {
   return (
     <Layout title="docs">
 	    <div className="container docs-container padding-top--md padding-bottom--lg">
-      <div id="docs-header">
-              <h1>Version: 0.22</h1>
-            </div>
+        <div id="docs-header">
+          <h1>Version: 0.22</h1>
+        </div>
         <div className="row docs-row">
-        <div className="col col--3">
+          <div className="col col--3">
             <div className="docs-toc">
               <ul className="sectlevel1">
 <li><a href="#_synopsis">Synopsis</a></li>
@@ -71,7 +71,7 @@ It supports static and dynamic tracing for both the kernel and user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;'</pre>
+<pre>{`# bpftrace -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }'`}</pre>
 </div>
 </div>
 <div className="dlist">
@@ -81,7 +81,7 @@ It supports static and dynamic tracing for both the kernel and user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;' -c 'sleep 5'</pre>
+<pre>{`# bpftrace -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }' -c 'sleep 5'`}</pre>
 </div>
 </div>
 <div className="dlist">
@@ -91,7 +91,7 @@ It supports static and dynamic tracing for both the kernel and user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -l '*sleep*'</pre>
+<pre>{`# bpftrace -l '*sleep*'`}</pre>
 </div>
 </div>
 <div className="dlist">
@@ -101,7 +101,7 @@ It supports static and dynamic tracing for both the kernel and user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -l -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;'</pre>
+<pre>{`# bpftrace -l -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }'`}</pre>
 </div>
 </div>
 </div>
@@ -228,9 +228,9 @@ When errors occur bpftrace will log an error containing the source location and 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>stdin:48-57: WARNING: Failed to probe_read_user_str: Bad address (-14)
-u:lib.so:"fn(char const*)" &#123; printf("arg0:%s\n", str(arg0));&#125;
-                                                 ~~~~~~~~~</pre>
+<pre>{`stdin:48-57: WARNING: Failed to probe_read_user_str: Bad address (-14)
+u:lib.so:"fn(char const*)" { printf("arg0:%s\\n", str(arg0));}
+                                                 ~~~~~~~~~`}</pre>
 </div>
 </div>
 </div>
@@ -389,11 +389,11 @@ We use a <code>.bt</code> file extension, short for bpftrace, but the extension 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># cat sleepers.bt
+<pre>{`# cat sleepers.bt
 
-tracepoint:syscalls:sys_enter_nanosleep &#123;
-  printf("%s is sleeping.\n", comm);
-&#125;</pre>
+tracepoint:syscalls:sys_enter_nanosleep {
+  printf("%s is sleeping.\\n", comm);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -401,11 +401,11 @@ tracepoint:syscalls:sys_enter_nanosleep &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace sleepers.bt
+<pre>{`# bpftrace sleepers.bt
 
 Attaching 1 probe...
 iscsid is sleeping.
-iscsid is sleeping.</pre>
+iscsid is sleeping.`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -414,11 +414,11 @@ Start by adding an interpreter line at the top (<code>#!</code>) with either the
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>#!/usr/local/bin/bpftrace
+<pre>{`#!/usr/local/bin/bpftrace
 
-tracepoint:syscalls:sys_enter_nanosleep &#123;
-  printf("%s is sleeping.\n", comm);
-&#125;</pre>
+tracepoint:syscalls:sys_enter_nanosleep {
+  printf("%s is sleeping.\\n", comm);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -426,12 +426,12 @@ tracepoint:syscalls:sys_enter_nanosleep &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># chmod 755 sleepers.bt
+<pre>{`# chmod 755 sleepers.bt
 # ./sleepers.bt
 
 Attaching 1 probe...
 iscsid is sleeping.
-iscsid is sleeping.</pre>
+iscsid is sleeping.`}</pre>
 </div>
 </div>
 </div>
@@ -445,10 +445,10 @@ Each script consists of a preamble and one or more action blocks.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>preamble
+<pre>{`preamble
 
 actionblock1
-actionblock2</pre>
+actionblock2`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -456,12 +456,12 @@ actionblock2</pre>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>#include &lt;linux/socket.h&gt;
-#define RED "\033[31m"
+<pre>{`#include &lt;linux/socket.h&gt;
+#define RED "\\033[31m"
 
-struct S &#123;
+struct S {
   int x;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -469,10 +469,10 @@ struct S &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>probe[,probe]
-/predicate/ &#123;
+<pre>{`probe[,probe]
+/predicate/ {
   action
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="dlist">
@@ -501,14 +501,14 @@ When a program exits, all populated maps are printed (this behavior and maps are
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
-	printf("Tracing open syscalls... Hit Ctrl-C to end.\n");
-&#125;
+<pre>{`BEGIN {
+	printf("Tracing open syscalls... Hit Ctrl-C to end.\\n");
+}
 
 tracepoint:syscalls:sys_enter_open,
-tracepoint:syscalls:sys_enter_openat &#123;
-	printf("%-6d %-16s %s\n", pid, comm, str(args.filename));
-&#125;</pre>
+tracepoint:syscalls:sys_enter_openat {
+	printf("%-6d %-16s %s\\n", pid, comm, str(args.filename));
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -536,14 +536,14 @@ They can only be read into a variable from a pointer.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>struct MyStruct &#123;
+<pre>{`struct MyStruct {
   int y[4];
-&#125;
+}
 
-kprobe:dummy &#123;
+kprobe:dummy {
   $s = (struct MyStruct *) arg0;
   print($s-&gt;y[0]);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -554,14 +554,14 @@ kprobe:dummy &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>// A single line comment
-interval:s:1 &#123; // can also be used to comment inline
+<pre>{`// A single line comment
+interval:s:1 { // can also be used to comment inline
 /*
  a multi line comment
 
 */
   print(/* inline comment block */ 1);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -575,7 +575,7 @@ interval:s:1 &#123; // can also be used to comment inline
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>condition ? ifTrue : ifFalse</pre>
+<pre>{`condition ? ifTrue : ifFalse`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -586,8 +586,8 @@ interval:s:1 &#123; // can also be used to comment inline
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$a == 1 ? print("true") : print("false");
-$b = $a &gt; 0 ? $a : -1;</pre>
+<pre>{`$a == 1 ? print("true") : print("false");
+$b = $a &gt; 0 ? $a : -1;`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -595,13 +595,13 @@ $b = $a &gt; 0 ? $a : -1;</pre>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>if (condition) &#123;
+<pre>{`if (condition) {
   ifblock
-&#125; else if (condition) &#123;
+} else if (condition) {
   if2block
-&#125; else &#123;
+} else {
   elseblock
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -613,14 +613,14 @@ which can only be placed at the top of the script before any probes (even <code>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>config = &#123;
+<pre>{`config = {
     stack_mode=perf;
     max_map_keys=2
-&#125;
+}
 
-BEGIN &#123; ... &#125;
+BEGIN { ... }
 
-uprobe:./testprogs/uprobe_test:uprobeFunction1 &#123; ... &#125;</pre>
+uprobe:./testprogs/uprobe_test:uprobeFunction1 { ... }`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -690,12 +690,12 @@ the type upon declaration.</p>
 </table>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123; $x = 1&lt;&lt;16; printf("%d %d\n", (uint16)$x, $x); &#125;
+<pre>{`BEGIN { $x = 1&lt;&lt;16; printf("%d %d\\n", (uint16)$x, $x); }
 
 /*
  * Output:
  * 0 65536
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -707,13 +707,13 @@ The probe still fires, but it will skip the action unless the filter is true.</p
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:vfs_read /arg2 &lt; 16/ &#123;
-  printf("small read: %d byte buffer\n", arg2);
-&#125;
+<pre>{`kprobe:vfs_read /arg2 &lt; 16/ {
+  printf("small read: %d byte buffer\\n", arg2);
+}
 
-kprobe:vfs_read /comm == "bash"/ &#123;
-  printf("read by %s\n", comm);
-&#125;</pre>
+kprobe:vfs_read /comm == "bash"/ {
+  printf("read by %s\\n", comm);
+}`}</pre>
 </div>
 </div>
 </div>
@@ -771,9 +771,9 @@ Note that scientific literals are integer only due to the lack of floating point
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
-  printf("Echo A: %c\n", 65);
-&#125;</pre>
+<pre>{`BEGIN {
+  printf("Echo A: %c\\n", 65);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -816,9 +816,9 @@ Note that scientific literals are integer only due to the lack of floating point
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>for ($kv : @map) &#123;
+<pre>{`for ($kv : @map) {
   block;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -826,11 +826,11 @@ Note that scientific literals are integer only due to the lack of floating point
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@map[10] = 20;
-for ($kv : @map) &#123;
+<pre>{`@map[10] = 20;
+for ($kv : @map) {
   print($kv.0); // key
   print($kv.1); // value
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -838,12 +838,12 @@ for ($kv : @map) &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@map[10,11] = 20;
-for ($kv : @map) &#123;
+<pre>{`@map[10,11] = 20;
+for ($kv : @map) {
   print($kv.0.0); // key 1
   print($kv.0.1); // key 2
   print($kv.1);   // value
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -857,9 +857,9 @@ for ($kv : @map) &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>while (condition) &#123;
+<pre>{`while (condition) {
   block;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -883,17 +883,17 @@ for ($kv : @map) &#123;
 </table>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $i = 0;
-  while ($i &lt;= 100) &#123;
+  while ($i &lt;= 100) {
     printf("%d ", $i);
-    if ($i &gt; 5) &#123;
+    if ($i &gt; 5) {
       break;
-    &#125;
+    }
     $i++
-  &#125;
-  printf("\n");
-&#125;</pre>
+  }
+  printf("\\n");
+}`}</pre>
 </div>
 </div>
 </div>
@@ -904,9 +904,9 @@ for ($kv : @map) &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>unroll(n) &#123;
+<pre>{`unroll(n) {
   block;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -918,17 +918,17 @@ As this happens at compile time <code>n</code> must be a constant greater than 0
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
-  unroll(3) &#123;
+<pre>{`interval:s:1 {
+  unroll(3) {
     print("Unrolled")
-  &#125;
-&#125;
+  }
+}
 
-interval:s:1 &#123;
+interval:s:1 {
   print("Unrolled")
   print("Unrolled")
   print("Unrolled")
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -1163,10 +1163,10 @@ The difference is that the expression <code>x&#43;&#43;</code> returns the origi
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$x = 10;
+<pre>{`$x = 10;
 $y = $x--; // y = 10; x = 9
 $a = 10;
-$b = --$a; // a = 9; b = 9</pre>
+$b = --$a; // a = 9; b = 9`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1200,16 +1200,16 @@ They can only be read into a variable from a pointer.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>struct MyStruct &#123;
+<pre>{`struct MyStruct {
   int a;
-&#125;
+}
 
-kprobe:dummy &#123;
+kprobe:dummy {
   $ptr = (struct MyStruct *) arg0;
   $st = *$ptr;
   print($st.a);
   print($ptr-&gt;a);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -1226,20 +1226,20 @@ Tuples are zero indexed like arrays are.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $a = (1,2);
   $b = (3,4, $a);
   print($a);
   print($b);
   print($b.0);
-&#125;
+}
 
 /*
  * Sample output:
  * (1, 2)
  * (3, 4, (1, 2))
  * 3
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -1250,8 +1250,8 @@ Tuples are zero indexed like arrays are.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$y = (uint32) $z;
-$py = (int16 *) $pz;</pre>
+<pre>{`$y = (uint32) $z;
+$py = (int16 *) $pz;`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1263,8 +1263,8 @@ Conversion to a lower rank is done by zeroing leading bits.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$a = (uint8[8]) 12345;
-$x = (uint64) $a;</pre>
+<pre>{`$a = (uint8[8]) 12345;
+$x = (uint64) $a;`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1283,17 +1283,17 @@ The main purpose of this is to allow casts from/to byte arrays.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   $a = (int8[8])12345;
-  printf("%x %x\n", $a[0], $a[1]);
-  printf("%d\n", (uint64)$a);
-&#125;
+  printf("%x %x\\n", $a[0], $a[1]);
+  printf("%d\\n", (uint64)$a);
+}
 
 /*
  * Output:
  * 39 30
  * 12345
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1305,10 +1305,10 @@ Array casting allows seamless comparison of such representations:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>fentry:tcp_connect &#123;
+<pre>{`fentry:tcp_connect {
     if (args-&gt;sk-&gt;__sk_common.skc_daddr == (uint32)pton("127.0.0.1"))
         ...
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -1325,12 +1325,12 @@ with a <code>$</code>, e.g. <code>$myvar</code>.
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>$a = 1;
-if ($a == 1) &#123;
+<pre>{`$a = 1;
+if ($a == 1) {
   $b = "hello"
   $a = 2;
-&#125;
-// $b is not accessible here</code></pre>
+}
+// $b is not accessible here`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1338,17 +1338,27 @@ if ($a == 1) &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>let $a = 1;
+<pre>{`let $a = 1;
 let $b;
-if ($a == 1) &#123;
+if ($a == 1) {
   $b = "hello"
   $a = 2;
-&#125;
-// $b IS accessible here and would be an empty string if the condition wasn't true</code></pre>
+}
+// $b IS accessible here and would be an empty string if the condition wasn't true`}</pre>
 </div>
 </div>
 <div className="paragraph">
 <p>If no assignment is specified variables will initialize to 0.</p>
+</div>
+<div className="paragraph">
+<p>You can also specify the type in the declaration e.g.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`let $x: uint8;
+let $y: uint8 = 7;
+let $a: string = "hiya";`}</pre>
+</div>
 </div>
 <div className="paragraph">
 <p>'map' variables use BPF 'maps'.
@@ -1369,7 +1379,7 @@ Note: you can&#8217;t iterate over these maps as they don&#8217;t have an access
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@name = expression</pre>
+<pre>{`@name = expression`}</pre>
 </div>
 </div>
 </div>
@@ -1380,7 +1390,7 @@ Note: you can&#8217;t iterate over these maps as they don&#8217;t have an access
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@name[key] = expression</pre>
+<pre>{`@name[key] = expression`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1388,7 +1398,7 @@ Note: you can&#8217;t iterate over these maps as they don&#8217;t have an access
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@name[(key1,key2)] = expression</pre>
+<pre>{`@name[(key1,key2)] = expression`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1397,7 +1407,7 @@ tuple above:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@name[key1,key2] = expression</pre>
+<pre>{`@name[key1,key2] = expression`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1409,8 +1419,8 @@ This applies to both the key(s) and the value type.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@[pid, comm]++
-@[(pid, comm)]++</pre>
+<pre>{`@[pid, comm]++
+@[(pid, comm)]++`}</pre>
 </div>
 </div>
 </div>
@@ -1421,14 +1431,14 @@ This applies to both the key(s) and the value type.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:do_nanosleep &#123;
+<pre>{`kprobe:do_nanosleep {
   @start[tid] = nsecs;
-&#125;
+}
 
-kretprobe:do_nanosleep /has_key(@start, tid)/ &#123;
-  printf("slept for %d ms\n", (nsecs - @start[tid]) / 1000000);
+kretprobe:do_nanosleep /has_key(@start, tid)/ {
+  printf("slept for %d ms\\n", (nsecs - @start[tid]) / 1000000);
   delete(@start, tid);
-&#125;
+}
 
 /*
  * Sample output:
@@ -1436,7 +1446,7 @@ kretprobe:do_nanosleep /has_key(@start, tid)/ &#123;
  * slept for 1009 ms
  * slept for 2002 ms
  * ...
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1444,19 +1454,19 @@ kretprobe:do_nanosleep /has_key(@start, tid)/ &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:syscalls:sys_enter_wait4
-&#123;
+<pre>{`tracepoint:syscalls:sys_enter_wait4
+{
   @out[tid] = args.ru;
-&#125;
+}
 
 tracepoint:syscalls:sys_exit_wait4
-&#123;
+{
   $ru = @out[tid];
   delete(@out, tid);
-  if ($ru != 0) &#123;
+  if ($ru != 0) {
     printf("got usage ...", ...);
-  &#125;
-&#125;</pre>
+  }
+}`}</pre>
 </div>
 </div>
 </div>
@@ -1671,13 +1681,13 @@ supports Python&#8217;s argparse and completely custom argument processing.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -e 'BEGIN &#123; printf("I got %d, %s (%d args)\n", $1, str($2), $#); &#125;' 42 "hello"
+<pre>{`# bpftrace -e 'BEGIN { printf("I got %d, %s (%d args)\\n", $1, str($2), $#); }' 42 "hello"
 
 I got 42, hello (2 args)
 
-# bpftrace -e 'BEGIN &#123; printf("%s\n", str($1 + 1)) &#125;' "hello"
+# bpftrace -e 'BEGIN { printf("%s\\n", str($1 + 1)) }' "hello"
 
-ello</pre>
+ello`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1685,18 +1695,18 @@ ello</pre>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>#!/usr/local/bin/bpftrace
+<pre>{`#!/usr/local/bin/bpftrace
 
 BEGIN
-&#123;
-	printf("Tracing block I/O sizes &gt; %d bytes\n", $1);
-&#125;
+{
+	printf("Tracing block I/O sizes &gt; %d bytes\\n", $1);
+}
 
 tracepoint:block:block_rq_issue
 /args.bytes &gt; $1/
-&#123;
+{
 	@ = hist(args.bytes);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1704,13 +1714,13 @@ tracepoint:block:block_rq_issue
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># ./bsize.bt 65536
+<pre>{`# ./bsize.bt 65536
 
 Tracing block I/O sizes &gt; 65536 bytes
 ^C
 
 @:
-[512K, 1M)             1 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|</pre>
+[512K, 1M)             1 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1721,7 +1731,7 @@ Tracing block I/O sizes &gt; 65536 bytes
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># ./bsize.bt
+<pre>{`# ./bsize.bt
 Attaching 2 probes...
 Tracing block I/O sizes &gt; 0 bytes
 ^C
@@ -1734,7 +1744,7 @@ Tracing block I/O sizes &gt; 0 bytes
 [64K, 128K)            1 |                                                    |
 [128K, 256K)           0 |                                                    |
 [256K, 512K)           0 |                                                    |
-[512K, 1M)             1 |                                                    |</pre>
+[512K, 1M)             1 |                                                    |`}</pre>
 </div>
 </div>
 </div>
@@ -1998,15 +2008,15 @@ For arrays the <code>length</code> is optional, it is automatically inferred fro
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
-  printf("%r\n", buf(kaddr("avenrun"), 8));
-&#125;</pre>
+<pre>{`interval:s:1 {
+  printf("%r\\n", buf(kaddr("avenrun"), 8));
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>\x00\x03\x00\x00\x00\x00\x00\x00
-\xc2\x02\x00\x00\x00\x00\x00\x00</pre>
+<pre>{`\x00\x03\x00\x00\x00\x00\x00\x00
+\xc2\x02\x00\x00\x00\x00\x00\x00`}</pre>
 </div>
 </div>
 </div>
@@ -2030,18 +2040,18 @@ If the file cannot be opened or read an error is printed to stderr.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:syscalls:sys_enter_execve &#123;
+<pre>{`tracepoint:syscalls:sys_enter_execve {
   cat("/proc/%d/maps", pid);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>55f683ebd000-55f683ec1000 r--p 00000000 08:01 1843399                    /usr/bin/ls
+<pre>{`55f683ebd000-55f683ec1000 r--p 00000000 08:01 1843399                    /usr/bin/ls
 55f683ec1000-55f683ed6000 r-xp 00004000 08:01 1843399                    /usr/bin/ls
 55f683ed6000-55f683edf000 r--p 00019000 08:01 1843399                    /usr/bin/ls
 55f683edf000-55f683ee2000 rw-p 00021000 08:01 1843399                    /usr/bin/ls
-55f683ee2000-55f683ee3000 rw-p 00000000 00:00 0</pre>
+55f683ee2000-55f683ee3000 rw-p 00000000 00:00 0`}</pre>
 </div>
 </div>
 </div>
@@ -2063,9 +2073,9 @@ If the file cannot be opened or read an error is printed to stderr.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   print(cgroupid("/sys/fs/cgroup/system.slice"));
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2098,12 +2108,12 @@ path of a process via /proc/&#8230;&#8203;/cgroup).</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   $cgroup_path = cgroup_path(3436);
   print($cgroup_path);
   print($cgroup_path); /* This may print a different path */
   printf("%s %s", $cgroup_path, $cgroup_path); /* This may print two different paths */
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2127,9 +2137,9 @@ An optional exit code can be provided.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2137,9 +2147,9 @@ An optional exit code can be provided.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   exit(1);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2165,9 +2175,9 @@ This string will be printed to stdout directly, it cannot be used as string valu
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:syscalls:sys_enter_execve &#123;
+<pre>{`tracepoint:syscalls:sys_enter_execve {
   join(args.argv);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2189,10 +2199,10 @@ This string will be printed to stdout directly, it cannot be used as string valu
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $avenrun = kaddr("avenrun");
   $load1 = *$avenrun;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2230,7 +2240,7 @@ The pointer type is left unchanged.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[kstack()] = count(); &#125;
+<pre>{`kprobe:ip_output { @[kstack()] = count(); }
 
 /*
  * Sample output:
@@ -2248,7 +2258,7 @@ The pointer type is left unchanged.</p>
  *  sys_write+82
  *   entry_SYSCALL_64_fastpath+30
  * ]: 1708
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2256,7 +2266,7 @@ The pointer type is left unchanged.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[kstack(3)] = count(); &#125;
+<pre>{`kprobe:ip_output { @[kstack(3)] = count(); }
 
 /*
  * Sample output:
@@ -2265,7 +2275,7 @@ The pointer type is left unchanged.</p>
  *  tcp_transmit_skb+1308
  *  tcp_write_xmit+482
  * ]: 1708
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2274,7 +2284,7 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[kstack(perf, 3)] = count(); &#125;
+<pre>{`kprobe:ip_output { @[kstack(perf, 3)] = count(); }
 
 /*
  * Sample output:
@@ -2283,7 +2293,7 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
  *  ffffffffb401700a sys_mmap_pgoff+266
  *  ffffffffb3e334eb sys_mmap+27
  * ]: 1708
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -2309,15 +2319,15 @@ The address to name mapping happens in user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:do_nanosleep
-&#123;
-  printf("%s\n", ksym(reg("ip")));
-&#125;
+<pre>{`kprobe:do_nanosleep
+{
+  printf("%s\\n", ksym(reg("ip")));
+}
 
 /*
  * Sample output:
  * do_nanosleep
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -2337,16 +2347,16 @@ This buffer can be printed in the canonical string format using the <code>%s</co
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:arp_create &#123;
+<pre>{`kprobe:arp_create {
   $stack_arg0 = *(uint8*)(reg("sp") + 8);
   $stack_arg1 = *(uint8*)(reg("sp") + 16);
-  printf("SRC %s, DST %s\n", macaddr($stack_arg0), macaddr($stack_arg1));
-&#125;
+  printf("SRC %s, DST %s\\n", macaddr($stack_arg0), macaddr($stack_arg1));
+}
 
 /*
  * Sample output:
  * SRC 18:C0:4D:08:2E:BB, DST 74:83:C2:7F:8C:FF
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -2382,19 +2392,19 @@ Defaults to <code>boot</code> if no clock is explicitly requested.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $sw_tai1 = nsecs(sw_tai);
   $tai = nsecs(tai);
   $sw_tai2 = nsecs(sw_tai);
-  printf("sw_tai precision: %lldns\n", ($sw_tai1 + $sw_tai2)/2 - $tai);
-&#125;
+  printf("sw_tai precision: %lldns\\n", ($sw_tai1 + $sw_tai2)/2 - $tai);
+}
 
 /*
  * Sample output:
  * sw_tai precision: -98ns
  * sw_tai precision: -99ns
  * ...
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -2475,15 +2485,15 @@ Note that subfields are not yet supported.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:__x64_sys_getuid
-/comm == "id"/ &#123;
+<pre>{`kprobe:__x64_sys_getuid
+/comm == "id"/ {
   override(2&lt;&lt;21);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>uid=4194304 gid=0(root) euid=0(root) groups=0(root)</pre>
+<pre>{`uid=4194304 gid=0(root) euid=0(root) groups=0(root)`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2494,8 +2504,8 @@ Note that subfields are not yet supported.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>ioctl(PERF_EVENT_IOC_SET_BPF): Invalid argument
-Error attaching probe: 'kprobe:vfs_read'</pre>
+<pre>{`ioctl(PERF_EVENT_IOC_SET_BPF): Invalid argument
+Error attaching probe: 'kprobe:vfs_read'`}</pre>
 </div>
 </div>
 </div>
@@ -2545,10 +2555,10 @@ omitted, the current CPU is used.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $proc_cnt = percpu_kaddr("process_counts");
-  printf("% processes are running on CPU %d\n", *$proc_cnt, cpu);
-&#125;</pre>
+  printf("% processes are running on CPU %d\\n", *$proc_cnt, cpu);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2559,12 +2569,12 @@ be rejected.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $runqueues = (struct rq *)percpu_kaddr("runqueues", 0);
-  if ($runqueues != 0) &#123;         // The check is mandatory here
+  if ($runqueues != 0) {         // The check is mandatory here
     print($runqueues-&gt;nr_running);
-  &#125;
-&#125;</pre>
+  }
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2603,26 +2613,26 @@ be rejected.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   print(123);
   print("abc");
   exit();
-&#125;
+}
 
 /*
  * Sample output:
  * 123
  * abc
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:10 &#123; @=hist(rand); &#125;
-interval:s:1 &#123;
+<pre>{`interval:ms:10 { @=hist(rand); }
+interval:s:1 {
   print(@);
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2630,7 +2640,7 @@ interval:s:1 &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@:
+<pre>{`@:
 [16M, 32M)             3 |@@@                                                 |
 [32M, 64M)             2 |@@                                                  |
 [64M, 128M)            1 |@                                                   |
@@ -2638,7 +2648,7 @@ interval:s:1 &#123;
 [256M, 512M)           3 |@@@                                                 |
 [512M, 1G)            14 |@@@@@@@@@@@@@@                                      |
 [1G, 2G)              22 |@@@@@@@@@@@@@@@@@@@@@@                              |
-[2G, 4G)              51 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|</pre>
+[2G, 4G)              51 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2654,21 +2664,21 @@ This means that updating and printing maps in a fast loop will likely result in 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   $i = 11;
-  while($i) &#123;
+  while($i) {
     @[$i] = --$i;
-  &#125;
+  }
   print(@, 2);
   clear(@);
   exit()
-&#125;
+}
 
 /*
  * Sample output:
  * @[9]: 9
  * @[10]: 10
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2678,9 +2688,9 @@ Consider the following program:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:f &#123;
+<pre>{`kprobe:f {
   @[func] += arg0/10;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2692,11 +2702,11 @@ The total is <code>721</code> which rounds to <code>72</code> when scaled by 10 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@[6]: 3
+<pre>{`@[6]: 3
 @[7]: 3
 @[8]: 4
 @[9]: 4
-@[10]: 5</pre>
+@[10]: 5`}</pre>
 </div>
 </div>
 </div>
@@ -2758,15 +2768,15 @@ defined in the kernel are supported. For example:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>enum custom &#123;
+<pre>{`enum custom {
   CUSTOM_ENUM = 3,
-&#125;;
+};
 
-BEGIN &#123;
+BEGIN {
   $r = SKB_DROP_REASON_SOCKET_FILTER;
-  printf("%d, %s, %s\n", $r, $r, CUSTOM_ENUM);
+  printf("%d, %s, %s\\n", $r, $r, CUSTOM_ENUM);
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2774,7 +2784,7 @@ BEGIN &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>6, SKB_DROP_REASON_SOCKET_FILTER, CUSTOM_ENUM</pre>
+<pre>{`6, SKB_DROP_REASON_SOCKET_FILTER, CUSTOM_ENUM`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2782,7 +2792,7 @@ BEGIN &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>print("\033[31mRed\t\033[33mYellow\033[0m\n")</pre>
+<pre>{`print("\\033[31mRed\t\\033[33mYellow\\033[0m\\n")`}</pre>
 </div>
 </div>
 </div>
@@ -2865,16 +2875,16 @@ The signal can either be identified by name, e.g. <code>SIGSTOP</code> or by ID,
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:__x64_sys_execve
-/comm == "bash"/ &#123;
+<pre>{`kprobe:__x64_sys_execve
+/comm == "bash"/ {
   signal(5);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$ ls
-Trace/breakpoint trap (core dumped)</pre>
+<pre>{`$ ls
+Trace/breakpoint trap (core dumped)`}</pre>
 </div>
 </div>
 </div>
@@ -2937,16 +2947,16 @@ The <code>data</code> section in the struct <code>skb</code> may contain etherne
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># cat dump.bt
-fentry:napi_gro_receive &#123;
+<pre>{`# cat dump.bt
+fentry:napi_gro_receive {
   $ret = skboutput("receive.pcap", args.skb, args.skb-&gt;len, 0);
-&#125;
+}
 
-fentry:dev_queue_xmit &#123;
+fentry:dev_queue_xmit {
   // setting offset to 14, to exclude ethernet header
   $ret = skboutput("output.pcap", args.skb, args.skb-&gt;len, 14);
-  printf("skboutput returns %d\n", $ret);
-&#125;
+  printf("skboutput returns %d\\n", $ret);
+}
 
 # export BPFTRACE_PERF_RB_PAGES=1024
 # bpftrace dump.bt
@@ -2957,7 +2967,7 @@ reading from file ./receive.pcap, link-type RAW (Raw IP)
 dropped privs to tcpdump
 10:23:44.674087 IP 22.128.74.231.63175 &gt; 192.168.0.23.22: Flags [.], ack 3513221061, win 14009, options [nop,nop,TS val 721277750 ecr 3115333619], length 0
 10:23:45.823194 IP 100.101.2.146.53 &gt; 192.168.0.23.46619: 17273 0/1/0 (130)
-10:23:45.823229 IP 100.101.2.146.53 &gt; 192.168.0.23.46158: 45799 1/0/0 A 100.100.45.106 (60)</pre>
+10:23:45.823229 IP 100.101.2.146.53 &gt; 192.168.0.23.46158: 45799 1/0/0 A 100.100.45.106 (60)`}</pre>
 </div>
 </div>
 </div>
@@ -3017,10 +3027,10 @@ This is done asynchronously in userspace when the strerror value is printed, hen
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>#include &lt;errno.h&gt;
-BEGIN &#123;
+<pre>{`#include &lt;errno.h&gt;
+BEGIN {
   print(strerror(EPERM));
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3046,9 +3056,9 @@ The time conversion and formatting happens in user space, therefore  the <code>t
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
-  printf("%s\n", strftime("%H:%M:%S", nsecs));
-&#125;</pre>
+<pre>{`interval:s:1 {
+  printf("%s\\n", strftime("%H:%M:%S", nsecs));
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3114,16 +3124,16 @@ The <code>command</code> is run with the same privileges as bpftrace and it bloc
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   time("%H:%M:%S: ");
-  printf("%d\n", @++);
-&#125;
-interval:s:10 &#123;
+  printf("%d\\n", @++);
+}
+interval:s:10 {
   system("/bin/sleep 10");
-&#125;
-interval:s:30 &#123;
+}
+interval:s:30 {
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3131,7 +3141,7 @@ interval:s:30 &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>Attaching 3 probes...
+<pre>{`Attaching 3 probes...
 08:50:37: 0
 08:50:38: 1
 08:50:39: 2
@@ -3151,7 +3161,7 @@ interval:s:30 &#123;
 08:50:56: 16
 08:50:56: 17
 08:50:56: 18
-08:50:56: 19</pre>
+08:50:56: 19`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3159,9 +3169,9 @@ interval:s:30 &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:syscalls:sys_enter_execve &#123;
+<pre>{`tracepoint:syscalls:sys_enter_execve {
   system("/bin/grep %s /proc/%d/status", "vmswap", pid);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3224,9 +3234,9 @@ As ELF does not contain type info the type is always assumed to be unsigned.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>uprobe:/bin/bash:readline &#123;
-  printf("PS1: %s\n", str(*uaddr("ps1_prompt")));
-&#125;</pre>
+<pre>{`uprobe:/bin/bash:readline {
+  printf("PS1: %s\\n", str(*uaddr("ps1_prompt")));
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3261,7 +3271,7 @@ The pointer type is left unchanged.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:do_sys_open /comm == "bash"/ &#123; @[ustack()] = count(); &#125;
+<pre>{`kprobe:do_sys_open /comm == "bash"/ { @[ustack()] = count(); }
 
 /*
  * Sample output:
@@ -3294,7 +3304,7 @@ The pointer type is left unchanged.</p>
  *  __libc_start_main+231
  *  0x61ce258d4c544155
  * ]: 9
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3302,7 +3312,7 @@ The pointer type is left unchanged.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[ustack(3)] = count(); &#125;
+<pre>{`kprobe:ip_output { @[ustack(3)] = count(); }
 
 /*
  * Sample output:
@@ -3311,7 +3321,7 @@ The pointer type is left unchanged.</p>
  *  command_word_completion_function+3604
  *  rl_completion_matches+370
  * ]: 20
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3320,7 +3330,7 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[ustack(perf, 3)] = count(); &#125;
+<pre>{`kprobe:ip_output { @[ustack(perf, 3)] = count(); }
 
 /*
  * Sample output:
@@ -3329,7 +3339,7 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
  *  5649fee2bfa6 yy_readline_get+451 (/home/mmarchini/bash/bash/bash)
  *  5649fee2bdc6 yy_getc+13 (/home/mmarchini/bash/bash/bash)
  * ]: 20
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3368,15 +3378,15 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>uprobe:/bin/bash:readline
-&#123;
-  printf("%s\n", usym(reg("ip")));
-&#125;
+<pre>{`uprobe:/bin/bash:readline
+{
+  printf("%s\\n", usym(reg("ip")));
+}
 
 /*
  * Sample output:
  * readline
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -3508,12 +3518,12 @@ The data type associated with these functions are only for internal use and are 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   @x++;
   @y = avg(@x);
   print(@x);
   print(@y);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3542,14 +3552,14 @@ cpus to collect and sum BOTH count and total.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:100 &#123;
+<pre>{`interval:ms:100 {
   @[rand % 10] = count();
-&#125;
+}
 
-interval:s:10 &#123;
+interval:s:10 {
   print(@);
   clear(@);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3583,12 +3593,12 @@ for <code>&#43;&#43;</code>.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   @ = count();
   @ = count();
-  printf("%d\n", (int64)@);   // prints 2
+  printf("%d\\n", (int64)@);   // prints 2
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3596,19 +3606,19 @@ for <code>&#43;&#43;</code>.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:100 &#123;
+<pre>{`interval:ms:100 {
   @ = count();
-&#125;
+}
 
-interval:s:10 &#123;
+interval:s:10 {
   // async read
   print(@);
   // sync read
-  if (@ &gt; 10) &#123;
+  if (@ &gt; 10) {
     print(("hello"));
-  &#125;
+  }
   clear(@);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3636,7 +3646,7 @@ e.g. <code>delete(@mymap[3, "hello"]);</code>.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>kprobe:dummy &#123;
+<pre>{`kprobe:dummy {
   @scalar = 1;
   delete(@scalar); // ok
   @single["hello"] = 1;
@@ -3649,7 +3659,7 @@ e.g. <code>delete(@mymap[3, "hello"]);</code>.</p>
   // deprecated but ok
   delete(@single["hello"]);
   delete(@associative[1, 2]);
-&#125;</code></pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3671,20 +3681,20 @@ Return value can also be used for scratch variables and map keys/values.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>kprobe:dummy &#123;
+<pre>{`kprobe:dummy {
   @associative[1,2] = 1;
-  if (!has_key(@associative, (1,3))) &#123; // ok
+  if (!has_key(@associative, (1,3))) { // ok
     print(("bye"));
-  &#125;
+  }
 
   @scalar = 1;
-  if (has_key(@scalar)) &#123; // error
+  if (has_key(@scalar)) { // error
     print(("hello"));
-  &#125;
+  }
 
   $a = has_key(@associative, (1,2)); // ok
   @b[has_key(@associative, (1,2))] = has_key(@associative, (1,2)); // ok
-&#125;</code></pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3704,9 +3714,9 @@ Return value can also be used for scratch variables and map keys/values.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kretprobe:vfs_read &#123;
+<pre>{`kretprobe:vfs_read {
   @bytes = hist(retval);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3714,7 +3724,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@:
+<pre>{`@:
 [1M, 2M)               3 |                                                    |
 [2M, 4M)               2 |                                                    |
 [4M, 8M)               2 |                                                    |
@@ -3725,7 +3735,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 [128M, 256M)          98 |@@@                                                 |
 [256M, 512M)         191 |@@@@@@                                              |
 [512M, 1G)           394 |@@@@@@@@@@@@@                                       |
-[1G, 2G)             820 |@@@@@@@@@@@@@@@@@@@@@@@@@@@                         |</pre>
+[1G, 2G)             820 |@@@@@@@@@@@@@@@@@@@@@@@@@@@                         |`}</pre>
 </div>
 </div>
 </div>
@@ -3760,13 +3770,13 @@ Values in the range <code>(-inf, min)</code> and <code>(max, inf)</code> get the
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:1 &#123;
+<pre>{`interval:ms:1 {
   @ = lhist(rand %10, 0, 10, 1);
-&#125;
+}
 
-interval:s:5 &#123;
+interval:s:5 {
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3774,7 +3784,7 @@ interval:s:5 &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@:
+<pre>{`@:
 [0, 1)               306 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@         |
 [1, 2)               284 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@            |
 [2, 3)               294 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@          |
@@ -3784,7 +3794,7 @@ interval:s:5 &#123;
 [6, 7)               336 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    |
 [7, 8)               326 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@      |
 [8, 9)               328 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@     |
-[9, 10)              318 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@       |</pre>
+[9, 10)              318 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@       |`}</pre>
 </div>
 </div>
 </div>
@@ -3815,7 +3825,7 @@ in the map the "result" is being assigned to.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>int x = std::max(3, 33);  // x contains 33</pre>
+<pre>{`int x = std::max(3, 33);  // x contains 33`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3823,8 +3833,8 @@ in the map the "result" is being assigned to.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@x = max(3);
-@x = max(33);   // @x contains 33</pre>
+<pre>{`@x = max(3);
+@x = max(33);   // @x contains 33`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3866,17 +3876,17 @@ Similar to <code>count</code> this uses a PER_CPU map (thread-safe, fast writes,
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:vfs_read &#123;
+<pre>{`kprobe:vfs_read {
   @bytes[comm] = stats(arg2);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@bytes[bash]: count 7, average 1, total 7
+<pre>{`@bytes[bash]: count 7, average 1, total 7
 @bytes[sleep]: count 5, average 832, total 4160
 @bytes[ls]: count 7, average 886, total 6208
-@</pre>
+@`}</pre>
 </div>
 </div>
 </div>
@@ -3910,13 +3920,13 @@ atomic operations.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   @ = sum(5);
   @ = sum(6);
-  printf("%d\n", (int64)@);   // prints 11
+  printf("%d\\n", (int64)@);   // prints 11
   clear(@);
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3924,19 +3934,19 @@ atomic operations.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:100 &#123;
+<pre>{`interval:ms:100 {
   @ = sum(5);
-&#125;
+}
 
-interval:s:10 &#123;
+interval:s:10 {
   // async read
   print(@);
   // sync read
-  if (@ &gt; 10) &#123;
+  if (@ &gt; 10) {
     print(("hello"));
-  &#125;
+  }
   clear(@);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3975,9 +3985,9 @@ Multiple probes can be specified as a comma (<code>,</code>) separated list:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:tcp_reset,kprobe:tcp_v4_rcv &#123;
-  printf("Entered: %s\n", probe);
-&#125;</pre>
+<pre>{`kprobe:tcp_reset,kprobe:tcp_v4_rcv {
+  printf("Entered: %s\\n", probe);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3985,9 +3995,9 @@ Multiple probes can be specified as a comma (<code>,</code>) separated list:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:tcp_* &#123;
-  printf("Entered: %s\n", probe);
-&#125;</pre>
+<pre>{`kprobe:tcp_* {
+  printf("Entered: %s\\n", probe);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3995,9 +4005,9 @@ Multiple probes can be specified as a comma (<code>,</code>) separated list:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:tcp_reset,kprobe:*socket* &#123;
-  printf("Entered: %s\n", probe);
-&#125;</pre>
+<pre>{`kprobe:tcp_reset,kprobe:*socket* {
+  printf("Entered: %s\\n", probe);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4116,10 +4126,10 @@ To prevent printing all used maps need be cleared in the <code>END</code> probe:
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>END &#123;
+<pre>{`END {
     clear(@map1);
     clear(@map2);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -4140,9 +4150,9 @@ When multiple signal handlers are attached to the same signal, only the first on
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>self:signal:SIGUSR1 &#123;
+<pre>{`self:signal:SIGUSR1 {
   print("abc");
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -4216,7 +4226,7 @@ If <code>count</code> is left unspecified a default value is used.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>hardware:cache-misses:1e6 &#123; @[pid] = count(); &#125;</pre>
+<pre>{`hardware:cache-misses:1e6 { @[pid] = count(); }`}</pre>
 </div>
 </div>
 </div>
@@ -4256,8 +4266,8 @@ Interval fires on one CPU at a time, unlike <a href="#probes-profile">profile</a
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:raw_syscalls:sys_enter &#123; @syscalls = count(); &#125;
-interval:s:1 &#123; print(@syscalls); clear(@syscalls); &#125;</pre>
+<pre>{`tracepoint:raw_syscalls:sys_enter { @syscalls = count(); }
+interval:s:1 { print(@syscalls); clear(@syscalls); }`}</pre>
 </div>
 </div>
 </div>
@@ -4306,7 +4316,7 @@ ctx pointer. Users can display the set of available fields for each iterator via
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>iter:task &#123; printf("%s:%d\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); &#125;
+<pre>{`iter:task { printf("%s:%d\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); }
 
 /*
  * Sample output:
@@ -4316,14 +4326,14 @@ ctx pointer. Users can display the set of available fields for each iterator via
  * rcu_par_gp:4
  * kworker/0:0H:6
  * mm_percpu_wq:8
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>iter:task_file &#123;
-  printf("%s:%d %d:%s\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, ctx-&gt;fd, path(ctx-&gt;file-&gt;f_path));
-&#125;
+<pre>{`iter:task_file {
+  printf("%s:%d %d:%s\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, ctx-&gt;fd, path(ctx-&gt;file-&gt;f_path));
+}
 
 /*
  * Sample output:
@@ -4334,21 +4344,21 @@ ctx pointer. Users can display the set of available fields for each iterator via
  * ...
  * bpftrace:1892 2:/dev/pts/1
  * bpftrace:1892 6:anon_inode:bpf-prog
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>iter:task_vma &#123;
-  printf("%s %d %lx-%lx\n", comm, pid, ctx-&gt;vma-&gt;vm_start, ctx-&gt;vma-&gt;vm_end);
-&#125;
+<pre>{`iter:task_vma {
+  printf("%s %d %lx-%lx\\n", comm, pid, ctx-&gt;vma-&gt;vm_start, ctx-&gt;vma-&gt;vm_end);
+}
 
 /*
  * Sample output:
  * bpftrace 119480 55b92c380000-55b92c386000
  * ...
  * bpftrace 119480 7ffd55dde000-7ffd55de2000
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4358,25 +4368,25 @@ It can be specified as an absolute or relative path to /sys/fs/bpf.</p>
 <div className="listingblock">
 <div className="title">relative pin</div>
 <div className="content">
-<pre>iter:task:list &#123; printf("%s:%d\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); &#125;
+<pre>{`iter:task:list { printf("%s:%d\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); }
 
 /*
  * Sample output:
  * Program pinned to /sys/fs/bpf/list
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="title">absolute pin</div>
 <div className="content">
-<pre>iter:task_file:/sys/fs/bpf/files &#123;
-  printf("%s:%d %s\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, path(ctx-&gt;file-&gt;f_path));
-&#125;
+<pre>{`iter:task_file:/sys/fs/bpf/files {
+  printf("%s:%d %s\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, path(ctx-&gt;file-&gt;f_path));
+}
 
 /*
  * Sample output:
  * Program pinned to /sys/fs/bpf/files
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -4430,18 +4440,18 @@ These arguments are also available in the return probe (<code>fexit</code>), unl
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -lv 'fentry:tcp_reset'
+<pre>{`# bpftrace -lv 'fentry:tcp_reset'
 
 fentry:tcp_reset
     struct sock * sk
-    struct sk_buff * skb</pre>
+    struct sk_buff * skb`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>fentry:x86_pmu_stop &#123;
-  printf("pmu %s stop\n", str(args.event-&gt;pmu-&gt;name));
-&#125;</pre>
+<pre>{`fentry:x86_pmu_stop {
+  printf("pmu %s stop\\n", str(args.event-&gt;pmu-&gt;name));
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4449,15 +4459,15 @@ fentry:tcp_reset
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>fexit:fget &#123;
-  printf("fd %d name %s\n", args.fd, str(retval-&gt;f_path.dentry-&gt;d_name.name));
-&#125;
+<pre>{`fexit:fget {
+  printf("fd %d name %s\\n", args.fd, str(retval-&gt;f_path.dentry-&gt;d_name.name));
+}
 
 /*
  * Sample output:
  * fd 3 name ld.so.cache
  * fd 3 name libselinux.so.1
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -4494,9 +4504,9 @@ Each time the specified kernel function is executed the attached BPF programs ar
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:tcp_reset &#123;
+<pre>{`kprobe:tcp_reset {
   @tcp_resets = count()
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4507,7 +4517,7 @@ Consider a function with the following signature:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>void func(int a, double d, int x)</pre>
+<pre>{`void func(int a, double d, int x)`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4519,13 +4529,13 @@ It is up to the user to perform <a href="#_type_conversion">Type conversion</a> 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>#include &lt;linux/path.h&gt;
+<pre>{`#include &lt;linux/path.h&gt;
 #include &lt;linux/dcache.h&gt;
 
 kprobe:vfs_open
-&#123;
-	printf("open path: %s\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
-&#125;</pre>
+{
+	printf("open path: %s\\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4538,9 +4548,9 @@ This means that many, but not all, structs will be available, and you may need t
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:vfs_open &#123;
-  printf("open path: %s\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
-&#125;</pre>
+<pre>{`kprobe:vfs_open {
+  printf("open path: %s\\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4548,11 +4558,11 @@ This means that many, but not all, structs will be available, and you may need t
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:kvm:x86_emulate_insn
-&#123;
+<pre>{`kprobe:kvm:x86_emulate_insn
+{
   $ctxt = (struct x86_emulate_ctxt *) arg0;
-  printf("eip = 0x%lx\n", $ctxt-&gt;eip);
-&#125;</pre>
+  printf("eip = 0x%lx\\n", $ctxt-&gt;eip);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4568,18 +4578,18 @@ A common pattern to work around this is by storing the arguments in a map on fun
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:d_lookup
-&#123;
+<pre>{`kprobe:d_lookup
+{
 	$name = (struct qstr *)arg1;
 	@fname[tid] = $name-&gt;name;
-&#125;
+}
 
 kretprobe:d_lookup
 /@fname[tid]/
-&#123;
-	printf("%-8d %-6d %-16s M %s\n", elapsed / 1e6, pid, comm,
+{
+	printf("%-8d %-6d %-16s M %s\\n", elapsed / 1e6, pid, comm,
 	    str(@fname[tid]));
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -4616,7 +4626,7 @@ These operate using perf_events (a Linux kernel facility, which is also used by 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>profile:hz:99 &#123; @[tid] = count(); &#125;</pre>
+<pre>{`profile:hz:99 { @[tid] = count(); }`}</pre>
 </div>
 </div>
 </div>
@@ -4647,9 +4657,9 @@ The additional processing is defined inside the kernel.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>rawtracepoint:block_rq_insert &#123;
-  printf("%llx %llx\n", arg0, arg1);
-&#125;</pre>
+<pre>{`rawtracepoint:block_rq_insert {
+  printf("%llx %llx\\n", arg0, arg1);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4659,11 +4669,11 @@ The available arguments can be found in the relative path of the kernel source c
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>include/trace/events/block.h
+<pre>{`include/trace/events/block.h
 DEFINE_EVENT(block_rq, block_rq_insert,
 	TP_PROTO(struct request_queue *q, struct request *rq),
 	TP_ARGS(q, rq)
-);</pre>
+);`}</pre>
 </div>
 </div>
 </div>
@@ -4735,7 +4745,7 @@ If the count is not provided, a default is used.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>software:faults:100 &#123; @[comm] = count(); &#125;</pre>
+<pre>{`software:faults:100 { @[comm] = count(); }`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4770,9 +4780,9 @@ Unlike <code>kprobe</code> s, new tracepoints cannot be added without modifying 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:syscalls:sys_enter_openat &#123;
-  printf("%s %s\n", comm, str(args.filename));
-&#125;</pre>
+<pre>{`tracepoint:syscalls:sys_enter_openat {
+  printf("%s %s\\n", comm, str(args.filename));
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4780,14 +4790,14 @@ Unlike <code>kprobe</code> s, new tracepoints cannot be added without modifying 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -lv "tracepoint:*"
+<pre>{`# bpftrace -lv "tracepoint:*"
 
 tracepoint:xhci-hcd:xhci_setup_device_slot
   u32 info
   u32 info2
   u32 tt_info
   u32 state
-...</pre>
+...`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4843,7 +4853,7 @@ retval is the return value for the instrumented function and can only be accesse
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>uprobe:/bin/bash:readline &#123; printf("arg0: %d\n", arg0); &#125;</pre>
+<pre>{`uprobe:/bin/bash:readline { printf("arg0: %d\\n", arg0); }`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4856,7 +4866,7 @@ a full path. The path will be then automatically resolved using <code>/etc/ld.so
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>uprobe:libc:malloc &#123; printf("Allocated %d bytes\n", arg0); &#125;</pre>
+<pre>{`uprobe:libc:malloc { printf("Allocated %d bytes\\n", arg0); }`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4864,10 +4874,10 @@ a full path. The path will be then automatically resolved using <code>/etc/ld.so
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -lv 'uprobe:/bin/bash:rl_set_prompt'
+<pre>{`# bpftrace -lv 'uprobe:/bin/bash:rl_set_prompt'
 
 uprobe:/bin/bash:rl_set_prompt
-    const char* prompt</pre>
+    const char* prompt`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4875,7 +4885,7 @@ uprobe:/bin/bash:rl_set_prompt
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace:cpp:"bpftrace::BPFtrace::add_probe" &#123; ... &#125;</pre>
+<pre>{`# bpftrace:cpp:"bpftrace::BPFtrace::add_probe" { ... }`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4885,26 +4895,26 @@ This can cause issues with languages that have their own runtime like Golang:</p
 <div className="listingblock">
 <div className="title">example.go</div>
 <div className="content">
-<pre>func myprint(s string) &#123;
-  fmt.Printf("Input: %s\n", s)
-&#125;
+<pre>{`func myprint(s string) {
+  fmt.Printf("Input: %s\\n", s)
+}
 
-func main() &#123;
-  ss := []string&#123;"a", "b", "c"&#125;
-  for _, s := range ss &#123;
+func main() {
+  ss := []string{"a", "b", "c"}
+  for _, s := range ss {
     go myprint(s)
-  &#125;
+  }
   time.Sleep(1*time.Second)
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="title">bpftrace</div>
 <div className="content">
-<pre># bpftrace -e 'uretprobe:./test:main.myprint &#123; @=count(); &#125;' -c ./test
+<pre>{`# bpftrace -e 'uretprobe:./test:main.myprint { @=count(); }' -c ./test
 runtime: unexpected return pc for main.myprint called from 0x7fffffffe000
-stack: frame=&#123;sp:0xc00008cf60, fp:0xc00008cfd0&#125; stack=[0xc00008c000,0xc00008d000)
-fatal error: unknown caller pc</pre>
+stack: frame={sp:0xc00008cf60, fp:0xc00008cfd0} stack=[0xc00008c000,0xc00008d000)
+fatal error: unknown caller pc`}</pre>
 </div>
 </div>
 </div>
@@ -4943,7 +4953,7 @@ fatal error: unknown caller pc</pre>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>usdt:*:loop &#123; printf("hi\n"); &#125;</pre>
+<pre>{`usdt:*:loop { printf("hi\\n"); }`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4954,7 +4964,7 @@ fatal error: unknown caller pc</pre>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>usdt:/root/tick:loop &#123; printf("%s: %d\n", str(arg0), arg1); &#125;</pre>
+<pre>{`usdt:/root/tick:loop { printf("%s: %d\\n", str(arg0), arg1); }`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -4964,9 +4974,9 @@ You can check if your system supports uprobe refcounts by running:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace --info 2&gt;&amp;1 | grep "uprobe refcount"
+<pre>{`# bpftrace --info 2&gt;&amp;1 | grep "uprobe refcount"
 bcc bpf_attach_uprobe refcount: yes
-  uprobe refcount (depends on Build:bcc bpf_attach_uprobe refcount): yes</pre>
+  uprobe refcount (depends on Build:bcc bpf_attach_uprobe refcount): yes`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5031,7 +5041,7 @@ If you want to avoid the <code>SIGSTOP</code> + <code>SIGCONT</code> use <code>a
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -e 'watchpoint:0x10000000:8:rw &#123; printf("hit!\n"); &#125;' -c ./testprogs/watchpoint</pre>
+<pre>{`# bpftrace -e 'watchpoint:0x10000000:8:rw { printf("hit!\\n"); }' -c ./testprogs/watchpoint`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5039,9 +5049,9 @@ If you want to avoid the <code>SIGSTOP</code> + <code>SIGCONT</code> use <code>a
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>watchpoint:0x$(awk '$3 == "jiffies" &#123;print $1&#125;' /proc/kallsyms):8:w &#123;
+<pre>{`watchpoint:0x$(awk '$3 == "jiffies" {print $1}' /proc/kallsyms):8:w {
   @[kstack] = count();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5049,32 +5059,32 @@ If you want to avoid the <code>SIGSTOP</code> + <code>SIGCONT</code> use <code>a
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code className="language-C" data-lang="C"># cat wpfunc.c
+<pre>{`# cat wpfunc.c
 #include &lt;stdio.h&gt;
 #include &lt;stdlib.h&gt;
 #include &lt;unistd.h&gt;
 
 __attribute__((noinline))
 void increment(__attribute__((unused)) int _, int *i)
-&#123;
+{
   (*i)++;
-&#125;
+}
 
 int main()
-&#123;
+{
   int *i = malloc(sizeof(int));
   while (1)
-  &#123;
+  {
     increment(0, i);
     (*i)++;
     usleep(1000);
-  &#125;
-&#125;</code></pre>
+  }
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -e 'watchpoint:increment+arg1:4:w &#123; printf("hit!\n"); exit() &#125;' -c ./wpfunc</pre>
+<pre>{`# bpftrace -e 'watchpoint:increment+arg1:4:w { printf("hit!\\n"); exit() }' -c ./wpfunc`}</pre>
 </div>
 </div>
 </div>
@@ -5441,13 +5451,13 @@ combined with <code>-e</code> or filename args to see all the probes that a prog
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -l 'kprobe:*'
+<pre>{`# bpftrace -l 'kprobe:*'
 # bpftrace -l 't:syscalls:*openat*
 # bpftrace -l 'kprobe:tcp*,trace
 # bpftrace -l 'k:*socket*,tracepoint:syscalls:*tcp*'
-# bpftrace -l -e 'tracepoint:xdp:mem_* &#123; exit(); &#125;'
+# bpftrace -l -e 'tracepoint:xdp:mem_* { exit(); }'
 # bpftrace -l my_script.bt
-# bpftrace -lv 'enum cpu_usage_stat'</pre>
+# bpftrace -lv 'enum cpu_usage_stat'`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5455,7 +5465,7 @@ combined with <code>-e</code> or filename args to see all the probes that a prog
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -l 'fexit:tcp_reset,tracepoint:syscalls:sys_enter_openat' -v
+<pre>{`# bpftrace -l 'fexit:tcp_reset,tracepoint:syscalls:sys_enter_openat' -v
 fexit:tcp_reset
     struct sock * sk
     struct sk_buff * skb
@@ -5471,7 +5481,7 @@ uprobe:/bin/bash:rl_set_prompt
     const char *prompt
 
 # bpftrace -lv 'struct css_task_iter'
-struct css_task_iter &#123;
+struct css_task_iter {
         struct cgroup_subsys *ss;
         unsigned int flags;
         struct list_head *cset_pos;
@@ -5484,7 +5494,7 @@ struct css_task_iter &#123;
         struct css_set *cur_dcset;
         struct task_struct *cur_task;
         struct list_head iters_node;
-&#125;;</pre>
+};`}</pre>
 </div>
 </div>
 </div>
@@ -5496,10 +5506,10 @@ Can be defined multiple times.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># cat program.bt
+<pre>{`# cat program.bt
 #include &lt;foo.h&gt;
 
-BEGIN &#123; @ = FOO &#125;
+BEGIN { @ = FOO }
 
 # bpftrace program.bt
 
@@ -5510,7 +5520,7 @@ foo.h
 
 # bpftrace -I /tmp/include program.bt
 
-Attaching 1 probe...</pre>
+Attaching 1 probe...`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5520,13 +5530,13 @@ Headers are included in the order they are defined, and they are included before
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace --include linux/path.h --include linux/dcache.h \
-    -e 'kprobe:vfs_open &#123; printf("open path: %s\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name)); &#125;'
+<pre>{`# bpftrace --include linux/path.h --include linux/dcache.h \
+    -e 'kprobe:vfs_open { printf("open path: %s\\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name)); }'
 
 Attaching 1 probe...
 open path: .com.google.Chrome.ASsbu2
 open path: .com.google.Chrome.gimc10
-open path: .com.google.Chrome.R1234s</pre>
+open path: .com.google.Chrome.R1234s`}</pre>
 </div>
 </div>
 </div>
@@ -5537,7 +5547,7 @@ open path: .com.google.Chrome.R1234s</pre>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -v -e 'tracepoint:syscalls:sys_enter_nanosleep &#123; printf("%s is sleeping.\n", comm); &#125;'
+<pre>{`# bpftrace -v -e 'tracepoint:syscalls:sys_enter_nanosleep { printf("%s is sleeping.\\n", comm); }'
 AST node count: 7
 Attaching 1 probe...
 
@@ -5547,7 +5557,7 @@ Program ID: 111
 Attaching tracepoint:syscalls:sys_enter_nanosleep
 iscsid is sleeping.
 iscsid is sleeping.
-[...]</pre>
+[...]`}</pre>
 </div>
 </div>
 </div>
@@ -5565,9 +5575,9 @@ This error is hidden by default but can be enabled with the <code>-kk</code> fla
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>stdin:1:9-12: WARNING: Failed to probe_read_user: Bad address (-14)
-BEGIN &#123; @=*uptr(kaddr("do_poweroff")) &#125;
-        ~~~</pre>
+<pre>{`stdin:1:9-12: WARNING: Failed to probe_read_user: Bad address (-14)
+BEGIN { @=*uptr(kaddr("do_poweroff")) }
+        ~~~`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5656,7 +5666,7 @@ However, the bcc version supports various arguments:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># ./xfsdist.py -h
+<pre>{`# ./xfsdist.py -h
 usage: xfsdist.py [-h] [-T] [-m] [-p PID] [interval] [count]
 
 Summarize XFS operation latency
@@ -5675,7 +5685,7 @@ examples:
     ./xfsdist            # show operation latency as a histogram
     ./xfsdist -p 181     # trace PID 181 only
     ./xfsdist 1 10       # print 1 second summaries, 10 times
-    ./xfsdist -m 5       # 5s summaries, milliseconds</pre>
+    ./xfsdist -m 5       # 5s summaries, milliseconds`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5771,14 +5781,14 @@ Operations that happen in the kernel are 'synchronous' ('sync') and those that a
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
     @=0;
-    unroll(10) &#123;
+    unroll(10) {
       print(@);
       @++;
-    &#125;
+    }
     exit()
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5786,7 +5796,7 @@ Operations that happen in the kernel are 'synchronous' ('sync') and those that a
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@: 10
+<pre>{`@: 10
 @: 10
 @: 10
 @: 10
@@ -5795,7 +5805,7 @@ Operations that happen in the kernel are 'synchronous' ('sync') and those that a
 @: 10
 @: 10
 @: 10
-@: 10</pre>
+@: 10`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5813,27 +5823,27 @@ If you don&#8217;t want this, you can either override the <code>print_maps_on_ex
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>config = &#123;
+<pre>{`config = {
   print_maps_on_exit=0
-&#125;
+}
 
-BEGIN &#123;
+BEGIN {
   @a = 1;
   @b[1] = 1;
-&#125;</code></pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>BEGIN &#123;
+<pre>{`BEGIN {
   @a = 1;
   @b[1] = 1;
-&#125;
+}
 
-END &#123;
+END {
   clear(@a);
   clear(@b);
-&#125;</code></pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -5846,7 +5856,7 @@ END &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># systemd-run --unit=bpftrace --service-type=notify bpftrace -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;'</pre>
+<pre>{`# systemd-run --unit=bpftrace --service-type=notify bpftrace -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }'`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5861,12 +5871,12 @@ bpftrace before another service looks as follows::</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>[Unit]
+<pre>{`[Unit]
 Before=service-i-want-to-trace.service
 
 [Service]
 Type=notify
-ExecStart=bpftrace -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;'</pre>
+ExecStart=bpftrace -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }'`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5887,15 +5897,15 @@ during comparisons, <code>printf()</code>, or other.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   @c = count();
   @s = sum(3);
   @s = sum(9);
 
-  if (@s == 12) &#123;                             // Coerces @s
-    printf("%d %d\n", (int64)@c, (int64)@s);  // Coerces @c and @s and prints "1 12"
-  &#125;
-&#125;</pre>
+  if (@s == 12) {                             // Coerces @s
+    printf("%d %d\\n", (int64)@c, (int64)@s);  // Coerces @c and @s and prints "1 12"
+  }
+}`}</pre>
 </div>
 </div>
 </div>
