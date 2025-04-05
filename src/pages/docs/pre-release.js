@@ -2548,8 +2548,8 @@ The 'Kernel' column indicates the minimum kernel version required and the 'BPF H
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">The nth positional parameter passed to the bpftrace program.
-If less than n parameters are passed this evaluates to <code>0</code>.
-For string arguments use the <code>str()</code> call to retrieve the value.</p></td>
+If less than n parameters are passed this evaluates to <code>0</code> in an action block or an empty string in a probe.
+For string arguments in an action block use the <code>str()</code> call to retrieve the value.</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>$#</code></p></td>
