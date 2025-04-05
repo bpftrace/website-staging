@@ -12,29 +12,27 @@ export default function Home() {
   return (
     <Layout title="docs">
 	    <div className="container docs-container padding-top--md padding-bottom--lg">
-      <div id="docs-header">
-              <h1>Version: 0.22</h1>
-            </div>
+        <div id="docs-header">
+          <h1>Version: latest</h1>
+        </div>
         <div className="row docs-row">
-        <div className="col col--3">
+          <div className="col col--3">
             <div className="docs-toc">
               <ul className="sectlevel1">
 <li><a href="#_synopsis">Synopsis</a></li>
 <li><a href="#_description">Description</a></li>
 <li><a href="#_examples">Examples</a></li>
-<li><a href="#_supported_architectures">Supported architectures</a></li>
 <li><a href="#_options">Options</a></li>
-<li><a href="#_terminology">Terminology</a></li>
-<li><a href="#_program_files">Program Files</a></li>
-<li><a href="#_bpftrace_language">bpftrace Language</a></li>
+<li><a href="#_the_language">The Language</a></li>
+<li><a href="#_probes">Probes</a></li>
 <li><a href="#_builtins">Builtins</a></li>
 <li><a href="#_functions">Functions</a></li>
 <li><a href="#_map_functions">Map Functions</a></li>
-<li><a href="#_probes">Probes</a></li>
-<li><a href="#_config_variables">Config Variables</a></li>
-<li><a href="#_environment_variables">Environment Variables</a></li>
-<li><a href="#_options_expanded">Options Expanded</a></li>
+<li><a href="#_configuration">Configuration</a></li>
 <li><a href="#_advanced_topics">Advanced Topics</a></li>
+<li><a href="#_terminology">Terminology</a></li>
+<li><a href="#_supported_architectures">Supported architectures</a></li>
+<li><a href="#_program_files">Program Files</a></li>
 </ul>
             </div>
           </div>
@@ -50,14 +48,20 @@ export default function Home() {
 <div className="paragraph">
 <p>When <em>FILENAME</em> is "<em>-</em>", bpftrace will read program code from stdin.</p>
 </div>
+<div className="paragraph">
+<p>A program will continue running until Ctrl-C is hit, or an <code>exit</code> function is called.
+When a program exits, all populated maps are printed (more details below).</p>
+</div>
 </div>
 </div>
 <div className="sect1">
 <h2 id="_description">Description</h2>
 <div className="sectionbody">
 <div className="paragraph">
-<p>bpftrace is a high-level tracing language and runtime for Linux based on eBPF.
-It supports static and dynamic tracing for both the kernel and user-space.</p>
+<p>bpftrace is a high-level tracing language for Linux. bpftrace uses LLVM as
+a backend to compile scripts to eBPF-bytecode and makes use of libbpf and bcc
+for interacting with the Linux BPF subsystem, as well as existing Linux
+tracing capabilities.</p>
 </div>
 </div>
 </div>
@@ -71,7 +75,7 @@ It supports static and dynamic tracing for both the kernel and user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;'</pre>
+<pre>{`# bpftrace -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }'`}</pre>
 </div>
 </div>
 <div className="dlist">
@@ -81,7 +85,7 @@ It supports static and dynamic tracing for both the kernel and user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;' -c 'sleep 5'</pre>
+<pre>{`# bpftrace -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }' -c 'sleep 5'`}</pre>
 </div>
 </div>
 <div className="dlist">
@@ -91,7 +95,7 @@ It supports static and dynamic tracing for both the kernel and user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -l '*sleep*'</pre>
+<pre>{`# bpftrace -l '*sleep*'`}</pre>
 </div>
 </div>
 <div className="dlist">
@@ -101,16 +105,8 @@ It supports static and dynamic tracing for both the kernel and user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -l -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;'</pre>
+<pre>{`# bpftrace -l -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }'`}</pre>
 </div>
-</div>
-</div>
-</div>
-<div className="sect1">
-<h2 id="_supported_architectures">Supported architectures</h2>
-<div className="sectionbody">
-<div className="paragraph">
-<p>x86_64, arm64, s390x, arm32, loongarch64, mips64, ppc64, riscv64</p>
 </div>
 </div>
 </div>
@@ -220,24 +216,15 @@ For more details see the <a href="#_preprocessor_options">Preprocessor Options</
 <div className="sect2">
 <h3 id="_k"><strong>-k</strong></h3>
 <div className="paragraph">
-<p>Errors from bpf-helpers(7) are silently ignored by default which can lead to strange results.</p>
-</div>
-<div className="paragraph">
-<p>This flag enables the detection of errors (except for errors from 'probe_read_*' BPF helpers).
+<p>This flag enables runtime warnings for errors from 'probe_read_*' and map lookup BPF helpers.
 When errors occur bpftrace will log an error containing the source location and the error code:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>stdin:48-57: WARNING: Failed to probe_read_user_str: Bad address (-14)
-u:lib.so:"fn(char const*)" &#123; printf("arg0:%s\n", str(arg0));&#125;
-                                                 ~~~~~~~~~</pre>
+<pre>{`stdin:48-57: WARNING: Failed to probe_read_user_str: Bad address (-14)
+u:lib.so:"fn(char const*)" { printf("arg0:%s\\n", str(arg0));}
+                                                 ~~~~~~~~~`}</pre>
 </div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="_kk"><strong>-kk</strong></h3>
-<div className="paragraph">
-<p>Same as '-k' but also includes the errors from 'probe_read_*'  BPF helpers.</p>
 </div>
 </div>
 <div className="sect2">
@@ -280,9 +267,10 @@ Errors are still written to stderr.</p>
 <div className="sect2">
 <h3 id="_p_pid"><strong>-p</strong> <em>PID</em></h3>
 <div className="paragraph">
-<p>Attach to the process with <em>PID</em>.
+<p>Attach to the process with or filter actions by <em>PID</em>.
 If the process terminates, bpftrace will also terminate.
-When using USDT probes, uprobes, and uretprobes they will be attached to only this process.
+When using USDT, uprobes, uretprobes, hardware, software, profile, interval, watchpoint, or asyncwatchpoint probes they will be attached to only this process.
+For all other probes, except BEGIN/END, the pid will act like a predicate to filter out events not from that pid.
 For listing uprobes/uretprobes set the target to '*' and the process&#8217;s address space will be searched for the symbols.</p>
 </div>
 </div>
@@ -321,158 +309,33 @@ For more details see the <a href="#_verbose_output">Verbose Output</a> section.<
 </div>
 </div>
 <div className="sect1">
-<h2 id="_terminology">Terminology</h2>
-<div className="sectionbody">
-<table className="tableblock frame-all grid-all stretch">
-<colgroup>
-<col />
-<col />
-</colgroup>
-<tbody>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">BPF</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Berkeley Packet Filter: a kernel technology originally developed for optimizing the processing of packet filters (eg, tcpdump expressions).</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">BPF map</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">A BPF memory object, which is used by bpftrace to create many higher-level objects.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">BTF</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">BPF Type Format: the metadata format which encodes the debug info related to BPF program/map.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">dynamic tracing</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Also known as dynamic instrumentation, this is a technology that can instrument any software event, such as function calls and returns, by live modification of instruction text. Target software usually does not need special capabilities to support dynamic tracing, other than a symbol table that bpftrace can read. Since this instruments all software text, it is not considered a stable API, and the target functions may not be documented outside of their source code.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">eBPF</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Enhanced BPF: a kernel technology that extends BPF so that it can execute more generic programs on any events, such as the bpftrace programs listed below. It makes use of the BPF sandboxed virtual machine environment. Also note that eBPF is often just referred to as BPF.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">kprobes</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">A Linux kernel technology for providing dynamic tracing of kernel functions.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">probe</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">An instrumentation point in software or hardware, that generates events that can execute bpftrace programs.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">static tracing</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Hard-coded instrumentation points in code. Since these are fixed, they may be provided as part of a stable API, and documented.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">tracepoints</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">A Linux kernel technology for providing static tracing.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">uprobes</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">A Linux kernel technology for providing dynamic tracing of user-level functions.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">USDT</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">User Statically-Defined Tracing: static tracing points for user-level software. Some applications support USDT.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<div className="sect1">
-<h2 id="_program_files">Program Files</h2>
-<div className="sectionbody">
-<div className="paragraph">
-<p>Programs saved as files are often called scripts and can be executed by specifying their file name.
-We use a <code>.bt</code> file extension, short for bpftrace, but the extension is not required.</p>
-</div>
-<div className="paragraph">
-<p>For example, listing the sleepers.bt file using <code>cat</code>:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># cat sleepers.bt
-
-tracepoint:syscalls:sys_enter_nanosleep &#123;
-  printf("%s is sleeping.\n", comm);
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>And then calling it:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace sleepers.bt
-
-Attaching 1 probe...
-iscsid is sleeping.
-iscsid is sleeping.</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>It can also be made executable to run stand-alone.
-Start by adding an interpreter line at the top (<code>#!</code>) with either the path to your installed bpftrace (/usr/local/bin is the default) or the path to <code>env</code> (usually just <code>/usr/bin/env</code>) followed by <code>bpftrace</code> (so it will find bpftrace in your <code>$PATH</code>):</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>#!/usr/local/bin/bpftrace
-
-tracepoint:syscalls:sys_enter_nanosleep &#123;
-  printf("%s is sleeping.\n", comm);
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Then make it executable:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># chmod 755 sleepers.bt
-# ./sleepers.bt
-
-Attaching 1 probe...
-iscsid is sleeping.
-iscsid is sleeping.</pre>
-</div>
-</div>
-</div>
-</div>
-<div className="sect1">
-<h2 id="_bpftrace_language">bpftrace Language</h2>
+<h2 id="_the_language">The Language</h2>
 <div className="sectionbody">
 <div className="paragraph">
 <p>The <code>bpftrace</code> (<code>bt</code>) language is inspired by the D language used by <code>dtrace</code> and uses the same program structure.
-Each script consists of a preamble and one or more action blocks.</p>
+Each script consists of a <a href="#_preamble">Preamble</a>, an optional <a href="#_config_block">Config Block</a>, and one or more <a href="#_action_block">Action Block</a>s.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>preamble
+<pre>{`preamble
+
+config
 
 actionblock1
-actionblock2</pre>
+actionblock2`}</pre>
 </div>
 </div>
-<div className="paragraph">
-<p>Preprocessor and type definitions take place in the preamble:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>#include &lt;linux/socket.h&gt;
-#define RED "\033[31m"
-
-struct S &#123;
-  int x;
-&#125;</pre>
-</div>
-</div>
+<div className="sect2">
+<h3 id="_action_block">Action Block</h3>
 <div className="paragraph">
 <p>Each action block consists of three parts:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>probe[,probe]
-/predicate/ &#123;
+<pre>{`probe[,probe]
+/predicate/ {
   action
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="dlist">
@@ -493,22 +356,18 @@ An action is a semicolon (<code>;</code>) separated list of statements and alway
 </dl>
 </div>
 <div className="paragraph">
-<p>A program will continue running until Ctrl-C is hit, or an <code>exit</code> function is called.
-When a program exits, all populated maps are printed (this behavior and maps are explained in later sections).</p>
-</div>
-<div className="paragraph">
 <p>A basic script that traces the <code>open(2)</code> and <code>openat(2)</code> system calls can be written as follows:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
-	printf("Tracing open syscalls... Hit Ctrl-C to end.\n");
-&#125;
+<pre>{`BEGIN {
+	printf("Tracing open syscalls... Hit Ctrl-C to end.\\n");
+}
 
 tracepoint:syscalls:sys_enter_open,
-tracepoint:syscalls:sys_enter_openat &#123;
-	printf("%-6d %-16s %s\n", pid, comm, str(args.filename));
-&#125;</pre>
+tracepoint:syscalls:sys_enter_openat {
+	printf("%-6d %-16s %s\\n", pid, comm, str(args.filename));
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -521,6 +380,7 @@ This probe is used to print a header, indicating that the tracing has started.</
 <div className="paragraph">
 <p>The second action block uses two probes, one for <code>open</code> and one for <code>openat</code>, and defines an action that prints the file being <code>open</code> ed as well as the <code>pid</code> and <code>comm</code> of the process that execute the syscall.
 See the <a href="#_probes">Probes</a> section for details on the available probe types.</p>
+</div>
 </div>
 <div className="sect2">
 <h3 id="_arrays">Arrays</h3>
@@ -536,14 +396,14 @@ They can only be read into a variable from a pointer.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>struct MyStruct &#123;
+<pre>{`struct MyStruct {
   int y[4];
-&#125;
+}
 
-kprobe:dummy &#123;
+kprobe:dummy {
   $s = (struct MyStruct *) arg0;
   print($s-&gt;y[0]);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -554,14 +414,14 @@ kprobe:dummy &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>// A single line comment
-interval:s:1 &#123; // can also be used to comment inline
+<pre>{`// A single line comment
+interval:s:1 { // can also be used to comment inline
 /*
  a multi line comment
 
 */
   print(/* inline comment block */ 1);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -575,7 +435,7 @@ interval:s:1 &#123; // can also be used to comment inline
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>condition ? ifTrue : ifFalse</pre>
+<pre>{`condition ? ifTrue : ifFalse`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -586,8 +446,8 @@ interval:s:1 &#123; // can also be used to comment inline
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$a == 1 ? print("true") : print("false");
-$b = $a &gt; 0 ? $a : -1;</pre>
+<pre>{`$a == 1 ? print("true") : print("false");
+$b = $a &gt; 0 ? $a : -1;`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -595,13 +455,13 @@ $b = $a &gt; 0 ? $a : -1;</pre>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>if (condition) &#123;
+<pre>{`if (condition) {
   ifblock
-&#125; else if (condition) &#123;
+} else if (condition) {
   if2block
-&#125; else &#123;
+} else {
   elseblock
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -609,18 +469,18 @@ $b = $a &gt; 0 ? $a : -1;</pre>
 <h3 id="_config_block">Config Block</h3>
 <div className="paragraph">
 <p>To improve script portability, you can set bpftrace <a href="#_config_variables">Config Variables</a> via the config block,
-which can only be placed at the top of the script before any probes (even <code>BEGIN</code>).</p>
+which can only be placed at the top of the script before any action blocks (even <code>BEGIN</code>).</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>config = &#123;
+<pre>{`config = {
     stack_mode=perf;
     max_map_keys=2
-&#125;
+}
 
-BEGIN &#123; ... &#125;
+BEGIN { ... }
 
-uprobe:./testprogs/uprobe_test:uprobeFunction1 &#123; ... &#125;</pre>
+uprobe:./testprogs/uprobe_test:uprobeFunction1 { ... }`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -690,30 +550,30 @@ the type upon declaration.</p>
 </table>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123; $x = 1&lt;&lt;16; printf("%d %d\n", (uint16)$x, $x); &#125;
+<pre>{`BEGIN { $x = 1&lt;&lt;16; printf("%d %d\\n", (uint16)$x, $x); }
 
 /*
  * Output:
  * 0 65536
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
 <div className="sect2">
-<h3 id="_filtering">Filtering</h3>
+<h3 id="_filterspredicates">Filters/Predicates</h3>
 <div className="paragraph">
 <p>Filters (also known as predicates) can be added after probe names.
 The probe still fires, but it will skip the action unless the filter is true.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:vfs_read /arg2 &lt; 16/ &#123;
-  printf("small read: %d byte buffer\n", arg2);
-&#125;
+<pre>{`kprobe:vfs_read /arg2 &lt; 16/ {
+  printf("small read: %d byte buffer\\n", arg2);
+}
 
-kprobe:vfs_read /comm == "bash"/ &#123;
-  printf("read by %s\n", comm);
-&#125;</pre>
+kprobe:vfs_read /comm == "bash"/ {
+  printf("read by %s\\n", comm);
+}`}</pre>
 </div>
 </div>
 </div>
@@ -771,9 +631,9 @@ Note that scientific literals are integer only due to the lack of floating point
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
-  printf("Echo A: %c\n", 65);
-&#125;</pre>
+<pre>{`BEGIN {
+  printf("Echo A: %c\\n", 65);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -816,9 +676,9 @@ Note that scientific literals are integer only due to the lack of floating point
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>for ($kv : @map) &#123;
+<pre>{`for ($kv : @map) {
   block;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -826,11 +686,11 @@ Note that scientific literals are integer only due to the lack of floating point
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@map[10] = 20;
-for ($kv : @map) &#123;
+<pre>{`@map[10] = 20;
+for ($kv : @map) {
   print($kv.0); // key
   print($kv.1); // value
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -838,12 +698,12 @@ for ($kv : @map) &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@map[10,11] = 20;
-for ($kv : @map) &#123;
+<pre>{`@map[10,11] = 20;
+for ($kv : @map) {
   print($kv.0.0); // key 1
   print($kv.0.1); // key 2
   print($kv.1);   // value
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -857,9 +717,9 @@ for ($kv : @map) &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>while (condition) &#123;
+<pre>{`while (condition) {
   block;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -883,17 +743,17 @@ for ($kv : @map) &#123;
 </table>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $i = 0;
-  while ($i &lt;= 100) &#123;
+  while ($i &lt;= 100) {
     printf("%d ", $i);
-    if ($i &gt; 5) &#123;
+    if ($i &gt; 5) {
       break;
-    &#125;
+    }
     $i++
-  &#125;
-  printf("\n");
-&#125;</pre>
+  }
+  printf("\\n");
+}`}</pre>
 </div>
 </div>
 </div>
@@ -904,9 +764,9 @@ for ($kv : @map) &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>unroll(n) &#123;
+<pre>{`unroll(n) {
   block;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -918,17 +778,17 @@ As this happens at compile time <code>n</code> must be a constant greater than 0
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
-  unroll(3) &#123;
+<pre>{`interval:s:1 {
+  unroll(3) {
     print("Unrolled")
-  &#125;
-&#125;
+  }
+}
 
-interval:s:1 &#123;
+interval:s:1 {
   print("Unrolled")
   print("Unrolled")
   print("Unrolled")
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -979,6 +839,12 @@ warning will be emitted.</p>
 promoted to the size of the larger one. Sign is preserved in the promotion.
 For example, <code>(uint32)5 + (uint8)3</code> is converted to <code>(uint32)5 + (uint32)3</code>
 which results in <code>(uint32)8</code>.</p>
+</div>
+<div className="paragraph">
+<p>Pointers may be used with arithmetic operators but only for addition and
+subtraction. For subtraction, the pointer must appear on the left side of the
+operator. Pointers may also be used with logical operators; they are considered
+true when non-null.</p>
 </div>
 </div>
 <div className="sect3">
@@ -1163,10 +1029,10 @@ The difference is that the expression <code>x&#43;&#43;</code> returns the origi
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$x = 10;
+<pre>{`$x = 10;
 $y = $x--; // y = 10; x = 9
 $a = 10;
-$b = --$a; // a = 9; b = 9</pre>
+$b = --$a; // a = 9; b = 9`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1175,6 +1041,41 @@ Scratch variables must be initialized before using these operators.</p>
 </div>
 <div className="paragraph">
 <p>Note <code>&#43;&#43;</code>/<code>--</code> on a shared global variable can lose updates. See <a href="#map-functions-count"><code>count()</code></a> for more details.</p>
+</div>
+</div>
+<div className="sect3">
+<h4 id="_block_expressions">Block Expressions</h4>
+<div className="paragraph">
+<p>A block can be used as expression, as long as the last statement of the block
+is an expression with no trailing semi-colon.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`let $a = {
+  let $b = 1;
+  $b
+};
+// $a is 1`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>This can be used anywhere an expression can be used.</p>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="_preamble">Preamble</h3>
+<div className="paragraph">
+<p>Preprocessor and type definitions take place in the preamble:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`#include &lt;linux/socket.h&gt;
+#define RED "\\033[31m"
+
+struct S {
+  int x;
+}`}</pre>
 </div>
 </div>
 </div>
@@ -1200,16 +1101,16 @@ They can only be read into a variable from a pointer.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>struct MyStruct &#123;
+<pre>{`struct MyStruct {
   int a;
-&#125;
+}
 
-kprobe:dummy &#123;
+kprobe:dummy {
   $ptr = (struct MyStruct *) arg0;
   $st = *$ptr;
   print($st.a);
   print($ptr-&gt;a);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -1226,20 +1127,20 @@ Tuples are zero indexed like arrays are.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $a = (1,2);
   $b = (3,4, $a);
   print($a);
   print($b);
   print($b.0);
-&#125;
+}
 
 /*
  * Sample output:
  * (1, 2)
  * (3, 4, (1, 2))
  * 3
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -1250,8 +1151,8 @@ Tuples are zero indexed like arrays are.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$y = (uint32) $z;
-$py = (int16 *) $pz;</pre>
+<pre>{`$y = (uint32) $z;
+$py = (int16 *) $pz;`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1263,8 +1164,8 @@ Conversion to a lower rank is done by zeroing leading bits.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$a = (uint8[8]) 12345;
-$x = (uint64) $a;</pre>
+<pre>{`$a = (uint8[8]) 12345;
+$x = (uint64) $a;`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1283,17 +1184,17 @@ The main purpose of this is to allow casts from/to byte arrays.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   $a = (int8[8])12345;
-  printf("%x %x\n", $a[0], $a[1]);
-  printf("%d\n", (uint64)$a);
-&#125;
+  printf("%x %x\\n", $a[0], $a[1]);
+  printf("%d\\n", (uint64)$a);
+}
 
 /*
  * Output:
  * 39 30
  * 12345
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1305,10 +1206,10 @@ Array casting allows seamless comparison of such representations:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>fentry:tcp_connect &#123;
+<pre>{`fentry:tcp_connect {
     if (args-&gt;sk-&gt;__sk_common.skc_daddr == (uint32)pton("127.0.0.1"))
         ...
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -1325,12 +1226,12 @@ with a <code>$</code>, e.g. <code>$myvar</code>.
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>$a = 1;
-if ($a == 1) &#123;
+<pre>{`$a = 1;
+if ($a == 1) {
   $b = "hello"
   $a = 2;
-&#125;
-// $b is not accessible here</code></pre>
+}
+// $b is not accessible here`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1338,13 +1239,13 @@ if ($a == 1) &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>let $a = 1;
+<pre>{`let $a = 1;
 let $b;
-if ($a == 1) &#123;
+if ($a == 1) {
   $b = "hello"
   $a = 2;
-&#125;
-// $b IS accessible here and would be an empty string if the condition wasn't true</code></pre>
+}
+// $b IS accessible here and would be an empty string if the condition wasn't true`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1362,6 +1263,42 @@ Map names always start with a <code>@</code>, e.g. <code>@mymap</code>.</p>
 <p>The data type of a variable is automatically determined during first assignment and cannot be changed afterwards.</p>
 </div>
 <div className="sect3">
+<h4 id="_maps_declarations">Maps Declarations</h4>
+<div className="paragraph">
+<p>Maps can also be declared in the global scope, before probes and after the config e.g.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`config = {
+    unstable_map_decl=1;
+}
+
+let @a = hash(100);
+let @b = percpulruhash(20);
+
+BEGIN { ... }`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>The utility of this is that you can specify different underlying BPF map types.
+Currently these are available in bpftrace:
+- hash (BPF_MAP_TYPE_HASH)
+- lruhash (BPF_MAP_TYPE_LRU_HASH)
+- percpuhash (BPF_MAP_TYPE_PERCPU_HASH)
+- percpulruhash (BPF_MAP_TYPE_LRU_PERCPU_HASH)
+- percpuarray (BPF_MAP_TYPE_PERCPU_ARRAY)</p>
+</div>
+<div className="paragraph">
+<p>Additionally, map declarations must supply a single argument: <strong>max entries</strong> e.g. <code>let @a = lruhash(100);</code>
+All maps that are not declared in the global scope utilize the default set in the config variable "max_map_keys".
+However, it&#8217;s best practice to declare maps up front as using the default can lead to lost map update events (if the map is full) or over allocation of memory if the map is intended to only store a few entries.</p>
+</div>
+<div className="paragraph">
+<p><strong>Warning</strong> this feature is experimental and may be subject to changes.
+It also requires the 'unstable_map_decl' config being set to 1.</p>
+</div>
+</div>
+<div className="sect3">
 <h4 id="_maps_without_explicit_keys">Maps without Explicit Keys</h4>
 <div className="paragraph">
 <p>Values can be assigned directly to maps without a key (sometimes refered to as scalar maps).
@@ -1369,7 +1306,7 @@ Note: you can&#8217;t iterate over these maps as they don&#8217;t have an access
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@name = expression</pre>
+<pre>{`@name = expression`}</pre>
 </div>
 </div>
 </div>
@@ -1380,7 +1317,7 @@ Note: you can&#8217;t iterate over these maps as they don&#8217;t have an access
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@name[key] = expression</pre>
+<pre>{`@name[key] = expression`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1388,7 +1325,7 @@ Note: you can&#8217;t iterate over these maps as they don&#8217;t have an access
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@name[(key1,key2)] = expression</pre>
+<pre>{`@name[(key1,key2)] = expression`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1397,7 +1334,7 @@ tuple above:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@name[key1,key2] = expression</pre>
+<pre>{`@name[key1,key2] = expression`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1409,8 +1346,8 @@ This applies to both the key(s) and the value type.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@[pid, comm]++
-@[(pid, comm)]++</pre>
+<pre>{`@[pid, comm]++
+@[(pid, comm)]++`}</pre>
 </div>
 </div>
 </div>
@@ -1421,14 +1358,14 @@ This applies to both the key(s) and the value type.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:do_nanosleep &#123;
+<pre>{`kprobe:do_nanosleep {
   @start[tid] = nsecs;
-&#125;
+}
 
-kretprobe:do_nanosleep /has_key(@start, tid)/ &#123;
-  printf("slept for %d ms\n", (nsecs - @start[tid]) / 1000000);
+kretprobe:do_nanosleep /has_key(@start, tid)/ {
+  printf("slept for %d ms\\n", (nsecs - @start[tid]) / 1000000);
   delete(@start, tid);
-&#125;
+}
 
 /*
  * Sample output:
@@ -1436,7 +1373,7 @@ kretprobe:do_nanosleep /has_key(@start, tid)/ &#123;
  * slept for 1009 ms
  * slept for 2002 ms
  * ...
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1444,20 +1381,1136 @@ kretprobe:do_nanosleep /has_key(@start, tid)/ &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:syscalls:sys_enter_wait4
-&#123;
+<pre>{`tracepoint:syscalls:sys_enter_wait4
+{
   @out[tid] = args.ru;
-&#125;
+}
 
 tracepoint:syscalls:sys_exit_wait4
-&#123;
+{
   $ru = @out[tid];
   delete(@out, tid);
-  if ($ru != 0) &#123;
+  if ($ru != 0) {
     printf("got usage ...", ...);
-  &#125;
-&#125;</pre>
+  }
+}`}</pre>
 </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div className="sect1">
+<h2 id="_probes">Probes</h2>
+<div className="sectionbody">
+<div className="paragraph">
+<p>bpftrace supports various probe types which allow the user to attach BPF programs to different types of events.
+Each probe starts with a provider (e.g. <code>kprobe</code>) followed by a colon (<code>:</code>) separated list of options.
+The amount of options and their meaning depend on the provider and are detailed below.
+The valid values for options can depend on the system or binary being traced, e.g. for uprobes it depends on the binary.
+Also see <a href="#_listing_probes">Listing Probes</a>.</p>
+</div>
+<div className="paragraph">
+<p>It is possible to associate multiple probes with a single action as long as the action is valid for all specified probes.
+Multiple probes can be specified as a comma (<code>,</code>) separated list:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`kprobe:tcp_reset,kprobe:tcp_v4_rcv {
+  printf("Entered: %s\\n", probe);
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Wildcards are supported too:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`kprobe:tcp_* {
+  printf("Entered: %s\\n", probe);
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Both can be combined:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`kprobe:tcp_reset,kprobe:*socket* {
+  printf("Entered: %s\\n", probe);
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Most providers also support a short name which can be used instead of the full name, e.g. <code>kprobe:f</code> and <code>k:f</code> are identical.</p>
+</div>
+<table className="tableblock frame-all grid-all stretch">
+<colgroup>
+<col />
+<col />
+<col />
+<col />
+</colgroup>
+<tbody>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Probe Name</strong></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Short Name</strong></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Description</strong></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Kernel/User Level</strong></p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-begin-end"><code>BEGIN/END</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">-</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Built-in events</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-self"><code>self</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">-</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Built-in events</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-hardware"><code>hardware</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>h</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Processor-level events</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-interval"><code>interval</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>i</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Timed output</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-iterator"><code>iter</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>it</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Iterators tracing</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-fentry"><code>fentry/fexit</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>f</code>/<code>fr</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel functions tracing with BTF support</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-kprobe"><code>kprobe/kretprobe</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>k</code>/<code>kr</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel function start/return</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-profile"><code>profile</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>p</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Timed sampling</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-rawtracepoint"><code>rawtracepoint</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>rt</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel static tracepoints with raw arguments</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-software"><code>software</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>s</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel software events</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-tracepoint"><code>tracepoint</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>t</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel static tracepoints</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-uprobe"><code>uprobe/uretprobe</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>u</code>/<code>ur</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">User-level function start/return</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">User</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-usdt"><code>usdt</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>U</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">User-level static tracepoints</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">User</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-watchpoint"><code>watchpoint/asyncwatchpoint</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>w</code>/<code>aw</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Memory watchpoints</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
+</tr>
+</tbody>
+</table>
+<div className="sect2">
+<h3 id="probes-begin-end">BEGIN/END</h3>
+<div className="paragraph">
+<p>These are special built-in events provided by the bpftrace runtime.
+<code>BEGIN</code> is triggered before all other probes are attached.
+<code>END</code> is triggered after all other probes are detached.</p>
+</div>
+<div className="paragraph">
+<p>Note that specifying an <code>END</code> probe doesn&#8217;t override the printing of 'non-empty' maps at exit.
+To prevent printing all used maps need be cleared in the <code>END</code> probe:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`END {
+    clear(@map1);
+    clear(@map2);
+}`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-self">self</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>self:signal:SIGUSR1</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>These are special built-in events provided by the bpftrace runtime.
+The trigger function is called by the bpftrace runtime when the bpftrace process receives specific events, such as a <code>SIGUSR1</code> signal.
+When multiple signal handlers are attached to the same signal, only the first one is used.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`self:signal:SIGUSR1 {
+  print("abc");
+}`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-hardware">hardware</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>hardware:event_name:</code></p>
+</li>
+<li>
+<p><code>hardware:event_name:count</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short name</div>
+<ul>
+<li>
+<p><code>h</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>These are the pre-defined hardware events provided by the Linux kernel, as commonly traced by the perf utility.
+They are implemented using performance monitoring counters (PMCs): hardware resources on the processor.
+There are about ten of these, and they are documented in the perf_event_open(2) man page.
+The event names are:</p>
+</div>
+<div className="ulist">
+<ul>
+<li>
+<p><code>cpu-cycles</code> or <code>cycles</code></p>
+</li>
+<li>
+<p><code>instructions</code></p>
+</li>
+<li>
+<p><code>cache-references</code></p>
+</li>
+<li>
+<p><code>cache-misses</code></p>
+</li>
+<li>
+<p><code>branch-instructions</code> or <code>branches</code></p>
+</li>
+<li>
+<p><code>branch-misses</code></p>
+</li>
+<li>
+<p><code>bus-cycles</code></p>
+</li>
+<li>
+<p><code>frontend-stalls</code></p>
+</li>
+<li>
+<p><code>backend-stalls</code></p>
+</li>
+<li>
+<p><code>ref-cycles</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>The <code>count</code> option specifies how many events must happen before the probe fires (sampling interval).
+If <code>count</code> is left unspecified a default value is used.</p>
+</div>
+<div className="paragraph">
+<p>This will fire once for every 1,000,000 cache misses.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`hardware:cache-misses:1e6 { @[pid] = count(); }`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-interval">interval</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>interval:us:count</code></p>
+</li>
+<li>
+<p><code>interval:ms:count</code></p>
+</li>
+<li>
+<p><code>interval:s:count</code></p>
+</li>
+<li>
+<p><code>interval:hz:rate</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short name</div>
+<ul>
+<li>
+<p><code>i</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>The interval probe fires at a fixed interval as specified by its time spec.
+Interval fires on one CPU at a time, unlike <a href="#probes-profile">profile</a> probes.</p>
+</div>
+<div className="paragraph">
+<p>This prints the rate of syscalls per second.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`tracepoint:raw_syscalls:sys_enter { @syscalls = count(); }
+interval:s:1 { print(@syscalls); clear(@syscalls); }`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-iterator">iterator</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>iter:task</code></p>
+</li>
+<li>
+<p><code>iter:task:pin</code></p>
+</li>
+<li>
+<p><code>iter:task_file</code></p>
+</li>
+<li>
+<p><code>iter:task_file:pin</code></p>
+</li>
+<li>
+<p><code>iter:task_vma</code></p>
+</li>
+<li>
+<p><code>iter:task_vma:pin</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short name</div>
+<ul>
+<li>
+<p><code>it</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p><strong>Warning</strong> this feature is experimental and may be subject to interface changes.</p>
+</div>
+<div className="paragraph">
+<p>These are eBPF iterator probes that allow iteration over kernel objects.
+Iterator probe can&#8217;t be mixed with any other probe, not even another iterator.
+Each iterator probe provides a set of fields that could be accessed with the
+ctx pointer. Users can display the set of available fields for each iterator via
+-lv options as described below.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`iter:task { printf("%s:%d\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); }
+
+/*
+ * Sample output:
+ * systemd:1
+ * kthreadd:2
+ * rcu_gp:3
+ * rcu_par_gp:4
+ * kworker/0:0H:6
+ * mm_percpu_wq:8
+ */`}</pre>
+</div>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`iter:task_file {
+  printf("%s:%d %d:%s\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, ctx-&gt;fd, path(ctx-&gt;file-&gt;f_path));
+}
+
+/*
+ * Sample output:
+ * systemd:1 1:/dev/null
+ * systemd:1 3:/dev/kmsg
+ * ...
+ * su:1622 2:/dev/pts/1
+ * ...
+ * bpftrace:1892 2:/dev/pts/1
+ * bpftrace:1892 6:anon_inode:bpf-prog
+ */`}</pre>
+</div>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`iter:task_vma {
+  printf("%s %d %lx-%lx\\n", comm, pid, ctx-&gt;vma-&gt;vm_start, ctx-&gt;vma-&gt;vm_end);
+}
+
+/*
+ * Sample output:
+ * bpftrace 119480 55b92c380000-55b92c386000
+ * ...
+ * bpftrace 119480 7ffd55dde000-7ffd55de2000
+ */`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>It&#8217;s possible to pin an iterator by specifying the optional probe ':pin' part, that defines the pin file.
+It can be specified as an absolute or relative path to /sys/fs/bpf.</p>
+</div>
+<div className="listingblock">
+<div className="title">relative pin</div>
+<div className="content">
+<pre>{`iter:task:list { printf("%s:%d\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); }
+
+/*
+ * Sample output:
+ * Program pinned to /sys/fs/bpf/list
+ */`}</pre>
+</div>
+</div>
+<div className="listingblock">
+<div className="title">absolute pin</div>
+<div className="content">
+<pre>{`iter:task_file:/sys/fs/bpf/files {
+  printf("%s:%d %s\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, path(ctx-&gt;file-&gt;f_path));
+}
+
+/*
+ * Sample output:
+ * Program pinned to /sys/fs/bpf/files
+ */`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-fentry">fentry and fexit</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>fentry[:module]:fn</code></p>
+</li>
+<li>
+<p><code>fexit[:module]:fn</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short names</div>
+<ul>
+<li>
+<p><code>f</code> (<code>fentry</code>)</p>
+</li>
+<li>
+<p><code>fr</code> (<code>fexit</code>)</p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">requires (<code>--info</code>)</div>
+<ul>
+<li>
+<p>Kernel features:BTF</p>
+</li>
+<li>
+<p>Probe types:fentry</p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p><code>fentry</code>/<code>fexit</code> probes attach to kernel functions similar to <a href="#probes-kprobe">kprobe and kretprobe</a>.
+They make use of eBPF trampolines which allow kernel code to call into BPF programs with near zero overhead.
+Originally, these were called <code>kfunc</code> and <code>kretfunc</code> but were later renamed to <code>fentry</code> and <code>fexit</code> to match
+how these are referenced in the kernel and to prevent confusion with <a href="https://docs.kernel.org/bpf/kfuncs.html">BPF Kernel Functions</a>.
+The original names are still supported for backwards compatibility.</p>
+</div>
+<div className="paragraph">
+<p><code>fentry</code>/<code>fexit</code> probes make use of BTF type information to derive the type of function arguments at compile time.
+This removes the need for manual type casting and makes the code more resilient against small signature changes in the kernel.
+The function arguments are available in the <code>args</code> struct which can be inspected by doing verbose listing (see <a href="#_listing_probes">Listing Probes</a>).
+These arguments are also available in the return probe (<code>fexit</code>), unlike <code>kretprobe</code>.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -lv 'fentry:tcp_reset'
+
+fentry:tcp_reset
+    struct sock * sk
+    struct sk_buff * skb`}</pre>
+</div>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`fentry:x86_pmu_stop {
+  printf("pmu %s stop\\n", str(args.event-&gt;pmu-&gt;name));
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>The fget function takes one argument as file descriptor and you can access it via args.fd and the return value is accessible via retval:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`fexit:fget {
+  printf("fd %d name %s\\n", args.fd, str(retval-&gt;f_path.dentry-&gt;d_name.name));
+}
+
+/*
+ * Sample output:
+ * fd 3 name ld.so.cache
+ * fd 3 name libselinux.so.1
+ */`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-kprobe">kprobe and kretprobe</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>kprobe[:module]:fn</code></p>
+</li>
+<li>
+<p><code>kprobe[:module]:fn+offset</code></p>
+</li>
+<li>
+<p><code>kretprobe[:module]:fn</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short names</div>
+<ul>
+<li>
+<p><code>k</code></p>
+</li>
+<li>
+<p><code>kr</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p><code>kprobe</code>s allow for dynamic instrumentation of kernel functions.
+Each time the specified kernel function is executed the attached BPF programs are ran.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`kprobe:tcp_reset {
+  @tcp_resets = count()
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Function arguments are available through the <code>argN</code> for register args. Arguments passed on stack are available using the stack pointer, e.g. <code>$stack_arg0 = <strong>(int64</strong>)reg("sp") + 16</code>.
+Whether arguments passed on stack or in a register depends on the architecture and the number or arguments used, e.g. on x86_64 the first 6 non-floating point arguments are passed in registers and all following arguments are passed on the stack.
+Note that floating point arguments are typically passed in special registers which don&#8217;t count as <code>argN</code> arguments which can cause confusion.
+Consider a function with the following signature:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`void func(int a, double d, int x)`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Due to <code>d</code> being a floating point, <code>x</code> is accessed through <code>arg1</code> where one might expect <code>arg2</code>.</p>
+</div>
+<div className="paragraph">
+<p>bpftrace does not detect the function signature so it is not aware of the argument count or their type.
+It is up to the user to perform <a href="#_type_conversion">Type conversion</a> when needed, e.g.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`#include &lt;linux/path.h&gt;
+#include &lt;linux/dcache.h&gt;
+
+kprobe:vfs_open
+{
+	printf("open path: %s\\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Here arg0 was cast as a (struct path *), since that is the first argument to vfs_open.
+The struct support is the same as bcc and based on available kernel headers.
+This means that many, but not all, structs will be available, and you may need to manually define structs.</p>
+</div>
+<div className="paragraph">
+<p>If the kernel has BTF (BPF Type Format) data, all kernel structs are always available without defining them. For example:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`kprobe:vfs_open {
+  printf("open path: %s\\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>You can optionally specify a kernel module, either to include BTF data from that module, or to specify that the traced function should come from that module.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`kprobe:kvm:x86_emulate_insn
+{
+  $ctxt = (struct x86_emulate_ctxt *) arg0;
+  printf("eip = 0x%lx\\n", $ctxt-&gt;eip);
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>See <a href="#_btf_support">BTF Support</a> for more details.</p>
+</div>
+<div className="paragraph">
+<p><code>kprobe</code> s are not limited to function entry, they can be attached to any instruction in a function by specifying an offset from the start of the function.</p>
+</div>
+<div className="paragraph">
+<p><code>kretprobe</code> s trigger on the return from a kernel function.
+Return probes do not have access to the function (input) arguments, only to the return value (through <code>retval</code>).
+A common pattern to work around this is by storing the arguments in a map on function entry and retrieving in the return probe:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`kprobe:d_lookup
+{
+	$name = (struct qstr *)arg1;
+	@fname[tid] = $name-&gt;name;
+}
+
+kretprobe:d_lookup
+/@fname[tid]/
+{
+	printf("%-8d %-6d %-16s M %s\\n", elapsed / 1e6, pid, comm,
+	    str(@fname[tid]));
+}`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-profile">profile</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>profile:us:count</code></p>
+</li>
+<li>
+<p><code>profile:ms:count</code></p>
+</li>
+<li>
+<p><code>profile:s:count</code></p>
+</li>
+<li>
+<p><code>profile:hz:rate</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short name</div>
+<ul>
+<li>
+<p><code>p</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>Profile probes fire on each CPU on the specified interval.
+These operate using perf_events (a Linux kernel facility, which is also used by the perf command).</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`profile:hz:99 { @[tid] = count(); }`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-rawtracepoint">rawtracepoint</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>rawtracepoint[:module]:event</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short name</div>
+<ul>
+<li>
+<p><code>rt</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>Raw tracepoints are attached to the same tracepoints as normal tracepoint programs.
+The reason why you might want to use raw tracepoints over normal tracepoints is due to the performance improvement - <a href="https://docs.ebpf.io/linux/program-type/BPF_PROG_TYPE_RAW_TRACEPOINT/">Read More</a>.</p>
+</div>
+<div className="paragraph">
+<p><code>rawtracepoint</code> arguments can be accessed via the <code>argN</code> builtins AND via the <code>args</code> builtin.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`rawtracepoint:vmlinux:kfree_skb {
+  printf("%llx %llx\\n", arg0, args.skb);
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p><code>arg0</code> and <code>args.skb</code> will print the same address.</p>
+</div>
+<div className="paragraph">
+<p><code>rawtracepoint</code> probes make use of BTF type information to derive the type of function arguments at compile time.
+This removes the need for manual type casting and makes the code more resilient against small signature changes in the kernel.
+The arguments accessible by a <code>rawtracepoint</code> are different from the arguments you can access from the <code>tracepoint</code> of the same name.
+The function arguments are available in the <code>args</code> struct which can be inspected by doing verbose listing (see <a href="#_listing_probes">Listing Probes</a>).</p>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-software">software</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>software:event:</code></p>
+</li>
+<li>
+<p><code>software:event:count</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short name</div>
+<ul>
+<li>
+<p><code>s</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>These are the pre-defined software events provided by the Linux kernel, as commonly traced via the perf utility.
+They are similar to tracepoints, but there is only about a dozen of these, and they are documented in the perf_event_open(2) man page.
+If the count is not provided, a default is used.</p>
+</div>
+<div className="paragraph">
+<p>The event names are:</p>
+</div>
+<div className="ulist">
+<ul>
+<li>
+<p><code>cpu-clock</code> or <code>cpu</code></p>
+</li>
+<li>
+<p><code>task-clock</code></p>
+</li>
+<li>
+<p><code>page-faults</code> or <code>faults</code></p>
+</li>
+<li>
+<p><code>context-switches</code> or <code>cs</code></p>
+</li>
+<li>
+<p><code>cpu-migrations</code></p>
+</li>
+<li>
+<p><code>minor-faults</code></p>
+</li>
+<li>
+<p><code>major-faults</code></p>
+</li>
+<li>
+<p><code>alignment-faults</code></p>
+</li>
+<li>
+<p><code>emulation-faults</code></p>
+</li>
+<li>
+<p><code>dummy</code></p>
+</li>
+<li>
+<p><code>bpf-output</code></p>
+</li>
+</ul>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`software:faults:100 { @[comm] = count(); }`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>This roughly counts who is causing page faults, by sampling the process name for every one in one hundred faults.</p>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-tracepoint">tracepoint</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>tracepoint:subsys:event</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short name</div>
+<ul>
+<li>
+<p><code>t</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>Tracepoints are hooks into events in the kernel.
+Tracepoints are defined in the kernel source and compiled into the kernel binary which makes them a form of static tracing.
+Unlike <code>kprobe</code> s, new tracepoints cannot be added without modifying the kernel.</p>
+</div>
+<div className="paragraph">
+<p>The advantage of tracepoints is that they generally provide a more stable interface than <code>kprobe</code> s do, they do not depend on the existence of a kernel function.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`tracepoint:syscalls:sys_enter_openat {
+  printf("%s %s\\n", comm, str(args.filename));
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Tracepoint arguments are available in the <code>args</code> struct which can be inspected with verbose listing, see the <a href="#_listing_probes">Listing Probes</a> section for more details.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -lv "tracepoint:*"
+
+tracepoint:xhci-hcd:xhci_setup_device_slot
+  u32 info
+  u32 info2
+  u32 tt_info
+  u32 state
+...`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Alternatively members for each tracepoint can be listed from their /format file in /sys.</p>
+</div>
+<div className="paragraph">
+<p>Apart from the filename member, we can also print flags, mode, and more.
+After the "common" members listed first, the members are specific to the tracepoint.</p>
+</div>
+<div className="ulist">
+<div className="title">Additional information</div>
+<ul>
+<li>
+<p><a href="https://www.kernel.org/doc/html/latest/trace/tracepoints.html" className="bare">https://www.kernel.org/doc/html/latest/trace/tracepoints.html</a></p>
+</li>
+</ul>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-uprobe">uprobe, uretprobe</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>uprobe:binary:func</code></p>
+</li>
+<li>
+<p><code>uprobe:binary:func+offset</code></p>
+</li>
+<li>
+<p><code>uprobe:binary:offset</code></p>
+</li>
+<li>
+<p><code>uretprobe:binary:func</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short names</div>
+<ul>
+<li>
+<p><code>u</code></p>
+</li>
+<li>
+<p><code>ur</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p><code>uprobe</code> s or user-space probes are the user-space equivalent of <code>kprobe</code> s.
+The same limitations that apply <a href="#probes-kprobe">kprobe and kretprobe</a> also apply to <code>uprobe</code> s and <code>uretprobe</code> s, namely: arguments are available via the <code>argN</code> and <code>sargN</code> builtins and can only be accessed with a uprobe (<code>sargN</code> is more common for older versions of golang).
+retval is the return value for the instrumented function and can only be accessed with a uretprobe.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`uprobe:/bin/bash:readline { printf("arg0: %d\\n", arg0); }`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>What does arg0 of readline() in /bin/bash contain?
+I don&#8217;t know, so I&#8217;ll need to look at the bash source code to find out what its arguments are.</p>
+</div>
+<div className="paragraph">
+<p>When tracing libraries, it is sufficient to specify the library name instead of
+a full path. The path will be then automatically resolved using <code>/etc/ld.so.cache</code>:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`uprobe:libc:malloc { printf("Allocated %d bytes\\n", arg0); }`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>If the traced binary has DWARF included, function arguments are available in the <code>args</code> struct which can be inspected with verbose listing, see the <a href="#_listing_probes">Listing Probes</a> section for more details.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -lv 'uprobe:/bin/bash:rl_set_prompt'
+
+uprobe:/bin/bash:rl_set_prompt
+    const char* prompt`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>When tracing C&#43;&#43; programs, it&#8217;s possible to turn on automatic symbol demangling by using the <code>:cpp</code> prefix:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace:cpp:"bpftrace::BPFtrace::add_probe" { ... }`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>It is important to note that for <code>uretprobe</code> s to work the kernel runs a special helper on user-space function entry which overrides the return address on the stack.
+This can cause issues with languages that have their own runtime like Golang:</p>
+</div>
+<div className="listingblock">
+<div className="title">example.go</div>
+<div className="content">
+<pre>{`func myprint(s string) {
+  fmt.Printf("Input: %s\\n", s)
+}
+
+func main() {
+  ss := []string{"a", "b", "c"}
+  for _, s := range ss {
+    go myprint(s)
+  }
+  time.Sleep(1*time.Second)
+}`}</pre>
+</div>
+</div>
+<div className="listingblock">
+<div className="title">bpftrace</div>
+<div className="content">
+<pre>{`# bpftrace -e 'uretprobe:./test:main.myprint { @=count(); }' -c ./test
+runtime: unexpected return pc for main.myprint called from 0x7fffffffe000
+stack: frame={sp:0xc00008cf60, fp:0xc00008cfd0} stack=[0xc00008c000,0xc00008d000)
+fatal error: unknown caller pc`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-usdt">usdt</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>usdt:binary_path:probe_name</code></p>
+</li>
+<li>
+<p><code>usdt:binary_path:[probe_namespace]:probe_name</code></p>
+</li>
+<li>
+<p><code>usdt:library_path:probe_name</code></p>
+</li>
+<li>
+<p><code>usdt:library_path:[probe_namespace]:probe_name</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short name</div>
+<ul>
+<li>
+<p><code>U</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>Where probe_namespace is optional if probe_name is unique within the binary.</p>
+</div>
+<div className="paragraph">
+<p>You can target the entire host (or an entire process&#8217;s address space by using the <code>-p</code> arg) by using a single wildcard in place of the binary_path/library_path:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`usdt:*:loop { printf("hi\\n"); }`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Please note that if you use wildcards for the probe_name or probe_namespace and end up targeting multiple USDTs for the same probe you might get errors if you also utilize the USDT argument builtin (e.g. arg0) as they could be of different types.</p>
+</div>
+<div className="paragraph">
+<p>Arguments are available via the <code>argN</code> builtins:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`usdt:/root/tick:loop { printf("%s: %d\\n", str(arg0), arg1); }`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>bpftrace also supports USDT semaphores.
+If both your environment and bpftrace support uprobe refcounts, then USDT semaphores are automatically activated for all processes upon probe attachment (and --usdt-file-activation becomes a noop).
+You can check if your system supports uprobe refcounts by running:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace --info 2&gt;&amp;1 | grep "uprobe refcount"
+bcc bpf_attach_uprobe refcount: yes
+  uprobe refcount (depends on Build:bcc bpf_attach_uprobe refcount): yes`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>If your system does not support uprobe refcounts, you may activate semaphores by passing in -p $PID or --usdt-file-activation.
+--usdt-file-activation looks through /proc to find processes that have your probe&#8217;s binary mapped with executable permissions into their address space and then tries to attach your probe.
+Note that file activation occurs only once (during attach time).
+In other words, if later during your tracing session a new process with your executable is spawned, your current tracing session will not activate the new process.
+Also note that --usdt-file-activation matches based on file path.
+This means that if bpftrace runs from the root host, things may not work as expected if there are processes execved from private mount namespaces or bind mounted directories.
+One workaround is to run bpftrace inside the appropriate namespaces (i.e. the container).</p>
+</div>
+</div>
+<div className="sect2">
+<h3 id="probes-watchpoint">watchpoint and asyncwatchpoint</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>watchpoint:absolute_address:length:mode</code></p>
+</li>
+<li>
+<p><code>watchpoint:function+argN:length:mode</code></p>
+</li>
+</ul>
+</div>
+<div className="ulist">
+<div className="title">short names</div>
+<ul>
+<li>
+<p><code>w</code></p>
+</li>
+<li>
+<p><code>aw</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>This feature is experimental and may be subject to interface changes.
+Memory watchpoints are also architecture dependent.</p>
+</div>
+<div className="paragraph">
+<p>These are memory watchpoints provided by the kernel.
+Whenever a memory address is written to (<code>w</code>), read
+from (<code>r</code>), or executed (<code>x</code>), the kernel can generate an event.</p>
+</div>
+<div className="paragraph">
+<p>In the first form, an absolute address is monitored.
+If a pid (<code>-p</code>) or a command (<code>-c</code>) is provided, bpftrace takes the address as a userspace address and monitors the appropriate process.
+If not, bpftrace takes the address as a kernel space address.</p>
+</div>
+<div className="paragraph">
+<p>In the second form, the address present in <code>argN</code> when <code>function</code> is entered is
+monitored.
+A pid or command must be provided for this form.
+If synchronous (<code>watchpoint</code>), a <code>SIGSTOP</code> is sent to the tracee upon function entry.
+The tracee will be <code>SIGCONT</code>ed after the watchpoint is attached.
+This is to ensure events are not missed.
+If you want to avoid the <code>SIGSTOP</code> + <code>SIGCONT</code> use <code>asyncwatchpoint</code>.</p>
+</div>
+<div className="paragraph">
+<p>Note that on most architectures you may not monitor for execution while monitoring read or write.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -e 'watchpoint:0x10000000:8:rw { printf("hit!\\n"); }' -c ./testprogs/watchpoint`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Print the call stack every time the <code>jiffies</code> variable is updated:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`watchpoint:0x$(awk '$3 == "jiffies" {print $1}' /proc/kallsyms):8:w {
+  @[kstack] = count();
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>"hit" and exit when the memory pointed to by <code>arg1</code> of <code>increment</code> is written to:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# cat wpfunc.c
+#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;unistd.h&gt;
+
+__attribute__((noinline))
+void increment(__attribute__((unused)) int _, int *i)
+{
+  (*i)++;
+}
+
+int main()
+{
+  int *i = malloc(sizeof(int));
+  while (1)
+  {
+    increment(0, i);
+    (*i)++;
+    usleep(1000);
+  }
+}`}</pre>
+</div>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -e 'watchpoint:increment+arg1:4:w { printf("hit!\\n"); exit() }' -c ./wpfunc`}</pre>
 </div>
 </div>
 </div>
@@ -1495,8 +2548,8 @@ The 'Kernel' column indicates the minimum kernel version required and the 'BPF H
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">The nth positional parameter passed to the bpftrace program.
-If less than n parameters are passed this evaluates to <code>0</code>.
-For string arguments use the <code>str()</code> call to retrieve the value.</p></td>
+If less than n parameters are passed this evaluates to <code>0</code> in an action block or an empty string in a probe.
+For string arguments in an action block use the <code>str()</code> call to retrieve the value.</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>$#</code></p></td>
@@ -1619,10 +2672,10 @@ For string arguments use the <code>str()</code> call to retrieve the value.</p><
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">retval</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">int64</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Value returned by the function being traced (kretprobe, uretprobe, fexit)</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Value returned by the function being traced (kretprobe, uretprobe, fexit). For kretprobe and uretprobe, its type is <code>uint64</code>, but for fexit it depends. You can look up the type using <code>bpftrace -lv</code></p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">tid</p></td>
@@ -1671,32 +2724,32 @@ supports Python&#8217;s argparse and completely custom argument processing.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># bpftrace -e 'BEGIN &#123; printf("I got %d, %s (%d args)\n", $1, str($2), $#); &#125;' 42 "hello"
+<pre>{`# bpftrace -e 'BEGIN { printf("I got %d, %s (%d args)\\n", $1, str($2), $#); }' 42 "hello"
 
 I got 42, hello (2 args)
 
-# bpftrace -e 'BEGIN &#123; printf("%s\n", str($1 + 1)) &#125;' "hello"
+# bpftrace -e 'BEGIN { printf("%s\\n", str($1 + 1)) }' "hello"
 
-ello</pre>
+ello`}</pre>
 </div>
 </div>
 <div className="paragraph">
-<p>Script example, bsize.d:</p>
+<p>Script example, bsize.bt:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>#!/usr/local/bin/bpftrace
+<pre>{`#!/usr/local/bin/bpftrace
 
 BEGIN
-&#123;
-	printf("Tracing block I/O sizes &gt; %d bytes\n", $1);
-&#125;
+{
+	printf("Tracing block I/O sizes &gt; %d bytes\\n", $1);
+}
 
 tracepoint:block:block_rq_issue
 /args.bytes &gt; $1/
-&#123;
+{
 	@ = hist(args.bytes);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1704,13 +2757,13 @@ tracepoint:block:block_rq_issue
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># ./bsize.bt 65536
+<pre>{`# ./bsize.bt 65536
 
 Tracing block I/O sizes &gt; 65536 bytes
 ^C
 
 @:
-[512K, 1M)             1 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|</pre>
+[512K, 1M)             1 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -1721,7 +2774,7 @@ Tracing block I/O sizes &gt; 65536 bytes
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># ./bsize.bt
+<pre>{`# ./bsize.bt
 Attaching 2 probes...
 Tracing block I/O sizes &gt; 0 bytes
 ^C
@@ -1734,7 +2787,7 @@ Tracing block I/O sizes &gt; 0 bytes
 [64K, 128K)            1 |                                                    |
 [128K, 256K)           0 |                                                    |
 [256K, 512K)           0 |                                                    |
-[512K, 1M)             1 |                                                    |</pre>
+[512K, 1M)             1 |                                                    |`}</pre>
 </div>
 </div>
 </div>
@@ -1751,189 +2804,194 @@ Tracing block I/O sizes &gt; 0 bytes
 </colgroup>
 <thead>
 <tr>
-<th className="tableblock halign-left valign-top">Function Name</th>
+<th className="tableblock halign-left valign-top">Name</th>
 <th className="tableblock halign-left valign-top">Description</th>
 <th className="tableblock halign-left valign-top">Sync/Async/Compile Time</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-bswap"><code>bswap(uint[8|\16|32|64] n)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-bswap"><code>bswap</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Reverse byte order</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-buf"><code>buf(void *d [, int length])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-buf"><code>buf</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Returns a hex-formatted string of the data pointed to by d</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-cat"><code>cat(char *filename)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-cat"><code>cat</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Print file content</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-cgroupid"><code>cgroupid(char *path)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-cgroupid"><code>cgroupid</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Resolve cgroup ID</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Compile Time</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-cgroup_path"><code>cgroup_path(int cgroupid, string filter)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-cgroup_path"><code>cgroup_path</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Convert cgroup id to cgroup path</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-exit"><code>exit([int code])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-exit"><code>exit</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Quit bpftrace with an optional exit code</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-join"><code>join(char *arr[] [, char *delim])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-join"><code>join</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Print the array</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-kaddr"><code>kaddr(char *name)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-kaddr"><code>kaddr</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Resolve kernel symbol name</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Compile Time</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-kptr"><code>kptr(void *p)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-kptr"><code>kptr</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Annotate as kernelspace pointer</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-kstack"><code>kstack([StackMode mode, ][int level])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-kstack"><code>kstack</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Kernel stack trace</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-ksym"><code>ksym(void *p)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-ksym"><code>ksym</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Resolve kernel address</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-macaddr"><code>macaddr(char[6] addr)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-len"><code>len</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Count ustack/kstack frames</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-macaddr"><code>macaddr</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Convert MAC address data</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-nsecs"><code>nsecs([TimestampMode mode])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-nsecs"><code>nsecs</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Timestamps and Time Deltas</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-ntop"><code>ntop([int af, ]int|char[4|16] addr)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-ntop"><code>ntop</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Convert IP address data to text</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-offsetof"><code>offsetof(struct, element)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-offsetof"><code>offsetof</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Offset of element in structure</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Compile Time</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-override"><code>override(u64 rc)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-override"><code>override</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Override return value</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-path"><code>path(struct path *path [, int32 size])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-path"><code>path</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Return full path</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-percpu-kaddr"><code>percpu_kaddr(const string name [, int cpu])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-percpu-kaddr"><code>percpu_kaddr</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Resolve percpu kernel symbol name</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-print"><code>print(&#8230;&#8203;)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-print"><code>print</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Print a non-map value with default formatting</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-printf"><code>printf(char *fmt, &#8230;&#8203;)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-printf"><code>printf</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Print formatted</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-pton"><code>pton(const string *addr)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-pton"><code>pton</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Convert text IP address to byte array</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Compile Time</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-reg"><code>reg(char *name)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-reg"><code>reg</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Returns the value stored in the named register</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-signal"><code>signal(char[] signal | u32 signal)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-signal"><code>signal</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Send a signal to the current process</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-sizeof"><code>sizeof(&#8230;&#8203;)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-sizeof"><code>sizeof</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Return size of a type or expression</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-skboutput"><code>skboutput(const string p, struct sk_buff *s, &#8230;&#8203;)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-skboutput"><code>skboutput</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Write skb 's data section into a PCAP file</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-str"><code>str(char *s [, int length])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-str"><code>str</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Returns the string pointed to by s</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-strcontains"><code>strcontains(const char *haystack, const char *needle)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-strcontains"><code>strcontains</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Compares whether the string haystack contains the string needle.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-strerror"><code>strerror(uint64 error)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-strerror"><code>strerror</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Get error message for errno code</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-strftime"><code>strftime(char *format, int nsecs)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-strftime"><code>strftime</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Return a formatted timestamp</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-strncmp"><code>strncmp(char *s1, char *s2, int length)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-strncmp"><code>strncmp</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Compare first n characters of two strings</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-system"><code>system(char *fmt)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-system"><code>system</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Execute shell command</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-time"><code>time(char *fmt)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-time"><code>time</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Print formatted time</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-uaddr"><code>uaddr(char *name)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-uaddr"><code>uaddr</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Resolve user-level symbol name</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Compile Time</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-uptr"><code>uptr(void *p)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-uptr"><code>uptr</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Annotate as userspace pointer</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-ustack"><code>ustack([StackMode mode, ][int level])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-ustack"><code>ustack</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">User stack trace</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-usym"><code>usym(void *p)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-usym"><code>usym</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Resolve user space address</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
@@ -1998,15 +3056,15 @@ For arrays the <code>length</code> is optional, it is automatically inferred fro
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
-  printf("%r\n", buf(kaddr("avenrun"), 8));
-&#125;</pre>
+<pre>{`interval:s:1 {
+  printf("%r\\n", buf(kaddr("avenrun"), 8));
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>\x00\x03\x00\x00\x00\x00\x00\x00
-\xc2\x02\x00\x00\x00\x00\x00\x00</pre>
+<pre>{`\x00\x03\x00\x00\x00\x00\x00\x00
+\xc2\x02\x00\x00\x00\x00\x00\x00`}</pre>
 </div>
 </div>
 </div>
@@ -2030,18 +3088,18 @@ If the file cannot be opened or read an error is printed to stderr.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:syscalls:sys_enter_execve &#123;
+<pre>{`tracepoint:syscalls:sys_enter_execve {
   cat("/proc/%d/maps", pid);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>55f683ebd000-55f683ec1000 r--p 00000000 08:01 1843399                    /usr/bin/ls
+<pre>{`55f683ebd000-55f683ec1000 r--p 00000000 08:01 1843399                    /usr/bin/ls
 55f683ec1000-55f683ed6000 r-xp 00004000 08:01 1843399                    /usr/bin/ls
 55f683ed6000-55f683edf000 r--p 00019000 08:01 1843399                    /usr/bin/ls
 55f683edf000-55f683ee2000 rw-p 00021000 08:01 1843399                    /usr/bin/ls
-55f683ee2000-55f683ee3000 rw-p 00000000 00:00 0</pre>
+55f683ee2000-55f683ee3000 rw-p 00000000 00:00 0`}</pre>
 </div>
 </div>
 </div>
@@ -2063,9 +3121,9 @@ If the file cannot be opened or read an error is printed to stderr.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   print(cgroupid("/sys/fs/cgroup/system.slice"));
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2098,12 +3156,12 @@ path of a process via /proc/&#8230;&#8203;/cgroup).</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   $cgroup_path = cgroup_path(3436);
   print($cgroup_path);
   print($cgroup_path); /* This may print a different path */
   printf("%s %s", $cgroup_path, $cgroup_path); /* This may print two different paths */
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2127,9 +3185,9 @@ An optional exit code can be provided.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2137,9 +3195,9 @@ An optional exit code can be provided.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   exit(1);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2165,9 +3223,9 @@ This string will be printed to stdout directly, it cannot be used as string valu
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:syscalls:sys_enter_execve &#123;
+<pre>{`tracepoint:syscalls:sys_enter_execve {
   join(args.argv);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2189,10 +3247,10 @@ This string will be printed to stdout directly, it cannot be used as string valu
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $avenrun = kaddr("avenrun");
   $load1 = *$avenrun;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2221,7 +3279,7 @@ The pointer type is left unchanged.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>kstack([StackMode mode, ][int limit])</code></p>
+<p><code>kstack_t kstack([StackMode mode, ][int limit])</code></p>
 </li>
 </ul>
 </div>
@@ -2230,7 +3288,7 @@ The pointer type is left unchanged.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[kstack()] = count(); &#125;
+<pre>{`kprobe:ip_output { @[kstack()] = count(); }
 
 /*
  * Sample output:
@@ -2248,7 +3306,7 @@ The pointer type is left unchanged.</p>
  *  sys_write+82
  *   entry_SYSCALL_64_fastpath+30
  * ]: 1708
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2256,7 +3314,7 @@ The pointer type is left unchanged.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[kstack(3)] = count(); &#125;
+<pre>{`kprobe:ip_output { @[kstack(3)] = count(); }
 
 /*
  * Sample output:
@@ -2265,7 +3323,7 @@ The pointer type is left unchanged.</p>
  *  tcp_transmit_skb+1308
  *  tcp_write_xmit+482
  * ]: 1708
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2274,7 +3332,7 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[kstack(perf, 3)] = count(); &#125;
+<pre>{`kprobe:ip_output { @[kstack(perf, 3)] = count(); }
 
 /*
  * Sample output:
@@ -2283,7 +3341,7 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
  *  ffffffffb401700a sys_mmap_pgoff+266
  *  ffffffffb3e334eb sys_mmap+27
  * ]: 1708
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -2309,16 +3367,34 @@ The address to name mapping happens in user-space.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:do_nanosleep
-&#123;
-  printf("%s\n", ksym(reg("ip")));
-&#125;
+<pre>{`kprobe:do_nanosleep
+{
+  printf("%s\\n", ksym(reg("ip")));
+}
 
 /*
  * Sample output:
  * do_nanosleep
- */</pre>
+ */`}</pre>
 </div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="functions-len">len</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>int64 len(ustack stack)</code></p>
+</li>
+<li>
+<p><code>int64 len(kstack stack)</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>Retrieve the depth (measured in # of frames) of the call stack
+specified by <code>stack</code>.</p>
 </div>
 </div>
 <div className="sect2">
@@ -2337,16 +3413,16 @@ This buffer can be printed in the canonical string format using the <code>%s</co
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:arp_create &#123;
+<pre>{`kprobe:arp_create {
   $stack_arg0 = *(uint8*)(reg("sp") + 8);
   $stack_arg1 = *(uint8*)(reg("sp") + 16);
-  printf("SRC %s, DST %s\n", macaddr($stack_arg0), macaddr($stack_arg1));
-&#125;
+  printf("SRC %s, DST %s\\n", macaddr($stack_arg0), macaddr($stack_arg1));
+}
 
 /*
  * Sample output:
  * SRC 18:C0:4D:08:2E:BB, DST 74:83:C2:7F:8C:FF
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -2356,7 +3432,7 @@ This buffer can be printed in the canonical string format using the <code>%s</co
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>nsecs([TimestampMode mode])</code></p>
+<p><code>timestamp nsecs([TimestampMode mode])</code></p>
 </li>
 </ul>
 </div>
@@ -2382,19 +3458,19 @@ Defaults to <code>boot</code> if no clock is explicitly requested.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $sw_tai1 = nsecs(sw_tai);
   $tai = nsecs(tai);
   $sw_tai2 = nsecs(sw_tai);
-  printf("sw_tai precision: %lldns\n", ($sw_tai1 + $sw_tai2)/2 - $tai);
-&#125;
+  printf("sw_tai precision: %lldns\\n", ($sw_tai1 + $sw_tai2)/2 - $tai);
+}
 
 /*
  * Sample output:
  * sw_tai precision: -98ns
  * sw_tai precision: -99ns
  * ...
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -2427,10 +3503,10 @@ You can also pass the address type (e.g. AF_INET) explicitly as the first parame
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>offsetof(STRUCT, FIELD)</code></p>
+<p><code>uint64 offsetof(STRUCT, FIELD[.SUBFIELD])</code></p>
 </li>
 <li>
-<p><code>offsetof(EXPRESSION, FIELD)</code></p>
+<p><code>uint64 offsetof(EXPRESSION, FIELD[.SUBFIELD])</code></p>
 </li>
 </ul>
 </div>
@@ -2439,8 +3515,27 @@ You can also pass the address type (e.g. AF_INET) explicitly as the first parame
 </div>
 <div className="paragraph">
 <p>Returns offset of the field offset bytes in struct.
-Similar to kernel <code>offsetof</code> operator.
-Note that subfields are not yet supported.</p>
+Similar to kernel <code>offsetof</code> operator.</p>
+</div>
+<div className="paragraph">
+<p>Support any number of sub field levels, for example:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`struct Foo {
+  struct {
+    struct {
+      struct {
+        int d;
+      } c;
+    } b;
+  } a;
+}
+BEGIN {
+  @x = offsetof(struct Foo, a.b.c.d);
+  exit();
+}`}</pre>
+</div>
 </div>
 </div>
 <div className="sect2">
@@ -2449,7 +3544,7 @@ Note that subfields are not yet supported.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>override(uint64 rc)</code></p>
+<p><code>void override(uint64 rc)</code></p>
 </li>
 </ul>
 </div>
@@ -2475,15 +3570,15 @@ Note that subfields are not yet supported.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:__x64_sys_getuid
-/comm == "id"/ &#123;
+<pre>{`kprobe:__x64_sys_getuid
+/comm == "id"/ {
   override(2&lt;&lt;21);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>uid=4194304 gid=0(root) euid=0(root) groups=0(root)</pre>
+<pre>{`uid=4194304 gid=0(root) euid=0(root) groups=0(root)`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2494,8 +3589,8 @@ Note that subfields are not yet supported.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>ioctl(PERF_EVENT_IOC_SET_BPF): Invalid argument
-Error attaching probe: 'kprobe:vfs_read'</pre>
+<pre>{`ioctl(PERF_EVENT_IOC_SET_BPF): Invalid argument
+Error attaching probe: 'kprobe:vfs_read'`}</pre>
 </div>
 </div>
 </div>
@@ -2518,6 +3613,9 @@ Error attaching probe: 'kprobe:vfs_read'</pre>
 <div className="paragraph">
 <p>Return full path referenced by struct path pointer in argument. If <code>size</code> is set,
 the path will be clamped by <code>size</code> otherwise <code>BPFTRACE_MAX_STRLEN</code> is used.</p>
+</div>
+<div className="paragraph">
+<p>If <code>size</code> is smaller than the resolved path, the resulting string will be truncated at the front rather than at the end.</p>
 </div>
 <div className="paragraph">
 <p>This function can only be used by functions that are allowed to, these functions are contained in the <code>btf_allowlist_d_path</code> set in the kernel.</p>
@@ -2545,10 +3643,10 @@ omitted, the current CPU is used.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $proc_cnt = percpu_kaddr("process_counts");
-  printf("% processes are running on CPU %d\n", *$proc_cnt, cpu);
-&#125;</pre>
+  printf("% processes are running on CPU %d\\n", *$proc_cnt, cpu);
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2559,12 +3657,12 @@ be rejected.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   $runqueues = (struct rq *)percpu_kaddr("runqueues", 0);
-  if ($runqueues != 0) &#123;         // The check is mandatory here
+  if ($runqueues != 0) {         // The check is mandatory here
     print($runqueues-&gt;nr_running);
-  &#125;
-&#125;</pre>
+  }
+}`}</pre>
 </div>
 </div>
 </div>
@@ -2603,26 +3701,26 @@ be rejected.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   print(123);
   print("abc");
   exit();
-&#125;
+}
 
 /*
  * Sample output:
  * 123
  * abc
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:10 &#123; @=hist(rand); &#125;
-interval:s:1 &#123;
+<pre>{`interval:ms:10 { @=hist(rand); }
+interval:s:1 {
   print(@);
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2630,7 +3728,7 @@ interval:s:1 &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@:
+<pre>{`@:
 [16M, 32M)             3 |@@@                                                 |
 [32M, 64M)             2 |@@                                                  |
 [64M, 128M)            1 |@                                                   |
@@ -2638,7 +3736,7 @@ interval:s:1 &#123;
 [256M, 512M)           3 |@@@                                                 |
 [512M, 1G)            14 |@@@@@@@@@@@@@@                                      |
 [1G, 2G)              22 |@@@@@@@@@@@@@@@@@@@@@@                              |
-[2G, 4G)              51 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|</pre>
+[2G, 4G)              51 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@|`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2654,21 +3752,21 @@ This means that updating and printing maps in a fast loop will likely result in 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   $i = 11;
-  while($i) &#123;
+  while($i) {
     @[$i] = --$i;
-  &#125;
+  }
   print(@, 2);
   clear(@);
   exit()
-&#125;
+}
 
 /*
  * Sample output:
  * @[9]: 9
  * @[10]: 10
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2678,9 +3776,9 @@ Consider the following program:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:f &#123;
+<pre>{`kprobe:f {
   @[func] += arg0/10;
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2692,11 +3790,11 @@ The total is <code>721</code> which rounds to <code>72</code> when scaled by 10 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@[6]: 3
+<pre>{`@[6]: 3
 @[7]: 3
 @[8]: 4
 @[9]: 4
-@[10]: 5</pre>
+@[10]: 5`}</pre>
 </div>
 </div>
 </div>
@@ -2758,15 +3856,15 @@ defined in the kernel are supported. For example:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>enum custom &#123;
+<pre>{`enum custom {
   CUSTOM_ENUM = 3,
-&#125;;
+};
 
-BEGIN &#123;
+BEGIN {
   $r = SKB_DROP_REASON_SOCKET_FILTER;
-  printf("%d, %s, %s\n", $r, $r, CUSTOM_ENUM);
+  printf("%d, %s, %s\\n", $r, $r, CUSTOM_ENUM);
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2774,7 +3872,7 @@ BEGIN &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>6, SKB_DROP_REASON_SOCKET_FILTER, CUSTOM_ENUM</pre>
+<pre>{`6, SKB_DROP_REASON_SOCKET_FILTER, CUSTOM_ENUM`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -2782,7 +3880,7 @@ BEGIN &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>print("\033[31mRed\t\033[33mYellow\033[0m\n")</pre>
+<pre>{`print("\\033[31mRed\t\\033[33mYellow\\033[0m\\n")`}</pre>
 </div>
 </div>
 </div>
@@ -2814,7 +3912,7 @@ BEGIN &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>reg(const string name)</code></p>
+<p><code>uint64 reg(const string name)</code></p>
 </li>
 </ul>
 </div>
@@ -2840,10 +3938,10 @@ Valid names depend on the CPU architecture.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>signal(const string sig)</code></p>
+<p><code>void signal(const string sig)</code></p>
 </li>
 <li>
-<p><code>signal(uint32 signum)</code></p>
+<p><code>void signal(uint32 signum)</code></p>
 </li>
 </ul>
 </div>
@@ -2865,16 +3963,16 @@ The signal can either be identified by name, e.g. <code>SIGSTOP</code> or by ID,
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:__x64_sys_execve
-/comm == "bash"/ &#123;
+<pre>{`kprobe:__x64_sys_execve
+/comm == "bash"/ {
   signal(5);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>$ ls
-Trace/breakpoint trap (core dumped)</pre>
+<pre>{`$ ls
+Trace/breakpoint trap (core dumped)`}</pre>
 </div>
 </div>
 </div>
@@ -2884,10 +3982,10 @@ Trace/breakpoint trap (core dumped)</pre>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>sizeof(TYPE)</code></p>
+<p><code>uint64 sizeof(TYPE)</code></p>
 </li>
 <li>
-<p><code>sizeof(EXPRESSION)</code></p>
+<p><code>uint64 sizeof(EXPRESSION)</code></p>
 </li>
 </ul>
 </div>
@@ -2937,16 +4035,16 @@ The <code>data</code> section in the struct <code>skb</code> may contain etherne
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># cat dump.bt
-fentry:napi_gro_receive &#123;
+<pre>{`# cat dump.bt
+fentry:napi_gro_receive {
   $ret = skboutput("receive.pcap", args.skb, args.skb-&gt;len, 0);
-&#125;
+}
 
-fentry:dev_queue_xmit &#123;
+fentry:dev_queue_xmit {
   // setting offset to 14, to exclude ethernet header
   $ret = skboutput("output.pcap", args.skb, args.skb-&gt;len, 14);
-  printf("skboutput returns %d\n", $ret);
-&#125;
+  printf("skboutput returns %d\\n", $ret);
+}
 
 # export BPFTRACE_PERF_RB_PAGES=1024
 # bpftrace dump.bt
@@ -2957,7 +4055,7 @@ reading from file ./receive.pcap, link-type RAW (Raw IP)
 dropped privs to tcpdump
 10:23:44.674087 IP 22.128.74.231.63175 &gt; 192.168.0.23.22: Flags [.], ack 3513221061, win 14009, options [nop,nop,TS val 721277750 ecr 3115333619], length 0
 10:23:45.823194 IP 100.101.2.146.53 &gt; 192.168.0.23.46619: 17273 0/1/0 (130)
-10:23:45.823229 IP 100.101.2.146.53 &gt; 192.168.0.23.46158: 45799 1/0/0 A 100.100.45.106 (60)</pre>
+10:23:45.823229 IP 100.101.2.146.53 &gt; 192.168.0.23.46158: 45799 1/0/0 A 100.100.45.106 (60)`}</pre>
 </div>
 </div>
 </div>
@@ -2967,7 +4065,7 @@ dropped privs to tcpdump
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>str(char * data [, uint32 length)</code></p>
+<p><code>string str(char * data [, uint32 length)</code></p>
 </li>
 </ul>
 </div>
@@ -3017,10 +4115,10 @@ This is done asynchronously in userspace when the strerror value is printed, hen
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>#include &lt;errno.h&gt;
-BEGIN &#123;
+<pre>{`#include &lt;errno.h&gt;
+BEGIN {
   print(strerror(EPERM));
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3046,9 +4144,9 @@ The time conversion and formatting happens in user space, therefore  the <code>t
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
-  printf("%s\n", strftime("%H:%M:%S", nsecs));
-&#125;</pre>
+<pre>{`interval:s:1 {
+  printf("%s\\n", strftime("%H:%M:%S", nsecs));
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3114,16 +4212,16 @@ The <code>command</code> is run with the same privileges as bpftrace and it bloc
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   time("%H:%M:%S: ");
-  printf("%d\n", @++);
-&#125;
-interval:s:10 &#123;
+  printf("%d\\n", @++);
+}
+interval:s:10 {
   system("/bin/sleep 10");
-&#125;
-interval:s:30 &#123;
+}
+interval:s:30 {
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3131,7 +4229,7 @@ interval:s:30 &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>Attaching 3 probes...
+<pre>{`Attaching 3 probes...
 08:50:37: 0
 08:50:38: 1
 08:50:39: 2
@@ -3151,7 +4249,7 @@ interval:s:30 &#123;
 08:50:56: 16
 08:50:56: 17
 08:50:56: 18
-08:50:56: 19</pre>
+08:50:56: 19`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3159,9 +4257,9 @@ interval:s:30 &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>tracepoint:syscalls:sys_enter_execve &#123;
+<pre>{`tracepoint:syscalls:sys_enter_execve {
   system("/bin/grep %s /proc/%d/status", "vmswap", pid);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3224,9 +4322,9 @@ As ELF does not contain type info the type is always assumed to be unsigned.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>uprobe:/bin/bash:readline &#123;
-  printf("PS1: %s\n", str(*uaddr("ps1_prompt")));
-&#125;</pre>
+<pre>{`uprobe:/bin/bash:readline {
+  printf("PS1: %s\\n", str(*uaddr("ps1_prompt")));
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3252,7 +4350,7 @@ The pointer type is left unchanged.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>ustack([StackMode mode, ][int limit])</code></p>
+<p><code>ustack_t ustack([StackMode mode, ][int limit])</code></p>
 </li>
 </ul>
 </div>
@@ -3261,7 +4359,7 @@ The pointer type is left unchanged.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:do_sys_open /comm == "bash"/ &#123; @[ustack()] = count(); &#125;
+<pre>{`kprobe:do_sys_open /comm == "bash"/ { @[ustack()] = count(); }
 
 /*
  * Sample output:
@@ -3294,7 +4392,7 @@ The pointer type is left unchanged.</p>
  *  __libc_start_main+231
  *  0x61ce258d4c544155
  * ]: 9
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3302,7 +4400,7 @@ The pointer type is left unchanged.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[ustack(3)] = count(); &#125;
+<pre>{`kprobe:ip_output { @[ustack(3)] = count(); }
 
 /*
  * Sample output:
@@ -3311,7 +4409,7 @@ The pointer type is left unchanged.</p>
  *  command_word_completion_function+3604
  *  rl_completion_matches+370
  * ]: 20
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3320,7 +4418,7 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:ip_output &#123; @[ustack(perf, 3)] = count(); &#125;
+<pre>{`kprobe:ip_output { @[ustack(perf, 3)] = count(); }
 
 /*
  * Sample output:
@@ -3329,7 +4427,7 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
  *  5649fee2bfa6 yy_readline_get+451 (/home/mmarchini/bash/bash/bash)
  *  5649fee2bdc6 yy_getc+13 (/home/mmarchini/bash/bash/bash)
  * ]: 20
- */</pre>
+ */`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3368,15 +4466,15 @@ Available formats are <code>bpftrace</code>, <code>perf</code>, and <code>raw</c
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>uprobe:/bin/bash:readline
-&#123;
-  printf("%s\n", usym(reg("ip")));
-&#125;
+<pre>{`uprobe:/bin/bash:readline
+{
+  printf("%s\\n", usym(reg("ip")));
+}
 
 /*
  * Sample output:
  * readline
- */</pre>
+ */`}</pre>
 </div>
 </div>
 </div>
@@ -3420,74 +4518,74 @@ The data type associated with these functions are only for internal use and are 
 </colgroup>
 <thead>
 <tr>
-<th className="tableblock halign-left valign-top">Function Name</th>
+<th className="tableblock halign-left valign-top">Name</th>
 <th className="tableblock halign-left valign-top">Description</th>
 <th className="tableblock halign-left valign-top">Sync/async</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-avg"><code>avg(int64 n)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-avg"><code>avg</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Calculate the running average of <code>n</code> between consecutive calls.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-clear"><code>clear(map m)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-clear"><code>clear</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Clear all keys/values from a map.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-count"><code>count()</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-count"><code>count</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Count how often this function is called.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-delete"><code>delete(map m, mapkey k)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-delete"><code>delete</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Delete a single key from a map.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-has_key"><code>has_key(map m, mapkey k)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-has_key"><code>has_key</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Return true (1) if the key exists in this map. Otherwise return false (0).</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-hist"><code>hist(int64 n[, int k])</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-hist"><code>hist</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Create a log2 histogram of n using buckets per power of 2, 0 &#8656; k &#8656; 5, defaults to 0.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-len"><code>len(map m)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-len"><code>len</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Return the number of elements in a map.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-lhist"><code>lhist(int64 n, int64 min, int64 max, int64 step)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-lhist"><code>lhist</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Create a linear histogram of n. lhist creates M ((max - min) / step) buckets in the range [min,max) where each bucket is step in size.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-max"><code>max(int64 n)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-max"><code>max</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Update the map with n if n is bigger than the current value held.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-min"><code>min(int64 n)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-min"><code>min</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Update the map with n if n is smaller than the current value held.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-stats"><code>stats(int64 n)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-stats"><code>stats</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Combines the count, avg and sum calls into one.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-sum"><code>sum(int64 n)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-sum"><code>sum</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Calculate the sum of all n passed.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-zero"><code>zero(map m)</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#map-functions-zero"><code>zero</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Set all values for all keys to zero.</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
@@ -3499,7 +4597,7 @@ The data type associated with these functions are only for internal use and are 
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>avg(int64 n)</code></p>
+<p><code>avg_t avg(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3508,12 +4606,12 @@ The data type associated with these functions are only for internal use and are 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:s:1 &#123;
+<pre>{`interval:s:1 {
   @x++;
   @y = avg(@x);
   print(@x);
   print(@y);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3530,7 +4628,7 @@ cpus to collect and sum BOTH count and total.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>clear(map m)</code></p>
+<p><code>void clear(map m)</code></p>
 </li>
 </ul>
 </div>
@@ -3542,14 +4640,14 @@ cpus to collect and sum BOTH count and total.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:100 &#123;
+<pre>{`interval:ms:100 {
   @[rand % 10] = count();
-&#125;
+}
 
-interval:s:10 &#123;
+interval:s:10 {
   print(@);
   clear(@);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3559,7 +4657,7 @@ interval:s:10 &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>count()</code></p>
+<p><code>count_t count()</code></p>
 </li>
 </ul>
 </div>
@@ -3583,12 +4681,12 @@ for <code>&#43;&#43;</code>.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   @ = count();
   @ = count();
-  printf("%d\n", (int64)@);   // prints 2
+  printf("%d\\n", (int64)@);   // prints 2
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3596,19 +4694,19 @@ for <code>&#43;&#43;</code>.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:100 &#123;
+<pre>{`interval:ms:100 {
   @ = count();
-&#125;
+}
 
-interval:s:10 &#123;
+interval:s:10 {
   // async read
   print(@);
   // sync read
-  if (@ &gt; 10) &#123;
+  if (@ &gt; 10) {
     print(("hello"));
-  &#125;
+  }
   clear(@);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3618,10 +4716,10 @@ interval:s:10 &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>delete(map m, mapkey k)</code></p>
+<p><code>void delete(map m, mapkey k)</code></p>
 </li>
 <li>
-<p>deprecated <code>delete(mapkey k)</code></p>
+<p>deprecated <code>void delete(mapkey k)</code></p>
 </li>
 </ul>
 </div>
@@ -3636,7 +4734,7 @@ e.g. <code>delete(@mymap[3, "hello"]);</code>.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>kprobe:dummy &#123;
+<pre>{`kprobe:dummy {
   @scalar = 1;
   delete(@scalar); // ok
   @single["hello"] = 1;
@@ -3649,7 +4747,7 @@ e.g. <code>delete(@mymap[3, "hello"]);</code>.</p>
   // deprecated but ok
   delete(@single["hello"]);
   delete(@associative[1, 2]);
-&#125;</code></pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3671,20 +4769,20 @@ Return value can also be used for scratch variables and map keys/values.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>kprobe:dummy &#123;
+<pre>{`kprobe:dummy {
   @associative[1,2] = 1;
-  if (!has_key(@associative, (1,3))) &#123; // ok
+  if (!has_key(@associative, (1,3))) { // ok
     print(("bye"));
-  &#125;
+  }
 
   @scalar = 1;
-  if (has_key(@scalar)) &#123; // error
+  if (has_key(@scalar)) { // error
     print(("hello"));
-  &#125;
+  }
 
   $a = has_key(@associative, (1,2)); // ok
   @b[has_key(@associative, (1,2))] = has_key(@associative, (1,2)); // ok
-&#125;</code></pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3694,7 +4792,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>hist(int64 n[, int k])</code></p>
+<p><code>hist_t hist(int64 n[, int k])</code></p>
 </li>
 </ul>
 </div>
@@ -3704,9 +4802,9 @@ Return value can also be used for scratch variables and map keys/values.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kretprobe:vfs_read &#123;
+<pre>{`kretprobe:vfs_read {
   @bytes = hist(retval);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3714,7 +4812,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@:
+<pre>{`@:
 [1M, 2M)               3 |                                                    |
 [2M, 4M)               2 |                                                    |
 [4M, 8M)               2 |                                                    |
@@ -3725,7 +4823,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 [128M, 256M)          98 |@@@                                                 |
 [256M, 512M)         191 |@@@@@@                                              |
 [512M, 1G)           394 |@@@@@@@@@@@@@                                       |
-[1G, 2G)             820 |@@@@@@@@@@@@@@@@@@@@@@@@@@@                         |</pre>
+[1G, 2G)             820 |@@@@@@@@@@@@@@@@@@@@@@@@@@@                         |`}</pre>
 </div>
 </div>
 </div>
@@ -3735,7 +4833,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>len(map m)</code></p>
+<p><code>int64 len(map m)</code></p>
 </li>
 </ul>
 </div>
@@ -3749,7 +4847,7 @@ Return value can also be used for scratch variables and map keys/values.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>lhist(int64 n, int64 min, int64 max, int64 step)</code></p>
+<p><code>lhist_t lhist(int64 n, int64 min, int64 max, int64 step)</code></p>
 </li>
 </ul>
 </div>
@@ -3760,13 +4858,13 @@ Values in the range <code>(-inf, min)</code> and <code>(max, inf)</code> get the
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:1 &#123;
+<pre>{`interval:ms:1 {
   @ = lhist(rand %10, 0, 10, 1);
-&#125;
+}
 
-interval:s:5 &#123;
+interval:s:5 {
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3774,7 +4872,7 @@ interval:s:5 &#123;
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@:
+<pre>{`@:
 [0, 1)               306 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@         |
 [1, 2)               284 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@            |
 [2, 3)               294 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@          |
@@ -3784,7 +4882,7 @@ interval:s:5 &#123;
 [6, 7)               336 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@    |
 [7, 8)               326 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@      |
 [8, 9)               328 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@     |
-[9, 10)              318 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@       |</pre>
+[9, 10)              318 |@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@       |`}</pre>
 </div>
 </div>
 </div>
@@ -3794,7 +4892,7 @@ interval:s:5 &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>max(int64 n)</code></p>
+<p><code>max_t max(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3815,7 +4913,7 @@ in the map the "result" is being assigned to.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>int x = std::max(3, 33);  // x contains 33</pre>
+<pre>{`int x = std::max(3, 33);  // x contains 33`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3823,8 +4921,8 @@ in the map the "result" is being assigned to.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@x = max(3);
-@x = max(33);   // @x contains 33</pre>
+<pre>{`@x = max(3);
+@x = max(33);   // @x contains 33`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3839,7 +4937,7 @@ be returned.</p>
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>min(int64 n)</code></p>
+<p><code>min_t min(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3857,7 +4955,7 @@ Similar to <code>count</code> this uses a PER_CPU map (thread-safe, fast writes,
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>stats(int64 n)</code></p>
+<p><code>stats_t stats(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3866,17 +4964,17 @@ Similar to <code>count</code> this uses a PER_CPU map (thread-safe, fast writes,
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>kprobe:vfs_read &#123;
+<pre>{`kprobe:vfs_read {
   @bytes[comm] = stats(arg2);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@bytes[bash]: count 7, average 1, total 7
+<pre>{`@bytes[bash]: count 7, average 1, total 7
 @bytes[sleep]: count 5, average 832, total 4160
 @bytes[ls]: count 7, average 886, total 6208
-@</pre>
+@`}</pre>
 </div>
 </div>
 </div>
@@ -3886,7 +4984,7 @@ Similar to <code>count</code> this uses a PER_CPU map (thread-safe, fast writes,
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>sum(int64 n)</code></p>
+<p><code>sum_t sum(int64 n)</code></p>
 </li>
 </ul>
 </div>
@@ -3910,13 +5008,13 @@ atomic operations.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   @ = sum(5);
   @ = sum(6);
-  printf("%d\n", (int64)@);   // prints 11
+  printf("%d\\n", (int64)@);   // prints 11
   clear(@);
   exit();
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -3924,19 +5022,19 @@ atomic operations.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>interval:ms:100 &#123;
+<pre>{`interval:ms:100 {
   @ = sum(5);
-&#125;
+}
 
-interval:s:10 &#123;
+interval:s:10 {
   // async read
   print(@);
   // sync read
-  if (@ &gt; 10) &#123;
+  if (@ &gt; 10) {
     print(("hello"));
-  &#125;
+  }
   clear(@);
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 </div>
@@ -3946,7 +5044,7 @@ interval:s:10 &#123;
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>zero(map m)</code></p>
+<p><code>void zero(map m)</code></p>
 </li>
 </ul>
 </div>
@@ -3960,1135 +5058,26 @@ interval:s:10 &#123;
 </div>
 </div>
 <div className="sect1">
-<h2 id="_probes">Probes</h2>
+<h2 id="_configuration">Configuration</h2>
 <div className="sectionbody">
-<div className="paragraph">
-<p>bpftrace supports various probe types which allow the user to attach BPF programs to different types of events.
-Each probe starts with a provider (e.g. <code>kprobe</code>) followed by a colon (<code>:</code>) separated list of options.
-The amount of options and their meaning depend on the provider and are detailed below.
-The valid values for options can depend on the system or binary being traced, e.g. for uprobes it depends on the binary.
-Also see <a href="#_listing_probes">Listing Probes</a>.</p>
-</div>
-<div className="paragraph">
-<p>It is possible to associate multiple probes with a single action as long as the action is valid for all specified probes.
-Multiple probes can be specified as a comma (<code>,</code>) separated list:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>kprobe:tcp_reset,kprobe:tcp_v4_rcv &#123;
-  printf("Entered: %s\n", probe);
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Wildcards are supported too:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>kprobe:tcp_* &#123;
-  printf("Entered: %s\n", probe);
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Both can be combined:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>kprobe:tcp_reset,kprobe:*socket* &#123;
-  printf("Entered: %s\n", probe);
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Most providers also support a short name which can be used instead of the full name, e.g. <code>kprobe:f</code> and <code>k:f</code> are identical.</p>
-</div>
-<table className="tableblock frame-all grid-all stretch">
-<colgroup>
-<col />
-<col />
-<col />
-<col />
-</colgroup>
-<tbody>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Probe Name</strong></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Short Name</strong></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Description</strong></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Kernel/User Level</strong></p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-begin-end"><code>BEGIN/END</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">-</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Built-in events</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-self"><code>self</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">-</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Built-in events</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-hardware"><code>hardware</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>h</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Processor-level events</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-interval"><code>interval</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>i</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Timed output</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-iterator"><code>iter</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>it</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Iterators tracing</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-fentry"><code>fentry/fexit</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>f</code>/<code>fr</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel functions tracing with BTF support</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-kprobe"><code>kprobe/kretprobe</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>k</code>/<code>kr</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel function start/return</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-profile"><code>profile</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>p</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Timed sampling</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-rawtracepoint"><code>rawtracepoint</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>rt</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel static tracepoints with raw arguments</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-software"><code>software</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>s</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel software events</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-tracepoint"><code>tracepoint</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>t</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel static tracepoints</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-uprobe"><code>uprobe/uretprobe</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>u</code>/<code>ur</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">User-level function start/return</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">User</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-usdt"><code>usdt</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>U</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">User-level static tracepoints</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">User</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-watchpoint"><code>watchpoint/asyncwatchpoint</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>w</code>/<code>aw</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Memory watchpoints</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
-</tr>
-</tbody>
-</table>
-<div className="sect2">
-<h3 id="probes-begin-end">BEGIN/END</h3>
-<div className="paragraph">
-<p>These are special built-in events provided by the bpftrace runtime.
-<code>BEGIN</code> is triggered before all other probes are attached.
-<code>END</code> is triggered after all other probes are detached.</p>
-</div>
-<div className="paragraph">
-<p>Note that specifying an <code>END</code> probe doesn&#8217;t override the printing of 'non-empty' maps at exit.
-To prevent printing all used maps need be cleared in the <code>END</code> probe:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>END &#123;
-    clear(@map1);
-    clear(@map2);
-&#125;</pre>
-</div>
-</div>
+<div className="ulist">
+<ul>
+<li>
+<p><a href="#_config_variables">Config Variables</a></p>
+</li>
+<li>
+<p><a href="#_environment_variables">Environment Variables</a></p>
+</li>
+</ul>
 </div>
 <div className="sect2">
-<h3 id="probes-self">self</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>self:signal:SIGUSR1</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>These are special built-in events provided by the bpftrace runtime.
-The trigger function is called by the bpftrace runtime when the bpftrace process receives specific events, such as a <code>SIGUSR1</code> signal.
-When multiple signal handlers are attached to the same signal, only the first one is used.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>self:signal:SIGUSR1 &#123;
-  print("abc");
-&#125;</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-hardware">hardware</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>hardware:event_name:</code></p>
-</li>
-<li>
-<p><code>hardware:event_name:count</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short name</div>
-<ul>
-<li>
-<p><code>h</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>These are the pre-defined hardware events provided by the Linux kernel, as commonly traced by the perf utility.
-They are implemented using performance monitoring counters (PMCs): hardware resources on the processor.
-There are about ten of these, and they are documented in the perf_event_open(2) man page.
-The event names are:</p>
-</div>
-<div className="ulist">
-<ul>
-<li>
-<p><code>cpu-cycles</code> or <code>cycles</code></p>
-</li>
-<li>
-<p><code>instructions</code></p>
-</li>
-<li>
-<p><code>cache-references</code></p>
-</li>
-<li>
-<p><code>cache-misses</code></p>
-</li>
-<li>
-<p><code>branch-instructions</code> or <code>branches</code></p>
-</li>
-<li>
-<p><code>branch-misses</code></p>
-</li>
-<li>
-<p><code>bus-cycles</code></p>
-</li>
-<li>
-<p><code>frontend-stalls</code></p>
-</li>
-<li>
-<p><code>backend-stalls</code></p>
-</li>
-<li>
-<p><code>ref-cycles</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>The <code>count</code> option specifies how many events must happen before the probe fires (sampling interval).
-If <code>count</code> is left unspecified a default value is used.</p>
-</div>
-<div className="paragraph">
-<p>This will fire once for every 1,000,000 cache misses.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>hardware:cache-misses:1e6 &#123; @[pid] = count(); &#125;</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-interval">interval</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>interval:us:count</code></p>
-</li>
-<li>
-<p><code>interval:ms:count</code></p>
-</li>
-<li>
-<p><code>interval:s:count</code></p>
-</li>
-<li>
-<p><code>interval:hz:rate</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short name</div>
-<ul>
-<li>
-<p><code>i</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>The interval probe fires at a fixed interval as specified by its time spec.
-Interval fires on one CPU at a time, unlike <a href="#probes-profile">profile</a> probes.</p>
-</div>
-<div className="paragraph">
-<p>This prints the rate of syscalls per second.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>tracepoint:raw_syscalls:sys_enter &#123; @syscalls = count(); &#125;
-interval:s:1 &#123; print(@syscalls); clear(@syscalls); &#125;</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-iterator">iterator</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>iter:task</code></p>
-</li>
-<li>
-<p><code>iter:task:pin</code></p>
-</li>
-<li>
-<p><code>iter:task_file</code></p>
-</li>
-<li>
-<p><code>iter:task_file:pin</code></p>
-</li>
-<li>
-<p><code>iter:task_vma</code></p>
-</li>
-<li>
-<p><code>iter:task_vma:pin</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short name</div>
-<ul>
-<li>
-<p><code>it</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p><strong>Warning</strong> this feature is experimental and may be subject to interface changes.</p>
-</div>
-<div className="paragraph">
-<p>These are eBPF iterator probes that allow iteration over kernel objects.
-Iterator probe can&#8217;t be mixed with any other probe, not even another iterator.
-Each iterator probe provides a set of fields that could be accessed with the
-ctx pointer. Users can display the set of available fields for each iterator via
--lv options as described below.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>iter:task &#123; printf("%s:%d\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); &#125;
-
-/*
- * Sample output:
- * systemd:1
- * kthreadd:2
- * rcu_gp:3
- * rcu_par_gp:4
- * kworker/0:0H:6
- * mm_percpu_wq:8
- */</pre>
-</div>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>iter:task_file &#123;
-  printf("%s:%d %d:%s\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, ctx-&gt;fd, path(ctx-&gt;file-&gt;f_path));
-&#125;
-
-/*
- * Sample output:
- * systemd:1 1:/dev/null
- * systemd:1 3:/dev/kmsg
- * ...
- * su:1622 2:/dev/pts/1
- * ...
- * bpftrace:1892 2:/dev/pts/1
- * bpftrace:1892 6:anon_inode:bpf-prog
- */</pre>
-</div>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>iter:task_vma &#123;
-  printf("%s %d %lx-%lx\n", comm, pid, ctx-&gt;vma-&gt;vm_start, ctx-&gt;vma-&gt;vm_end);
-&#125;
-
-/*
- * Sample output:
- * bpftrace 119480 55b92c380000-55b92c386000
- * ...
- * bpftrace 119480 7ffd55dde000-7ffd55de2000
- */</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>It&#8217;s possible to pin an iterator by specifying the optional probe ':pin' part, that defines the pin file.
-It can be specified as an absolute or relative path to /sys/fs/bpf.</p>
-</div>
-<div className="listingblock">
-<div className="title">relative pin</div>
-<div className="content">
-<pre>iter:task:list &#123; printf("%s:%d\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); &#125;
-
-/*
- * Sample output:
- * Program pinned to /sys/fs/bpf/list
- */</pre>
-</div>
-</div>
-<div className="listingblock">
-<div className="title">absolute pin</div>
-<div className="content">
-<pre>iter:task_file:/sys/fs/bpf/files &#123;
-  printf("%s:%d %s\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, path(ctx-&gt;file-&gt;f_path));
-&#125;
-
-/*
- * Sample output:
- * Program pinned to /sys/fs/bpf/files
- */</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-fentry">fentry and fexit</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>fentry[:module]:fn</code></p>
-</li>
-<li>
-<p><code>fexit[:module]:fn</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short names</div>
-<ul>
-<li>
-<p><code>f</code> (<code>fentry</code>)</p>
-</li>
-<li>
-<p><code>fr</code> (<code>fexit</code>)</p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">requires (<code>--info</code>)</div>
-<ul>
-<li>
-<p>Kernel features:BTF</p>
-</li>
-<li>
-<p>Probe types:fentry</p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p><code>fentry</code>/<code>fexit</code> probes attach to kernel functions similar to <a href="#probes-kprobe">kprobe and kretprobe</a>.
-They make use of eBPF trampolines which allow kernel code to call into BPF programs with near zero overhead.
-Originally, these were called <code>kfunc</code> and <code>kretfunc</code> but were later renamed to <code>fentry</code> and <code>fexit</code> to match
-how these are referenced in the kernel and to prevent confusion with <a href="https://docs.kernel.org/bpf/kfuncs.html">BPF Kernel Functions</a>.
-The original names are still supported for backwards compatibility.</p>
-</div>
-<div className="paragraph">
-<p><code>fentry</code>/<code>fexit</code> probes make use of BTF type information to derive the type of function arguments at compile time.
-This removes the need for manual type casting and makes the code more resilient against small signature changes in the kernel.
-The function arguments are available in the <code>args</code> struct which can be inspected by doing verbose listing (see <a href="#_listing_probes">Listing Probes</a>).
-These arguments are also available in the return probe (<code>fexit</code>), unlike <code>kretprobe</code>.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace -lv 'fentry:tcp_reset'
-
-fentry:tcp_reset
-    struct sock * sk
-    struct sk_buff * skb</pre>
-</div>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>fentry:x86_pmu_stop &#123;
-  printf("pmu %s stop\n", str(args.event-&gt;pmu-&gt;name));
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>The fget function takes one argument as file descriptor and you can access it via args.fd and the return value is accessible via retval:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>fexit:fget &#123;
-  printf("fd %d name %s\n", args.fd, str(retval-&gt;f_path.dentry-&gt;d_name.name));
-&#125;
-
-/*
- * Sample output:
- * fd 3 name ld.so.cache
- * fd 3 name libselinux.so.1
- */</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-kprobe">kprobe and kretprobe</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>kprobe[:module]:fn</code></p>
-</li>
-<li>
-<p><code>kprobe[:module]:fn+offset</code></p>
-</li>
-<li>
-<p><code>kretprobe[:module]:fn</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short names</div>
-<ul>
-<li>
-<p><code>k</code></p>
-</li>
-<li>
-<p><code>kr</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p><code>kprobe</code>s allow for dynamic instrumentation of kernel functions.
-Each time the specified kernel function is executed the attached BPF programs are ran.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>kprobe:tcp_reset &#123;
-  @tcp_resets = count()
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Function arguments are available through the <code>argN</code> for register args. Arguments passed on stack are available using the stack pointer, e.g. <code>$stack_arg0 = <strong>(int64</strong>)reg("sp") + 16</code>.
-Whether arguments passed on stack or in a register depends on the architecture and the number or arguments used, e.g. on x86_64 the first 6 non-floating point arguments are passed in registers and all following arguments are passed on the stack.
-Note that floating point arguments are typically passed in special registers which don&#8217;t count as <code>argN</code> arguments which can cause confusion.
-Consider a function with the following signature:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>void func(int a, double d, int x)</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Due to <code>d</code> being a floating point, <code>x</code> is accessed through <code>arg1</code> where one might expect <code>arg2</code>.</p>
-</div>
-<div className="paragraph">
-<p>bpftrace does not detect the function signature so it is not aware of the argument count or their type.
-It is up to the user to perform <a href="#_type_conversion">Type conversion</a> when needed, e.g.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>#include &lt;linux/path.h&gt;
-#include &lt;linux/dcache.h&gt;
-
-kprobe:vfs_open
-&#123;
-	printf("open path: %s\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Here arg0 was cast as a (struct path *), since that is the first argument to vfs_open.
-The struct support is the same as bcc and based on available kernel headers.
-This means that many, but not all, structs will be available, and you may need to manually define structs.</p>
-</div>
-<div className="paragraph">
-<p>If the kernel has BTF (BPF Type Format) data, all kernel structs are always available without defining them. For example:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>kprobe:vfs_open &#123;
-  printf("open path: %s\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>You can optionally specify a kernel module, either to include BTF data from that module, or to specify that the traced function should come from that module.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>kprobe:kvm:x86_emulate_insn
-&#123;
-  $ctxt = (struct x86_emulate_ctxt *) arg0;
-  printf("eip = 0x%lx\n", $ctxt-&gt;eip);
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>See <a href="#_btf_support">BTF Support</a> for more details.</p>
-</div>
-<div className="paragraph">
-<p><code>kprobe</code> s are not limited to function entry, they can be attached to any instruction in a function by specifying an offset from the start of the function.</p>
-</div>
-<div className="paragraph">
-<p><code>kretprobe</code> s trigger on the return from a kernel function.
-Return probes do not have access to the function (input) arguments, only to the return value (through <code>retval</code>).
-A common pattern to work around this is by storing the arguments in a map on function entry and retrieving in the return probe:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>kprobe:d_lookup
-&#123;
-	$name = (struct qstr *)arg1;
-	@fname[tid] = $name-&gt;name;
-&#125;
-
-kretprobe:d_lookup
-/@fname[tid]/
-&#123;
-	printf("%-8d %-6d %-16s M %s\n", elapsed / 1e6, pid, comm,
-	    str(@fname[tid]));
-&#125;</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-profile">profile</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>profile:us:count</code></p>
-</li>
-<li>
-<p><code>profile:ms:count</code></p>
-</li>
-<li>
-<p><code>profile:s:count</code></p>
-</li>
-<li>
-<p><code>profile:hz:rate</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short name</div>
-<ul>
-<li>
-<p><code>p</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>Profile probes fire on each CPU on the specified interval.
-These operate using perf_events (a Linux kernel facility, which is also used by the perf command).</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>profile:hz:99 &#123; @[tid] = count(); &#125;</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-rawtracepoint">rawtracepoint</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>rawtracepoint:event</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short name</div>
-<ul>
-<li>
-<p><code>rt</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>The hook point triggered by <code>tracepoint</code> and <code>rawtracepoint</code> is the same.
-<code>tracepoint</code> and <code>rawtracepoint</code> are nearly identical in terms of functionality.
-The only difference is in the program context.
-<code>rawtracepoint</code> offers raw arguments to the tracepoint while <code>tracepoint</code> applies further processing to the raw arguments.
-The additional processing is defined inside the kernel.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>rawtracepoint:block_rq_insert &#123;
-  printf("%llx %llx\n", arg0, arg1);
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Tracepoint arguments are available via the <code>argN</code> builtins.
-Each arg is a 64-bit integer.
-The available arguments can be found in the relative path of the kernel source code <code>include/trace/events/</code>. For example:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>include/trace/events/block.h
-DEFINE_EVENT(block_rq, block_rq_insert,
-	TP_PROTO(struct request_queue *q, struct request *rq),
-	TP_ARGS(q, rq)
-);</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-software">software</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>software:event:</code></p>
-</li>
-<li>
-<p><code>software:event:count</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short name</div>
-<ul>
-<li>
-<p><code>s</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>These are the pre-defined software events provided by the Linux kernel, as commonly traced via the perf utility.
-They are similar to tracepoints, but there is only about a dozen of these, and they are documented in the perf_event_open(2) man page.
-If the count is not provided, a default is used.</p>
-</div>
-<div className="paragraph">
-<p>The event names are:</p>
-</div>
-<div className="ulist">
-<ul>
-<li>
-<p><code>cpu-clock</code> or <code>cpu</code></p>
-</li>
-<li>
-<p><code>task-clock</code></p>
-</li>
-<li>
-<p><code>page-faults</code> or <code>faults</code></p>
-</li>
-<li>
-<p><code>context-switches</code> or <code>cs</code></p>
-</li>
-<li>
-<p><code>cpu-migrations</code></p>
-</li>
-<li>
-<p><code>minor-faults</code></p>
-</li>
-<li>
-<p><code>major-faults</code></p>
-</li>
-<li>
-<p><code>alignment-faults</code></p>
-</li>
-<li>
-<p><code>emulation-faults</code></p>
-</li>
-<li>
-<p><code>dummy</code></p>
-</li>
-<li>
-<p><code>bpf-output</code></p>
-</li>
-</ul>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>software:faults:100 &#123; @[comm] = count(); &#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>This roughly counts who is causing page faults, by sampling the process name for every one in one hundred faults.</p>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-tracepoint">tracepoint</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>tracepoint:subsys:event</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short name</div>
-<ul>
-<li>
-<p><code>t</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>Tracepoints are hooks into events in the kernel.
-Tracepoints are defined in the kernel source and compiled into the kernel binary which makes them a form of static tracing.
-Unlike <code>kprobe</code> s, new tracepoints cannot be added without modifying the kernel.</p>
-</div>
-<div className="paragraph">
-<p>The advantage of tracepoints is that they generally provide a more stable interface than <code>kprobe</code> s do, they do not depend on the existence of a kernel function.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>tracepoint:syscalls:sys_enter_openat &#123;
-  printf("%s %s\n", comm, str(args.filename));
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Tracepoint arguments are available in the <code>args</code> struct which can be inspected with verbose listing, see the <a href="#_listing_probes">Listing Probes</a> section for more details.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace -lv "tracepoint:*"
-
-tracepoint:xhci-hcd:xhci_setup_device_slot
-  u32 info
-  u32 info2
-  u32 tt_info
-  u32 state
-...</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Alternatively members for each tracepoint can be listed from their /format file in /sys.</p>
-</div>
-<div className="paragraph">
-<p>Apart from the filename member, we can also print flags, mode, and more.
-After the "common" members listed first, the members are specific to the tracepoint.</p>
-</div>
-<div className="ulist">
-<div className="title">Additional information</div>
-<ul>
-<li>
-<p><a href="https://www.kernel.org/doc/html/latest/trace/tracepoints.html" className="bare">https://www.kernel.org/doc/html/latest/trace/tracepoints.html</a></p>
-</li>
-</ul>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-uprobe">uprobe, uretprobe</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>uprobe:binary:func</code></p>
-</li>
-<li>
-<p><code>uprobe:binary:func+offset</code></p>
-</li>
-<li>
-<p><code>uprobe:binary:offset</code></p>
-</li>
-<li>
-<p><code>uretprobe:binary:func</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short names</div>
-<ul>
-<li>
-<p><code>u</code></p>
-</li>
-<li>
-<p><code>ur</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p><code>uprobe</code> s or user-space probes are the user-space equivalent of <code>kprobe</code> s.
-The same limitations that apply <a href="#probes-kprobe">kprobe and kretprobe</a> also apply to <code>uprobe</code> s and <code>uretprobe</code> s, namely: arguments are available via the <code>argN</code> and <code>sargN</code> builtins and can only be accessed with a uprobe (<code>sargN</code> is more common for older versions of golang).
-retval is the return value for the instrumented function and can only be accessed with a uretprobe.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>uprobe:/bin/bash:readline &#123; printf("arg0: %d\n", arg0); &#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>What does arg0 of readline() in /bin/bash contain?
-I don&#8217;t know, so I&#8217;ll need to look at the bash source code to find out what its arguments are.</p>
-</div>
-<div className="paragraph">
-<p>When tracing libraries, it is sufficient to specify the library name instead of
-a full path. The path will be then automatically resolved using <code>/etc/ld.so.cache</code>:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>uprobe:libc:malloc &#123; printf("Allocated %d bytes\n", arg0); &#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>If the traced binary has DWARF included, function arguments are available in the <code>args</code> struct which can be inspected with verbose listing, see the <a href="#_listing_probes">Listing Probes</a> section for more details.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace -lv 'uprobe:/bin/bash:rl_set_prompt'
-
-uprobe:/bin/bash:rl_set_prompt
-    const char* prompt</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>When tracing C&#43;&#43; programs, it&#8217;s possible to turn on automatic symbol demangling by using the <code>:cpp</code> prefix:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace:cpp:"bpftrace::BPFtrace::add_probe" &#123; ... &#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>It is important to note that for <code>uretprobe</code> s to work the kernel runs a special helper on user-space function entry which overrides the return address on the stack.
-This can cause issues with languages that have their own runtime like Golang:</p>
-</div>
-<div className="listingblock">
-<div className="title">example.go</div>
-<div className="content">
-<pre>func myprint(s string) &#123;
-  fmt.Printf("Input: %s\n", s)
-&#125;
-
-func main() &#123;
-  ss := []string&#123;"a", "b", "c"&#125;
-  for _, s := range ss &#123;
-    go myprint(s)
-  &#125;
-  time.Sleep(1*time.Second)
-&#125;</pre>
-</div>
-</div>
-<div className="listingblock">
-<div className="title">bpftrace</div>
-<div className="content">
-<pre># bpftrace -e 'uretprobe:./test:main.myprint &#123; @=count(); &#125;' -c ./test
-runtime: unexpected return pc for main.myprint called from 0x7fffffffe000
-stack: frame=&#123;sp:0xc00008cf60, fp:0xc00008cfd0&#125; stack=[0xc00008c000,0xc00008d000)
-fatal error: unknown caller pc</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-usdt">usdt</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>usdt:binary_path:probe_name</code></p>
-</li>
-<li>
-<p><code>usdt:binary_path:[probe_namespace]:probe_name</code></p>
-</li>
-<li>
-<p><code>usdt:library_path:probe_name</code></p>
-</li>
-<li>
-<p><code>usdt:library_path:[probe_namespace]:probe_name</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short name</div>
-<ul>
-<li>
-<p><code>U</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>Where probe_namespace is optional if probe_name is unique within the binary.</p>
-</div>
-<div className="paragraph">
-<p>You can target the entire host (or an entire process&#8217;s address space by using the <code>-p</code> arg) by using a single wildcard in place of the binary_path/library_path:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>usdt:*:loop &#123; printf("hi\n"); &#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Please note that if you use wildcards for the probe_name or probe_namespace and end up targeting multiple USDTs for the same probe you might get errors if you also utilize the USDT argument builtin (e.g. arg0) as they could be of different types.</p>
-</div>
-<div className="paragraph">
-<p>Arguments are available via the <code>argN</code> builtins:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>usdt:/root/tick:loop &#123; printf("%s: %d\n", str(arg0), arg1); &#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>bpftrace also supports USDT semaphores.
-If both your environment and bpftrace support uprobe refcounts, then USDT semaphores are automatically activated for all processes upon probe attachment (and --usdt-file-activation becomes a noop).
-You can check if your system supports uprobe refcounts by running:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace --info 2&gt;&amp;1 | grep "uprobe refcount"
-bcc bpf_attach_uprobe refcount: yes
-  uprobe refcount (depends on Build:bcc bpf_attach_uprobe refcount): yes</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>If your system does not support uprobe refcounts, you may activate semaphores by passing in -p $PID or --usdt-file-activation.
---usdt-file-activation looks through /proc to find processes that have your probe&#8217;s binary mapped with executable permissions into their address space and then tries to attach your probe.
-Note that file activation occurs only once (during attach time).
-In other words, if later during your tracing session a new process with your executable is spawned, your current tracing session will not activate the new process.
-Also note that --usdt-file-activation matches based on file path.
-This means that if bpftrace runs from the root host, things may not work as expected if there are processes execved from private mount namespaces or bind mounted directories.
-One workaround is to run bpftrace inside the appropriate namespaces (i.e. the container).</p>
-</div>
-</div>
-<div className="sect2">
-<h3 id="probes-watchpoint">watchpoint and asyncwatchpoint</h3>
-<div className="ulist">
-<div className="title">variants</div>
-<ul>
-<li>
-<p><code>watchpoint:absolute_address:length:mode</code></p>
-</li>
-<li>
-<p><code>watchpoint:function+argN:length:mode</code></p>
-</li>
-</ul>
-</div>
-<div className="ulist">
-<div className="title">short names</div>
-<ul>
-<li>
-<p><code>w</code></p>
-</li>
-<li>
-<p><code>aw</code></p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>This feature is experimental and may be subject to interface changes.
-Memory watchpoints are also architecture dependent.</p>
-</div>
-<div className="paragraph">
-<p>These are memory watchpoints provided by the kernel.
-Whenever a memory address is written to (<code>w</code>), read
-from (<code>r</code>), or executed (<code>x</code>), the kernel can generate an event.</p>
-</div>
-<div className="paragraph">
-<p>In the first form, an absolute address is monitored.
-If a pid (<code>-p</code>) or a command (<code>-c</code>) is provided, bpftrace takes the address as a userspace address and monitors the appropriate process.
-If not, bpftrace takes the address as a kernel space address.</p>
-</div>
-<div className="paragraph">
-<p>In the second form, the address present in <code>argN</code> when <code>function</code> is entered is
-monitored.
-A pid or command must be provided for this form.
-If synchronous (<code>watchpoint</code>), a <code>SIGSTOP</code> is sent to the tracee upon function entry.
-The tracee will be <code>SIGCONT</code>ed after the watchpoint is attached.
-This is to ensure events are not missed.
-If you want to avoid the <code>SIGSTOP</code> + <code>SIGCONT</code> use <code>asyncwatchpoint</code>.</p>
-</div>
-<div className="paragraph">
-<p>Note that on most architectures you may not monitor for execution while monitoring read or write.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace -e 'watchpoint:0x10000000:8:rw &#123; printf("hit!\n"); &#125;' -c ./testprogs/watchpoint</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>Print the call stack every time the <code>jiffies</code> variable is updated:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre>watchpoint:0x$(awk '$3 == "jiffies" &#123;print $1&#125;' /proc/kallsyms):8:w &#123;
-  @[kstack] = count();
-&#125;</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>"hit" and exit when the memory pointed to by <code>arg1</code> of <code>increment</code> is written to:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre className="highlight"><code className="language-C" data-lang="C"># cat wpfunc.c
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
-
-__attribute__((noinline))
-void increment(__attribute__((unused)) int _, int *i)
-&#123;
-  (*i)++;
-&#125;
-
-int main()
-&#123;
-  int *i = malloc(sizeof(int));
-  while (1)
-  &#123;
-    increment(0, i);
-    (*i)++;
-    usleep(1000);
-  &#125;
-&#125;</code></pre>
-</div>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace -e 'watchpoint:increment+arg1:4:w &#123; printf("hit!\n"); exit() &#125;' -c ./wpfunc</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div className="sect1">
-<h2 id="_config_variables">Config Variables</h2>
-<div className="sectionbody">
+<h3 id="_config_variables">Config Variables</h3>
 <div className="paragraph">
 <p>Some behavior can only be controlled through config variables, which are listed here.
 These can be set via the <a href="#_config_block">Config Block</a> directly in a script (before any probes) or via their environment variable equivalent, which is upper case and includes the <code>BPFTRACE_</code> prefix e.g. <code>stack_mode</code>'s environment variable would be <code>BPFTRACE_STACK_MODE</code>.</p>
 </div>
-<div className="sect2">
-<h3 id="_cache_user_symbols">cache_user_symbols</h3>
+<div className="sect3">
+<h4 id="_cache_user_symbols">cache_user_symbols</h4>
 <div className="paragraph">
 <p>Default: PER_PROGRAM if ASLR disabled or <code>-c</code> option given, PER_PID otherwise.</p>
 </div>
@@ -5108,8 +5097,8 @@ If there are many processes running, it will consume a lot of a memory.</p>
 </ul>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_cpp_demangle">cpp_demangle</h3>
+<div className="sect3">
+<h4 id="_cpp_demangle">cpp_demangle</h4>
 <div className="paragraph">
 <p>Default: 1</p>
 </div>
@@ -5120,8 +5109,8 @@ If there are many processes running, it will consume a lot of a memory.</p>
 <p>This feature can be turned off by setting the value of this environment variable to <code>0</code>.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_lazy_symbolication">lazy_symbolication</h3>
+<div className="sect3">
+<h4 id="_lazy_symbolication">lazy_symbolication</h4>
 <div className="paragraph">
 <p>Default: 0</p>
 </div>
@@ -5129,8 +5118,17 @@ If there are many processes running, it will consume a lot of a memory.</p>
 <p>For user space symbols, symbolicate lazily/on-demand (1) or symbolicate everything ahead of time (0).</p>
 </div>
 </div>
+</div>
 <div className="sect2">
-<h3 id="_log_size">log_size</h3>
+<h3 id="_license">license</h3>
+<div className="paragraph">
+<p>Default: "GPL"</p>
+</div>
+<div className="paragraph">
+<p>The license bpftrace will use to load BPF programs into the linux kernel.</p>
+</div>
+<div className="sect3">
+<h4 id="_log_size">log_size</h4>
 <div className="paragraph">
 <p>Default: 1000000</p>
 </div>
@@ -5138,10 +5136,10 @@ If there are many processes running, it will consume a lot of a memory.</p>
 <p>Log size in bytes.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_max_bpf_progs">max_bpf_progs</h3>
+<div className="sect3">
+<h4 id="_max_bpf_progs">max_bpf_progs</h4>
 <div className="paragraph">
-<p>Default: 512</p>
+<p>Default: 1024</p>
 </div>
 <div className="paragraph">
 <p>This is the maximum number of BPF programs (functions) that bpftrace can generate.
@@ -5149,8 +5147,8 @@ The main purpose of this limit is to prevent bpftrace from hanging since generat
 takes a lot of resources (and it should not happen often).</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_max_cat_bytes">max_cat_bytes</h3>
+<div className="sect3">
+<h4 id="_max_cat_bytes">max_cat_bytes</h4>
 <div className="paragraph">
 <p>Default: 10000</p>
 </div>
@@ -5158,8 +5156,8 @@ takes a lot of resources (and it should not happen often).</p>
 <p>Maximum bytes read by cat builtin.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_max_map_keys">max_map_keys</h3>
+<div className="sect3">
+<h4 id="_max_map_keys">max_map_keys</h4>
 <div className="paragraph">
 <p>Default: 4096</p>
 </div>
@@ -5169,10 +5167,10 @@ Increasing the value will consume more memory and increase startup times.
 There are some cases where you will want to, for example: sampling stack traces, recording timestamps for each page, etc.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_max_probes">max_probes</h3>
+<div className="sect3">
+<h4 id="_max_probes">max_probes</h4>
 <div className="paragraph">
-<p>Default: 512</p>
+<p>Default: 1024</p>
 </div>
 <div className="paragraph">
 <p>This is the maximum number of probes that bpftrace can attach to.
@@ -5180,10 +5178,10 @@ Increasing the value will consume more memory, increase startup times, and can i
 system.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_max_strlen">max_strlen</h3>
+<div className="sect3">
+<h4 id="_max_strlen">max_strlen</h4>
 <div className="paragraph">
-<p>Default: 64</p>
+<p>Default: 1024</p>
 </div>
 <div className="paragraph">
 <p>The maximum length (in bytes) for values created by <code>str()</code>, <code>buf()</code> and <code>path()</code>.</p>
@@ -5193,8 +5191,8 @@ system.</p>
 There is no artificial limit on what you can tune this to. But you may be wasting resources (memory and cpu) if you make this too high.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_max_type_res_iterations">max_type_res_iterations</h3>
+<div className="sect3">
+<h4 id="_max_type_res_iterations">max_type_res_iterations</h4>
 <div className="paragraph">
 <p>Default: 0</p>
 </div>
@@ -5203,8 +5201,8 @@ There is no artificial limit on what you can tune this to. But you may be wastin
 0 is unlimited.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_missing_probes">missing_probes</h3>
+<div className="sect3">
+<h4 id="_missing_probes">missing_probes</h4>
 <div className="paragraph">
 <p>Default: <code>warn</code></p>
 </div>
@@ -5220,8 +5218,8 @@ in the traced binary.</p>
 - <code>ignore</code> - silently ignore missing probes</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_on_stack_limit">on_stack_limit</h3>
+<div className="sect3">
+<h4 id="_on_stack_limit">on_stack_limit</h4>
 <div className="paragraph">
 <p>Default: 32</p>
 </div>
@@ -5232,8 +5230,8 @@ in the traced binary.</p>
 <p>This exists because the BPF stack is limited to 512 bytes and large objects make it more likely that we&#8217;ll run out of space. bpftrace can store objects that are larger than the <code>on_stack_limit</code> in pre-allocated memory to prevent this stack error. However, storing in pre-allocated memory may be less memory efficient. Lower this default number if you are still seeing a stack memory error or increase it if you&#8217;re worried about memory consumption.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_perf_rb_pages">perf_rb_pages</h3>
+<div className="sect3">
+<h4 id="_perf_rb_pages">perf_rb_pages</h4>
 <div className="paragraph">
 <p>Default: 64</p>
 </div>
@@ -5245,8 +5243,8 @@ It may be useful to bump the value higher so more events can be queued up.
 The tradeoff is that bpftrace will use more memory.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_stack_mode">stack_mode</h3>
+<div className="sect3">
+<h4 id="_stack_mode">stack_mode</h4>
 <div className="paragraph">
 <p>Default: bpftrace</p>
 </div>
@@ -5271,8 +5269,8 @@ Available modes/formats:</p>
 <p>This can be overwritten at the call site.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_str_trunc_trailer">str_trunc_trailer</h3>
+<div className="sect3">
+<h4 id="_str_trunc_trailer">str_trunc_trailer</h4>
 <div className="paragraph">
 <p>Default: <code>..</code></p>
 </div>
@@ -5281,8 +5279,8 @@ Available modes/formats:</p>
 Set to empty string to disable truncation trailers.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_print_maps_on_exit">print_maps_on_exit</h3>
+<div className="sect3">
+<h4 id="_print_maps_on_exit">print_maps_on_exit</h4>
 <div className="paragraph">
 <p>Default: 1</p>
 </div>
@@ -5290,42 +5288,14 @@ Set to empty string to disable truncation trailers.</p>
 <p>Controls whether maps are printed on exit. Set to <code>0</code> in order to change the default behavior and not automatically print maps at program exit.</p>
 </div>
 </div>
+</div>
 <div className="sect2">
-<h3 id="_symbol_source">symbol_source</h3>
-<div className="paragraph">
-<p>Default: <code>dwarf</code> if <code>bpftrace</code> is compiled with LLDB, <code>symbol_table</code> otherwise</p>
-</div>
-<div className="paragraph">
-<p>Choose how bpftrace will resolve all <code>uprobe</code> symbol locations.</p>
-</div>
-<div className="paragraph">
-<p>Available options:</p>
-</div>
-<div className="ulist">
-<ul>
-<li>
-<p><code>dwarf</code> - locate uprobes using DebugInfo, which yields more accurate stack traces (<code>ustack</code>). Fall back to the Symbol Table if it can&#8217;t locate the probe using DebugInfo.</p>
-</li>
-<li>
-<p><code>symbol_table</code> - don&#8217;t use DebugInfo and rely on the ELF Symbol Table instead.</p>
-</li>
-</ul>
-</div>
-<div className="paragraph">
-<p>If the DebugInfo was rewritten by a post-linkage optimisation tool (like BOLT or AutoFDO), it might yield an incorrect address for a probe location.
-This config can force using the Symbol Table, for when the DebugInfo returns invalid addresses.</p>
-</div>
-</div>
-</div>
-</div>
-<div className="sect1">
-<h2 id="_environment_variables">Environment Variables</h2>
-<div className="sectionbody">
+<h3 id="_environment_variables">Environment Variables</h3>
 <div className="paragraph">
 <p>These are not available as part of the standard set of <a href="#_config_variables">Config Variables</a> and can only be set as environment variables.</p>
 </div>
-<div className="sect2">
-<h3 id="_bpftrace_btf">BPFTRACE_BTF</h3>
+<div className="sect3">
+<h4 id="_bpftrace_btf">BPFTRACE_BTF</h4>
 <div className="paragraph">
 <p>Default: None</p>
 </div>
@@ -5334,8 +5304,8 @@ This config can force using the Symbol Table, for when the DebugInfo returns inv
 See src/btf.cpp for the details.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_bpftrace_debug_output">BPFTRACE_DEBUG_OUTPUT</h3>
+<div className="sect3">
+<h4 id="_bpftrace_debug_output">BPFTRACE_DEBUG_OUTPUT</h4>
 <div className="paragraph">
 <p>Default: 0</p>
 </div>
@@ -5344,8 +5314,8 @@ See src/btf.cpp for the details.</p>
 the value of this environment variable to <code>1</code>.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_bpftrace_kernel_build">BPFTRACE_KERNEL_BUILD</h3>
+<div className="sect3">
+<h4 id="_bpftrace_kernel_build">BPFTRACE_KERNEL_BUILD</h4>
 <div className="paragraph">
 <p>Default: <code>/lib/modules/$(uname -r)</code></p>
 </div>
@@ -5353,8 +5323,8 @@ the value of this environment variable to <code>1</code>.</p>
 <p>Only used with <code>BPFTRACE_KERNEL_SOURCE</code> if it is out-of-tree Linux kernel build.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_bpftrace_kernel_source">BPFTRACE_KERNEL_SOURCE</h3>
+<div className="sect3">
+<h4 id="_bpftrace_kernel_source">BPFTRACE_KERNEL_SOURCE</h4>
 <div className="paragraph">
 <p>Default: <code>/lib/modules/$(uname -r)</code></p>
 </div>
@@ -5362,8 +5332,8 @@ the value of this environment variable to <code>1</code>.</p>
 <p>bpftrace requires kernel headers for certain features, which are searched for in this directory.</p>
 </div>
 </div>
-<div className="sect2">
-<h3 id="_bpftrace_vmlinux">BPFTRACE_VMLINUX</h3>
+<div className="sect3">
+<h4 id="_bpftrace_vmlinux">BPFTRACE_VMLINUX</h4>
 <div className="paragraph">
 <p>Default: None</p>
 </div>
@@ -5373,181 +5343,13 @@ If this value is not given, bpftrace searches vmlinux from pre defined locations
 See src/attached_probe.cpp:find_vmlinux() for details.</p>
 </div>
 </div>
-</div>
-</div>
-<div className="sect1">
-<h2 id="_options_expanded">Options Expanded</h2>
-<div className="sectionbody">
-<div className="sect2">
-<h3 id="_debug_output">Debug Output</h3>
+<div className="sect3">
+<h4 id="_bpftrace_color">BPFTRACE_COLOR</h4>
 <div className="paragraph">
-<p>The <code>-d STAGE</code> option produces debug output. It prints the output of the
-bpftrace execution stage given by the <em>STAGE</em> argument. The option can be used
-multiple times (with different stage names) and the special value <code>all</code> prints
-the output of all the supported stages. The option also takes multiple stages
-in one invocation as comma separated values.</p>
+<p>Default: auto</p>
 </div>
 <div className="paragraph">
-<p>Note: This is primarily used for bpftrace developers.</p>
-</div>
-<div className="paragraph">
-<p>The supported options are:</p>
-</div>
-<table className="tableblock frame-all grid-all stretch">
-<colgroup>
-<col />
-<col />
-</colgroup>
-<tbody>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>ast</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Prints the Abstract Syntax Tree (AST) after every pass.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>codegen</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Prints the unoptimized LLVM IR as produced by <code>CodegenLLVM</code>.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>codegen-opt</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Prints the optimized LLVM IR, i.e. the code which will be compiled into BPF
-bytecode.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>dis</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Disassembles and prints out the generated bytecode that <code>libbpf</code> will see.
-Only available in debug builds.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>libbpf</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Captures and prints libbpf log for all libbpf operations that bpftrace uses.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>verifier</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Captures and prints the BPF verifier log.</p></td>
-</tr>
-<tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><code>all</code></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Prints the output of all of the above stages.</p></td>
-</tr>
-</tbody>
-</table>
-</div>
-<div className="sect2">
-<h3 id="_listing_probes">Listing Probes</h3>
-<div className="paragraph">
-<p>Probe listing is the method to discover which probes are supported by the current system.
-Listing supports the same syntax as normal attachment does and alternatively can be
-combined with <code>-e</code> or filename args to see all the probes that a program would attach to.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace -l 'kprobe:*'
-# bpftrace -l 't:syscalls:*openat*
-# bpftrace -l 'kprobe:tcp*,trace
-# bpftrace -l 'k:*socket*,tracepoint:syscalls:*tcp*'
-# bpftrace -l -e 'tracepoint:xdp:mem_* &#123; exit(); &#125;'
-# bpftrace -l my_script.bt
-# bpftrace -lv 'enum cpu_usage_stat'</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>The verbose flag (<code>-v</code>) can be specified to inspect arguments (<code>args</code>) for providers that support it:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace -l 'fexit:tcp_reset,tracepoint:syscalls:sys_enter_openat' -v
-fexit:tcp_reset
-    struct sock * sk
-    struct sk_buff * skb
-tracepoint:syscalls:sys_enter_openat
-    int __syscall_nr
-    int dfd
-    const char * filename
-    int flags
-    umode_t mode
-
-# bpftrace -l 'uprobe:/bin/bash:rl_set_prompt' -v    # works only if /bin/bash has DWARF
-uprobe:/bin/bash:rl_set_prompt
-    const char *prompt
-
-# bpftrace -lv 'struct css_task_iter'
-struct css_task_iter &#123;
-        struct cgroup_subsys *ss;
-        unsigned int flags;
-        struct list_head *cset_pos;
-        struct list_head *cset_head;
-        struct list_head *tcset_pos;
-        struct list_head *tcset_head;
-        struct list_head *task_pos;
-        struct list_head *cur_tasks_head;
-        struct css_set *cur_cset;
-        struct css_set *cur_dcset;
-        struct task_struct *cur_task;
-        struct list_head iters_node;
-&#125;;</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="_preprocessor_options">Preprocessor Options</h3>
-<div className="paragraph">
-<p>The <code>-I</code> option can be used to add directories to the list of directories that bpftrace uses to look for headers.
-Can be defined multiple times.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># cat program.bt
-#include &lt;foo.h&gt;
-
-BEGIN &#123; @ = FOO &#125;
-
-# bpftrace program.bt
-
-definitions.h:1:10: fatal error: 'foo.h' file not found
-
-# /tmp/include
-foo.h
-
-# bpftrace -I /tmp/include program.bt
-
-Attaching 1 probe...</pre>
-</div>
-</div>
-<div className="paragraph">
-<p>The <code>--include</code> option can be used to include headers by default.
-Can be defined multiple times.
-Headers are included in the order they are defined, and they are included before any other include in the program being executed.</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace --include linux/path.h --include linux/dcache.h \
-    -e 'kprobe:vfs_open &#123; printf("open path: %s\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name)); &#125;'
-
-Attaching 1 probe...
-open path: .com.google.Chrome.ASsbu2
-open path: .com.google.Chrome.gimc10
-open path: .com.google.Chrome.R1234s</pre>
-</div>
-</div>
-</div>
-<div className="sect2">
-<h3 id="_verbose_output">Verbose Output</h3>
-<div className="paragraph">
-<p>The <code>-v</code> option prints more information about the program as it is run:</p>
-</div>
-<div className="listingblock">
-<div className="content">
-<pre># bpftrace -v -e 'tracepoint:syscalls:sys_enter_nanosleep &#123; printf("%s is sleeping.\n", comm); &#125;'
-AST node count: 7
-Attaching 1 probe...
-
-load tracepoint:syscalls:sys_enter_nanosleep, with BTF, with func_infos: Success
-
-Program ID: 111
-Attaching tracepoint:syscalls:sys_enter_nanosleep
-iscsid is sleeping.
-iscsid is sleeping.
-[...]</pre>
+<p>Colorize the bpftrace log output message. Valid values are auto, always and never.</p>
 </div>
 </div>
 </div>
@@ -5561,18 +5363,27 @@ iscsid is sleeping.
 <div className="paragraph">
 <p>Kernel and user pointers live in different address spaces which, depending on the CPU architecture, might overlap.
 Trying to read a pointer that is in the wrong address space results in a runtime error.
-This error is hidden by default but can be enabled with the <code>-kk</code> flag:</p>
+This error is hidden by default but can be enabled with the <code>-k</code> flag:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>stdin:1:9-12: WARNING: Failed to probe_read_user: Bad address (-14)
-BEGIN &#123; @=*uptr(kaddr("do_poweroff")) &#125;
-        ~~~</pre>
+<pre>{`stdin:1:9-12: WARNING: Failed to probe_read_user: Bad address (-14)
+BEGIN { @=*uptr(kaddr("do_poweroff")) }
+        ~~~`}</pre>
 </div>
 </div>
 <div className="paragraph">
 <p>bpftrace tries to automatically set the correct address space for a pointer based on the probe type, but might fail in cases where it is unclear.
 The address space can be changed with the <a href="#functions-kptr">kptrs</a> and <a href="#functios-uptr">uptr</a> functions.</p>
+</div>
+</div>
+<div className="sect2">
+<h3 id="_bpf_license">BPF License</h3>
+<div className="paragraph">
+<p>By default bpftrace uses "GPL", which is actually "GPL version 2", as the license it uses to load BPF programs into the kernel.
+Some other examples of compatible licenses are: "GPL v2" and "Dual MPL/GPL".
+You can specify a different license using the "license" config variable.
+<a href="https://docs.kernel.org/bpf/bpf_licensing.html#using-bpf-programs-in-the-linux-kernel">#Read more about BPF programs and licensing</a>.</p>
 </div>
 </div>
 <div className="sect2">
@@ -5656,7 +5467,7 @@ However, the bcc version supports various arguments:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># ./xfsdist.py -h
+<pre>{`# ./xfsdist.py -h
 usage: xfsdist.py [-h] [-T] [-m] [-p PID] [interval] [count]
 
 Summarize XFS operation latency
@@ -5675,7 +5486,7 @@ examples:
     ./xfsdist            # show operation latency as a histogram
     ./xfsdist -p 181     # trace PID 181 only
     ./xfsdist 1 10       # print 1 second summaries, 10 times
-    ./xfsdist -m 5       # 5s summaries, milliseconds</pre>
+    ./xfsdist -m 5       # 5s summaries, milliseconds`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5771,14 +5582,14 @@ Operations that happen in the kernel are 'synchronous' ('sync') and those that a
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
     @=0;
-    unroll(10) &#123;
+    unroll(10) {
       print(@);
       @++;
-    &#125;
+    }
     exit()
-&#125;</pre>
+}`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5786,7 +5597,7 @@ Operations that happen in the kernel are 'synchronous' ('sync') and those that a
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>@: 10
+<pre>{`@: 10
 @: 10
 @: 10
 @: 10
@@ -5795,7 +5606,7 @@ Operations that happen in the kernel are 'synchronous' ('sync') and those that a
 @: 10
 @: 10
 @: 10
-@: 10</pre>
+@: 10`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5813,40 +5624,215 @@ If you don&#8217;t want this, you can either override the <code>print_maps_on_ex
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>config = &#123;
+<pre>{`config = {
   print_maps_on_exit=0
-&#125;
+}
 
-BEGIN &#123;
+BEGIN {
   @a = 1;
   @b[1] = 1;
-&#125;</code></pre>
+}`}</pre>
 </div>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre className="highlight"><code>BEGIN &#123;
+<pre>{`BEGIN {
   @a = 1;
   @b[1] = 1;
-&#125;
+}
 
-END &#123;
+END {
   clear(@a);
   clear(@b);
-&#125;</code></pre>
+}`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="_options_expanded">Options Expanded</h3>
+<div className="sect3">
+<h4 id="_debug_output">Debug Output</h4>
+<div className="paragraph">
+<p>The <code>-d STAGE</code> option produces debug output. It prints the output of the
+bpftrace execution stage given by the <em>STAGE</em> argument. The option can be used
+multiple times (with different stage names) and the special value <code>all</code> prints
+the output of all the supported stages. The option also takes multiple stages
+in one invocation as comma separated values.</p>
+</div>
+<div className="paragraph">
+<p>Note: This is primarily used for bpftrace developers.</p>
+</div>
+<div className="paragraph">
+<p>The supported options are:</p>
+</div>
+<table className="tableblock frame-all grid-all stretch">
+<colgroup>
+<col />
+<col />
+</colgroup>
+<tbody>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>ast</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Prints the Abstract Syntax Tree (AST) after every pass.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>codegen</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Prints the unoptimized LLVM IR as produced by <code>CodegenLLVM</code>.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>codegen-opt</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Prints the optimized LLVM IR, i.e. the code which will be compiled into BPF
+bytecode.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>dis</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Disassembles and prints out the generated bytecode that <code>libbpf</code> will see.
+Only available in debug builds.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>libbpf</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Captures and prints libbpf log for all libbpf operations that bpftrace uses.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>verifier</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Captures and prints the BPF verifier log.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>all</code></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Prints the output of all of the above stages.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div className="sect3">
+<h4 id="_listing_probes">Listing Probes</h4>
+<div className="paragraph">
+<p>Probe listing is the method to discover which probes are supported by the current system.
+Listing supports the same syntax as normal attachment does and alternatively can be
+combined with <code>-e</code> or filename args to see all the probes that a program would attach to.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -l 'kprobe:*'
+# bpftrace -l 't:syscalls:*openat*
+# bpftrace -l 'kprobe:tcp*,trace
+# bpftrace -l 'k:*socket*,tracepoint:syscalls:*tcp*'
+# bpftrace -l -e 'tracepoint:xdp:mem_* { exit(); }'
+# bpftrace -l my_script.bt
+# bpftrace -lv 'enum cpu_usage_stat'`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>The verbose flag (<code>-v</code>) can be specified to inspect arguments (<code>args</code>) for providers that support it:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -l 'fexit:tcp_reset,tracepoint:syscalls:sys_enter_openat' -v
+fexit:tcp_reset
+    struct sock * sk
+    struct sk_buff * skb
+tracepoint:syscalls:sys_enter_openat
+    int __syscall_nr
+    int dfd
+    const char * filename
+    int flags
+    umode_t mode
+
+# bpftrace -l 'uprobe:/bin/bash:rl_set_prompt' -v    # works only if /bin/bash has DWARF
+uprobe:/bin/bash:rl_set_prompt
+    const char *prompt
+
+# bpftrace -lv 'struct css_task_iter'
+struct css_task_iter {
+        struct cgroup_subsys *ss;
+        unsigned int flags;
+        struct list_head *cset_pos;
+        struct list_head *cset_head;
+        struct list_head *tcset_pos;
+        struct list_head *tcset_head;
+        struct list_head *task_pos;
+        struct list_head *cur_tasks_head;
+        struct css_set *cur_cset;
+        struct css_set *cur_dcset;
+        struct task_struct *cur_task;
+        struct list_head iters_node;
+};`}</pre>
+</div>
+</div>
+</div>
+<div className="sect3">
+<h4 id="_preprocessor_options">Preprocessor Options</h4>
+<div className="paragraph">
+<p>The <code>-I</code> option can be used to add directories to the list of directories that bpftrace uses to look for headers.
+Can be defined multiple times.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# cat program.bt
+#include &lt;foo.h&gt;
+
+BEGIN { @ = FOO }
+
+# bpftrace program.bt
+
+definitions.h:1:10: fatal error: 'foo.h' file not found
+
+# /tmp/include
+foo.h
+
+# bpftrace -I /tmp/include program.bt
+
+Attaching 1 probe...`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>The <code>--include</code> option can be used to include headers by default.
+Can be defined multiple times.
+Headers are included in the order they are defined, and they are included before any other include in the program being executed.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace --include linux/path.h --include linux/dcache.h \
+    -e 'kprobe:vfs_open { printf("open path: %s\\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name)); }'
+
+Attaching 1 probe...
+open path: .com.google.Chrome.ASsbu2
+open path: .com.google.Chrome.gimc10
+open path: .com.google.Chrome.R1234s`}</pre>
+</div>
+</div>
+</div>
+<div className="sect3">
+<h4 id="_verbose_output">Verbose Output</h4>
+<div className="paragraph">
+<p>The <code>-v</code> option prints more information about the program as it is run:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -v -e 'tracepoint:syscalls:sys_enter_nanosleep { printf("%s is sleeping.\\n", comm); }'
+AST node count: 7
+Attaching 1 probe...
+
+load tracepoint:syscalls:sys_enter_nanosleep, with BTF, with func_infos: Success
+
+Program ID: 111
+Attaching tracepoint:syscalls:sys_enter_nanosleep
+iscsid is sleeping.
+iscsid is sleeping.
+[...]`}</pre>
+</div>
 </div>
 </div>
 </div>
 <div className="sect2">
 <h3 id="_systemd_support">Systemd support</h3>
-<div className="dlist">
-<dl>
-<dt className="hdlist1">To run bpftrace in the background using systemd</dt>
-</dl>
+<div className="paragraph">
+<p>If bpftrace has been built with <code>-DENABLE_SYSTEMD=1</code>, one can run bpftrace in
+the background using systemd::</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre># systemd-run --unit=bpftrace --service-type=notify bpftrace -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;'</pre>
+<pre>{`# systemd-run --unit=bpftrace --service-type=notify bpftrace -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }'`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5861,12 +5847,12 @@ bpftrace before another service looks as follows::</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>[Unit]
+<pre>{`[Unit]
 Before=service-i-want-to-trace.service
 
 [Service]
 Type=notify
-ExecStart=bpftrace -e 'kprobe:do_nanosleep &#123; printf("%d sleeping\n", pid); &#125;'</pre>
+ExecStart=bpftrace -e 'kprobe:do_nanosleep { printf("%d sleeping\\n", pid); }'`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5887,16 +5873,140 @@ during comparisons, <code>printf()</code>, or other.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>BEGIN &#123;
+<pre>{`BEGIN {
   @c = count();
   @s = sum(3);
   @s = sum(9);
 
-  if (@s == 12) &#123;                             // Coerces @s
-    printf("%d %d\n", (int64)@c, (int64)@s);  // Coerces @c and @s and prints "1 12"
-  &#125;
-&#125;</pre>
+  if (@s == 12) {                             // Coerces @s
+    printf("%d %d\\n", (int64)@c, (int64)@s);  // Coerces @c and @s and prints "1 12"
+  }
+}`}</pre>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div className="sect1">
+<h2 id="_terminology">Terminology</h2>
+<div className="sectionbody">
+<table className="tableblock frame-all grid-all stretch">
+<colgroup>
+<col />
+<col />
+</colgroup>
+<tbody>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">BPF</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Berkeley Packet Filter: a kernel technology originally developed for optimizing the processing of packet filters (eg, tcpdump expressions).</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">BPF map</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">A BPF memory object, which is used by bpftrace to create many higher-level objects.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">BTF</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">BPF Type Format: the metadata format which encodes the debug info related to BPF program/map.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">dynamic tracing</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Also known as dynamic instrumentation, this is a technology that can instrument any software event, such as function calls and returns, by live modification of instruction text. Target software usually does not need special capabilities to support dynamic tracing, other than a symbol table that bpftrace can read. Since this instruments all software text, it is not considered a stable API, and the target functions may not be documented outside of their source code.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">eBPF</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Enhanced BPF: a kernel technology that extends BPF so that it can execute more generic programs on any events, such as the bpftrace programs listed below. It makes use of the BPF sandboxed virtual machine environment. Also note that eBPF is often just referred to as BPF.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">kprobes</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">A Linux kernel technology for providing dynamic tracing of kernel functions.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">probe</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">An instrumentation point in software or hardware, that generates events that can execute bpftrace programs.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">static tracing</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Hard-coded instrumentation points in code. Since these are fixed, they may be provided as part of a stable API, and documented.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">tracepoints</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">A Linux kernel technology for providing static tracing.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">uprobes</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">A Linux kernel technology for providing dynamic tracing of user-level functions.</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">USDT</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">User Statically-Defined Tracing: static tracing points for user-level software. Some applications support USDT.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div className="sect1">
+<h2 id="_supported_architectures">Supported architectures</h2>
+<div className="sectionbody">
+<div className="paragraph">
+<p>x86_64, arm64, s390x, arm32, loongarch64, mips64, ppc64, riscv64</p>
+</div>
+</div>
+</div>
+<div className="sect1">
+<h2 id="_program_files">Program Files</h2>
+<div className="sectionbody">
+<div className="paragraph">
+<p>Programs saved as files are often called scripts and can be executed by specifying their file name.
+It is convention to use the <code>.bt</code> file extension but it is not required.</p>
+</div>
+<div className="paragraph">
+<p>For example, listing the sleepers.bt file using <code>cat</code>:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# cat sleepers.bt
+
+tracepoint:syscalls:sys_enter_nanosleep {
+  printf("%s is sleeping.\\n", comm);
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>And then calling it:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace sleepers.bt
+
+Attaching 1 probe...
+iscsid is sleeping.
+iscsid is sleeping.`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>It can also be made executable to run stand-alone.
+Start by adding an interpreter line at the top (<code>#!</code>) with either the path to your installed bpftrace (/usr/local/bin is the default) or the path to <code>env</code> (usually just <code>/usr/bin/env</code>) followed by <code>bpftrace</code> (so it will find bpftrace in your <code>$PATH</code>):</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`#!/usr/local/bin/bpftrace
+
+tracepoint:syscalls:sys_enter_nanosleep {
+  printf("%s is sleeping.\\n", comm);
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Then make it executable:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# chmod 755 sleepers.bt
+# ./sleepers.bt
+
+Attaching 1 probe...
+iscsid is sleeping.
+iscsid is sleeping.`}</pre>
 </div>
 </div>
 </div>

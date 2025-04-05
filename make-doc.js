@@ -27,6 +27,10 @@ if (arguments.length < 3) {
 const filePath = arguments[2]
 const hasVersion = arguments.length == 4
 const versionArg = hasVersion ? arguments[3] : "pre-release"
+const PRE_START = "<pre>";
+const PRE_END = "</pre>";
+const PRE_CURLY_START = "<pre>{`"
+const PRE_CURLY_END = "`}</pre>"
 
 var body = []
 var toc = []
@@ -34,6 +38,11 @@ const destinationPath = path.join(
 	__dirname,
 	'/src/pages/docs/',
 	versionArg + '.js')
+	
+function replaceCodeSnippetWord(str) {
+	return str.replaceAll("\\n", "\\\\n")
+		  .replaceAll("\\0", "\\\\0");
+}
 
 async function processAdoc() {
 	const fileStream = createReadStream(filePath);
@@ -43,38 +52,64 @@ async function processAdoc() {
 		crlfDelay: Infinity,
 	});
 	
-	var startToc = false;
-	var startBody = false;
+	var insideToc = false;
+	var insideBody = false;
+	var insidePre = false;
 
-	for await (const line of rl) {
+	for await (var line of rl) {
 		if (line.includes("<ul class=\"sectlevel1\">")) {
-			startToc = true;
+			insideToc = true;
 			toc.push("<ul className=\"sectlevel1\">");
 			continue;
 		}
 		if (line.includes("<div id=\"content\">")) {
-			startBody = true;
+			insideBody = true;
 		}
-		if (startToc) {
+		if (insideToc) {
 			toc.push(line);
 			if (line.includes("</ul>")) {
-				startToc = false;
+				insideToc = false;
 			}
 			continue;
 		}
-		if (startBody) {
+		if (insideBody) {
 			if (line.includes("<div id=\"footer\">")) {
 				break;
 			}
+			
+			if (line.includes("<pre")) {
+				if (line.includes(PRE_END)) {
+					body.push(
+						replaceCodeSnippetWord(line)
+						.replace(PRE_START, PRE_CURLY_START)
+					        .replace(PRE_END, PRE_CURLY_END)
+					);
+					continue;
+				}
+				insidePre = true;
+				// For cases like <pre className="highlight"><code language="c++">
+				let idx = line.lastIndexOf('>');
+				line = PRE_CURLY_START + line.substring(idx + 1);
+			}
+			
 			if (line.startsWith("<col ") || line === "<col>") {
 				body.push("<col />")
 			} else {
-				body.push(
-					line.replace(/<br>/ig, "<br />")
-					.replace(/{/ig, "&#123;")
-					.replace(/}/ig, "&#125;")
-					.replace(/class="/ig, "className=\"")
-					);
+				if (insidePre) {
+					if (line.includes(PRE_END)) {
+						insidePre = false;
+						line = line.replace(PRE_END, PRE_CURLY_END)
+							   .replace("</code>", "");
+					}
+					body.push(replaceCodeSnippetWord(line));
+				} else {
+					body.push(
+						line.replace(/<br>/ig, "<br />")
+						.replace(/{/ig, "&#123;")
+						.replace(/}/ig, "&#125;")
+						.replace(/class="/ig, "className=\"")
+						);
+				}
 			}
 			
 		}
