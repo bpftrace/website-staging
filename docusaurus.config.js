@@ -158,7 +158,11 @@ const config = {
                 to: '/docs/pre-release'
               },
               {
-                label: '0.22 (latest)',
+                label: '0.23 (latest)',
+                to: '/docs/0.23'
+              },
+              {
+                label: '0.22',
                 to: '/docs/0.22'
               },
               {
