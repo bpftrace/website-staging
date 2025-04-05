@@ -41,7 +41,10 @@ const destinationPath = path.join(
 	
 function replaceCodeSnippetWord(str) {
 	return str.replaceAll("\\n", "\\\\n")
-		  .replaceAll("\\0", "\\\\0");
+		  .replaceAll("\\0", "\\\\0")
+		  .replaceAll("&gt;", ">")
+		  .replaceAll("&lt;", "<");
+		  
 }
 
 async function processAdoc() {

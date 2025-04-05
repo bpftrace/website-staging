@@ -456,7 +456,7 @@ actionblock2`}</pre>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`#include &lt;linux/socket.h&gt;
+<pre>{`#include <linux/socket.h>
 #define RED "\\033[31m"
 
 struct S {
@@ -542,7 +542,7 @@ They can only be read into a variable from a pointer.</p>
 
 kprobe:dummy {
   $s = (struct MyStruct *) arg0;
-  print($s-&gt;y[0]);
+  print($s->y[0]);
 }`}</pre>
 </div>
 </div>
@@ -587,7 +587,7 @@ interval:s:1 { // can also be used to comment inline
 <div className="listingblock">
 <div className="content">
 <pre>{`$a == 1 ? print("true") : print("false");
-$b = $a &gt; 0 ? $a : -1;`}</pre>
+$b = $a > 0 ? $a : -1;`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -690,7 +690,7 @@ the type upon declaration.</p>
 </table>
 <div className="listingblock">
 <div className="content">
-<pre>{`BEGIN { $x = 1&lt;&lt;16; printf("%d %d\\n", (uint16)$x, $x); }
+<pre>{`BEGIN { $x = 1<<16; printf("%d %d\\n", (uint16)$x, $x); }
 
 /*
  * Output:
@@ -707,7 +707,7 @@ The probe still fires, but it will skip the action unless the filter is true.</p
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`kprobe:vfs_read /arg2 &lt; 16/ {
+<pre>{`kprobe:vfs_read /arg2 < 16/ {
   printf("small read: %d byte buffer\\n", arg2);
 }
 
@@ -885,9 +885,9 @@ for ($kv : @map) {
 <div className="content">
 <pre>{`interval:s:1 {
   $i = 0;
-  while ($i &lt;= 100) {
+  while ($i <= 100) {
     printf("%d ", $i);
-    if ($i &gt; 5) {
+    if ($i > 5) {
       break;
     }
     $i++
@@ -1208,7 +1208,7 @@ kprobe:dummy {
   $ptr = (struct MyStruct *) arg0;
   $st = *$ptr;
   print($st.a);
-  print($ptr-&gt;a);
+  print($ptr->a);
 }`}</pre>
 </div>
 </div>
@@ -1306,7 +1306,7 @@ Array casting allows seamless comparison of such representations:</p>
 <div className="listingblock">
 <div className="content">
 <pre>{`fentry:tcp_connect {
-    if (args-&gt;sk-&gt;__sk_common.skc_daddr == (uint32)pton("127.0.0.1"))
+    if (args->sk->__sk_common.skc_daddr == (uint32)pton("127.0.0.1"))
         ...
 }`}</pre>
 </div>
@@ -1699,11 +1699,11 @@ ello`}</pre>
 
 BEGIN
 {
-	printf("Tracing block I/O sizes &gt; %d bytes\\n", $1);
+	printf("Tracing block I/O sizes > %d bytes\\n", $1);
 }
 
 tracepoint:block:block_rq_issue
-/args.bytes &gt; $1/
+/args.bytes > $1/
 {
 	@ = hist(args.bytes);
 }`}</pre>
@@ -1716,7 +1716,7 @@ tracepoint:block:block_rq_issue
 <div className="content">
 <pre>{`# ./bsize.bt 65536
 
-Tracing block I/O sizes &gt; 65536 bytes
+Tracing block I/O sizes > 65536 bytes
 ^C
 
 @:
@@ -1733,7 +1733,7 @@ Tracing block I/O sizes &gt; 65536 bytes
 <div className="content">
 <pre>{`# ./bsize.bt
 Attaching 2 probes...
-Tracing block I/O sizes &gt; 0 bytes
+Tracing block I/O sizes > 0 bytes
 ^C
 
 @:
@@ -2487,7 +2487,7 @@ Note that subfields are not yet supported.</p>
 <div className="content">
 <pre>{`kprobe:__x64_sys_getuid
 /comm == "id"/ {
-  override(2&lt;&lt;21);
+  override(2<<21);
 }`}</pre>
 </div>
 </div>
@@ -2572,7 +2572,7 @@ be rejected.</p>
 <pre>{`interval:s:1 {
   $runqueues = (struct rq *)percpu_kaddr("runqueues", 0);
   if ($runqueues != 0) {         // The check is mandatory here
-    print($runqueues-&gt;nr_running);
+    print($runqueues->nr_running);
   }
 }`}</pre>
 </div>
@@ -2949,12 +2949,12 @@ The <code>data</code> section in the struct <code>skb</code> may contain etherne
 <div className="content">
 <pre>{`# cat dump.bt
 fentry:napi_gro_receive {
-  $ret = skboutput("receive.pcap", args.skb, args.skb-&gt;len, 0);
+  $ret = skboutput("receive.pcap", args.skb, args.skb->len, 0);
 }
 
 fentry:dev_queue_xmit {
   // setting offset to 14, to exclude ethernet header
-  $ret = skboutput("output.pcap", args.skb, args.skb-&gt;len, 14);
+  $ret = skboutput("output.pcap", args.skb, args.skb->len, 14);
   printf("skboutput returns %d\\n", $ret);
 }
 
@@ -2965,9 +2965,9 @@ fentry:dev_queue_xmit {
 # tcpdump -n -r ./receive.pcap  | head -3
 reading from file ./receive.pcap, link-type RAW (Raw IP)
 dropped privs to tcpdump
-10:23:44.674087 IP 22.128.74.231.63175 &gt; 192.168.0.23.22: Flags [.], ack 3513221061, win 14009, options [nop,nop,TS val 721277750 ecr 3115333619], length 0
-10:23:45.823194 IP 100.101.2.146.53 &gt; 192.168.0.23.46619: 17273 0/1/0 (130)
-10:23:45.823229 IP 100.101.2.146.53 &gt; 192.168.0.23.46158: 45799 1/0/0 A 100.100.45.106 (60)`}</pre>
+10:23:44.674087 IP 22.128.74.231.63175 > 192.168.0.23.22: Flags [.], ack 3513221061, win 14009, options [nop,nop,TS val 721277750 ecr 3115333619], length 0
+10:23:45.823194 IP 100.101.2.146.53 > 192.168.0.23.46619: 17273 0/1/0 (130)
+10:23:45.823229 IP 100.101.2.146.53 > 192.168.0.23.46158: 45799 1/0/0 A 100.100.45.106 (60)`}</pre>
 </div>
 </div>
 </div>
@@ -3027,7 +3027,7 @@ This is done asynchronously in userspace when the strerror value is printed, hen
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`#include &lt;errno.h&gt;
+<pre>{`#include <errno.h>
 BEGIN {
   print(strerror(EPERM));
 }`}</pre>
@@ -3614,7 +3614,7 @@ interval:s:10 {
   // async read
   print(@);
   // sync read
-  if (@ &gt; 10) {
+  if (@ > 10) {
     print(("hello"));
   }
   clear(@);
@@ -3942,7 +3942,7 @@ interval:s:10 {
   // async read
   print(@);
   // sync read
-  if (@ &gt; 10) {
+  if (@ > 10) {
     print(("hello"));
   }
   clear(@);
@@ -4316,7 +4316,7 @@ ctx pointer. Users can display the set of available fields for each iterator via
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`iter:task { printf("%s:%d\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); }
+<pre>{`iter:task { printf("%s:%d\\n", ctx->task->comm, ctx->task->pid); }
 
 /*
  * Sample output:
@@ -4332,7 +4332,7 @@ ctx pointer. Users can display the set of available fields for each iterator via
 <div className="listingblock">
 <div className="content">
 <pre>{`iter:task_file {
-  printf("%s:%d %d:%s\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, ctx-&gt;fd, path(ctx-&gt;file-&gt;f_path));
+  printf("%s:%d %d:%s\\n", ctx->task->comm, ctx->task->pid, ctx->fd, path(ctx->file->f_path));
 }
 
 /*
@@ -4350,7 +4350,7 @@ ctx pointer. Users can display the set of available fields for each iterator via
 <div className="listingblock">
 <div className="content">
 <pre>{`iter:task_vma {
-  printf("%s %d %lx-%lx\\n", comm, pid, ctx-&gt;vma-&gt;vm_start, ctx-&gt;vma-&gt;vm_end);
+  printf("%s %d %lx-%lx\\n", comm, pid, ctx->vma->vm_start, ctx->vma->vm_end);
 }
 
 /*
@@ -4368,7 +4368,7 @@ It can be specified as an absolute or relative path to /sys/fs/bpf.</p>
 <div className="listingblock">
 <div className="title">relative pin</div>
 <div className="content">
-<pre>{`iter:task:list { printf("%s:%d\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid); }
+<pre>{`iter:task:list { printf("%s:%d\\n", ctx->task->comm, ctx->task->pid); }
 
 /*
  * Sample output:
@@ -4380,7 +4380,7 @@ It can be specified as an absolute or relative path to /sys/fs/bpf.</p>
 <div className="title">absolute pin</div>
 <div className="content">
 <pre>{`iter:task_file:/sys/fs/bpf/files {
-  printf("%s:%d %s\\n", ctx-&gt;task-&gt;comm, ctx-&gt;task-&gt;pid, path(ctx-&gt;file-&gt;f_path));
+  printf("%s:%d %s\\n", ctx->task->comm, ctx->task->pid, path(ctx->file->f_path));
 }
 
 /*
@@ -4450,7 +4450,7 @@ fentry:tcp_reset
 <div className="listingblock">
 <div className="content">
 <pre>{`fentry:x86_pmu_stop {
-  printf("pmu %s stop\\n", str(args.event-&gt;pmu-&gt;name));
+  printf("pmu %s stop\\n", str(args.event->pmu->name));
 }`}</pre>
 </div>
 </div>
@@ -4460,7 +4460,7 @@ fentry:tcp_reset
 <div className="listingblock">
 <div className="content">
 <pre>{`fexit:fget {
-  printf("fd %d name %s\\n", args.fd, str(retval-&gt;f_path.dentry-&gt;d_name.name));
+  printf("fd %d name %s\\n", args.fd, str(retval->f_path.dentry->d_name.name));
 }
 
 /*
@@ -4529,12 +4529,12 @@ It is up to the user to perform <a href="#_type_conversion">Type conversion</a> 
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`#include &lt;linux/path.h&gt;
-#include &lt;linux/dcache.h&gt;
+<pre>{`#include <linux/path.h>
+#include <linux/dcache.h>
 
 kprobe:vfs_open
 {
-	printf("open path: %s\\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
+	printf("open path: %s\\n", str(((struct path *)arg0)->dentry->d_name.name));
 }`}</pre>
 </div>
 </div>
@@ -4549,7 +4549,7 @@ This means that many, but not all, structs will be available, and you may need t
 <div className="listingblock">
 <div className="content">
 <pre>{`kprobe:vfs_open {
-  printf("open path: %s\\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name));
+  printf("open path: %s\\n", str(((struct path *)arg0)->dentry->d_name.name));
 }`}</pre>
 </div>
 </div>
@@ -4561,7 +4561,7 @@ This means that many, but not all, structs will be available, and you may need t
 <pre>{`kprobe:kvm:x86_emulate_insn
 {
   $ctxt = (struct x86_emulate_ctxt *) arg0;
-  printf("eip = 0x%lx\\n", $ctxt-&gt;eip);
+  printf("eip = 0x%lx\\n", $ctxt->eip);
 }`}</pre>
 </div>
 </div>
@@ -4581,7 +4581,7 @@ A common pattern to work around this is by storing the arguments in a map on fun
 <pre>{`kprobe:d_lookup
 {
 	$name = (struct qstr *)arg1;
-	@fname[tid] = $name-&gt;name;
+	@fname[tid] = $name->name;
 }
 
 kretprobe:d_lookup
@@ -4974,7 +4974,7 @@ You can check if your system supports uprobe refcounts by running:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`# bpftrace --info 2&gt;&amp;1 | grep "uprobe refcount"
+<pre>{`# bpftrace --info 2>&amp;1 | grep "uprobe refcount"
 bcc bpf_attach_uprobe refcount: yes
   uprobe refcount (depends on Build:bcc bpf_attach_uprobe refcount): yes`}</pre>
 </div>
@@ -5060,9 +5060,9 @@ If you want to avoid the <code>SIGSTOP</code> + <code>SIGCONT</code> use <code>a
 <div className="listingblock">
 <div className="content">
 <pre>{`# cat wpfunc.c
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;unistd.h&gt;
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
 __attribute__((noinline))
 void increment(__attribute__((unused)) int _, int *i)
@@ -5507,7 +5507,7 @@ Can be defined multiple times.</p>
 <div className="listingblock">
 <div className="content">
 <pre>{`# cat program.bt
-#include &lt;foo.h&gt;
+#include <foo.h>
 
 BEGIN { @ = FOO }
 
@@ -5531,7 +5531,7 @@ Headers are included in the order they are defined, and they are included before
 <div className="listingblock">
 <div className="content">
 <pre>{`# bpftrace --include linux/path.h --include linux/dcache.h \
-    -e 'kprobe:vfs_open { printf("open path: %s\\n", str(((struct path *)arg0)-&gt;dentry-&gt;d_name.name)); }'
+    -e 'kprobe:vfs_open { printf("open path: %s\\n", str(((struct path *)arg0)->dentry->d_name.name)); }'
 
 Attaching 1 probe...
 open path: .com.google.Chrome.ASsbu2
