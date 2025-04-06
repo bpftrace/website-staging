@@ -28,6 +28,7 @@ function VideosBody() {
         	<div className="col col--4">
 			<ul className="video-list">
 				<li><a onClick={() => { setUrl("https://www.youtube.com/watch?v=18xPsqYjUhE"); }}>Bpftrace OOM profiler - 2025</a></li>
+				<li><a onClick={() => { setUrl("https://www.youtube.com/watch?v=esfcBJAc8qI&t=50s"); }}>Evolving a DSL: How bpftrace makes language design decisions - 2025</a></li>
 				<li><a onClick={() => { setUrl("https://www.youtube.com/watch?v=19RZ7b6AZJ0"); }}>Making bpftrace more powerful - 2023</a></li>
 				<li><a onClick={() => { setUrl("https://www.youtube.com/watch?v=wMtArNjRYXU"); }}>Bpftrace Recipes: 5 Real Problems Solved - 2023</a></li>
 				<li><a onClick={() => { setUrl("https://www.youtube.com/watch?v=gSxntAO2Iys"); }}>Linux tracing made simpler with bpftrace - 2022</a></li>
