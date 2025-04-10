@@ -1297,6 +1297,9 @@ However, it&#8217;s best practice to declare maps up front as using the default 
 <p><strong>Warning</strong> this feature is experimental and may be subject to changes.
 It also requires the 'unstable_map_decl' config being set to 1.</p>
 </div>
+<div className="paragraph">
+<p><strong>Warning</strong> The "lru" variants of hash and percpuhash evict the approximately least recently used elements. In other words, users should not rely on the accuracy on the part of the eviction algorithm. Adding a single new element may cause one or multiple elements to be deleted if the map is at capacity. <a href="https://docs.ebpf.io/linux/map-type/BPF_MAP_TYPE_LRU_HASH/">Read more about LRU internals</a>.</p>
+</div>
 </div>
 <div className="sect3">
 <h4 id="_maps_without_explicit_keys">Maps without Explicit Keys</h4>
