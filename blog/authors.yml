@@ -29,9 +29,15 @@ ajor:
   image_url: https://github.com/ajor.png
   page: true
 
-viktormalik::
+viktormalik:
   name: Viktor Malik
   title: Software Engineer
   url: https://github.com/viktormalik
   image_url: https://github.com/viktormalik.png
+  page: true
+  
+serxa:
+  name: Sergei Trifonov
+  title: Principal Software Engineer
+  url: https://github.com/serxa
   page: true
