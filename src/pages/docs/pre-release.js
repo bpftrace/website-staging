@@ -342,7 +342,7 @@ actionblock2`}</pre>
 <dl>
 <dt className="hdlist1">Probes</dt>
 <dd>
-<p>A probe specifies the event and event type to attach too. <a href="#_probes">Probes list</a>.</p>
+<p>A probe specifies the event and event type to attach to. <a href="#_probes">Probes list</a>.</p>
 </dd>
 <dt className="hdlist1">Predicate</dt>
 <dd>
