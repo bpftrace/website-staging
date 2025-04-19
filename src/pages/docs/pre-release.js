@@ -5195,16 +5195,6 @@ There is no artificial limit on what you can tune this to. But you may be wastin
 </div>
 </div>
 <div className="sect3">
-<h4 id="_max_type_res_iterations">max_type_res_iterations</h4>
-<div className="paragraph">
-<p>Default: 0</p>
-</div>
-<div className="paragraph">
-<p>Maximum number of levels of nested field accesses for tracepoint args.
-0 is unlimited.</p>
-</div>
-</div>
-<div className="sect3">
 <h4 id="_missing_probes">missing_probes</h4>
 <div className="paragraph">
 <p>Default: <code>warn</code></p>
