@@ -2694,6 +2694,13 @@ For string arguments in an action block use the <code>str()</code> call to retri
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_uid_gid</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">User ID of the current thread, as seen from the init namespace</p></td>
 </tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">username</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">string</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">get_current_uid_gid</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">User name of the current thread, as seen from the init namespace</p></td>
+</tr>
 </tbody>
 </table>
 <div className="sect2">
