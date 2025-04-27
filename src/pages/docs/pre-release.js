@@ -2852,7 +2852,7 @@ Tracing block I/O sizes > 0 bytes
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-join"><code>join</code></a></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Print the array</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Combine an array of char* into one string and print it</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
@@ -3225,7 +3225,7 @@ An optional exit code can be provided.</p>
 <p><strong>async</strong></p>
 </div>
 <div className="paragraph">
-<p><code>join</code> joins all the string array <code>arr</code> with <code>sep</code> as separator into one string.
+<p><code>join</code> joins a char * <code>arr</code> with <code>sep</code> as separator into one string.
 This string will be printed to stdout directly, it cannot be used as string value.</p>
 </div>
 <div className="paragraph">
