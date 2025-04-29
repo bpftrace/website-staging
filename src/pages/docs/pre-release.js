@@ -242,10 +242,11 @@ For more details see the <a href="#_listing_probes">Listing Probes</a> section.<
 <h3 id="_no_feature_featurefeature"><strong>--no-feature</strong> <em>feature,feature,&#8230;&#8203;</em></h3>
 <div className="dlist">
 <dl>
-<dt className="hdlist1">Disable detected features, valid values are</dt>
+<dt className="hdlist1">Disable use of detected features, valid values are</dt>
 <dd>
 <p><strong>uprobe_multi</strong> to disable uprobe_multi link<br />
-<strong>kprobe_multi</strong> to disable kprobe_multi link</p>
+<strong>kprobe_multi</strong> to disable kprobe_multi link<br />
+<strong>kprobe_session</strong> to disable automatic collapse of kprobe/kretprobe into kprobe session</p>
 </dd>
 </dl>
 </div>
