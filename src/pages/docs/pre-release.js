@@ -1296,7 +1296,7 @@ However, it&#8217;s best practice to declare maps up front as using the default 
 </div>
 <div className="paragraph">
 <p><strong>Warning</strong> this feature is experimental and may be subject to changes.
-It also requires the 'unstable_map_decl' config being set to 1.</p>
+It also requires the 'unstable_map_decl' config being set to 1. Stabilization is tracked in <a href="https://github.com/bpftrace/bpftrace/issues/4077">#4077</a>.</p>
 </div>
 <div className="paragraph">
 <p><strong>Warning</strong> The "lru" variants of hash and percpuhash evict the approximately least recently used elements. In other words, users should not rely on the accuracy on the part of the eviction algorithm. Adding a single new element may cause one or multiple elements to be deleted if the map is at capacity. <a href="https://docs.ebpf.io/linux/map-type/BPF_MAP_TYPE_LRU_HASH/">Read more about LRU internals</a>.</p>
@@ -1353,6 +1353,99 @@ This applies to both the key(s) and the value type.</p>
 <pre>{`@[pid, comm]++
 @[(pid, comm)]++`}</pre>
 </div>
+</div>
+</div>
+<div className="sect3">
+<h4 id="_macros">Macros</h4>
+<div className="paragraph">
+<p>bpftrace macros (as opposed to C macros) provide a way for you to structure your script.
+They can be useful when you want to factor out code into smaller, more understandable parts.
+Or if you want to share code between probes.</p>
+</div>
+<div className="paragraph">
+<p>At a high level, macros can be thought of as semantic aware text replacement.
+They accept (optional) variable, map, and some expression arguments.
+The body of the macro may only access maps and external variables passed in through the arguments, which is why these are often referred to as "hygienic macros".
+The body of the macro is exactly one block expression.</p>
+</div>
+<div className="paragraph">
+<p>For example, these are valid usages of macros:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`config = {
+  unstable_macro=1;
+}
+
+macro one() {
+  1
+}
+
+macro add_one($other_name) {
+  $other_name + 1
+}
+
+macro add_one_to_each($a, @b) {
+  $a += 1;
+  @b += 1;
+  $a + @b
+}
+
+macro side_effect($x) {
+  print($x)
+}
+
+macro add_two($x) {
+  add_one($x) + 1
+}
+
+BEGIN {
+  print(one());                   // prints 1
+
+  $a = 42;
+  print(add_one($a));             // prints 43
+
+  @b = 3;
+  print(add_one_to_each($a, @b)); // prints 47
+
+  side_effect(5)                  // prints 5
+
+  print(add_two(1));              // prints 3
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Some examples of invalid macro usage:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`config = {
+  unstable_macro=1;
+}
+
+macro not_expression() {
+  $var = 1;                    // BAD: Not an expression
+}
+
+macro unhygienic_access() {
+  @x++                         // BAD: @x not passed in
+}
+
+macro wrong_parameter_type($x) {
+  $x++
+}
+
+BEGIN {
+  @x = 1;
+  unhygienic_access();
+
+  wrong_parameter_type(@x);    // BAD: macro expects a scratch variable
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p><strong>Warning</strong> this feature is experimental and may be subject to changes.
+It also requires the 'unstable_macro' config being set to 1. Stabilization is tracked in <a href="https://github.com/bpftrace/bpftrace/issues/4079">#4079</a>.</p>
 </div>
 </div>
 <div className="sect3">
