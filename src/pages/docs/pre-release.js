@@ -5254,7 +5254,7 @@ takes a lot of resources (and it should not happen often).</p>
 <div className="sect3">
 <h4 id="_max_cat_bytes">max_cat_bytes</h4>
 <div className="paragraph">
-<p>Default: 10000</p>
+<p>Default: 10240</p>
 </div>
 <div className="paragraph">
 <p>Maximum bytes read by cat builtin.</p>
