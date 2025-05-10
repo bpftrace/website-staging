@@ -1264,17 +1264,17 @@ Map names always start with a <code>@</code>, e.g. <code>@mymap</code>.</p>
 <p>The data type of a variable is automatically determined during first assignment and cannot be changed afterwards.</p>
 </div>
 <div className="sect3">
-<h4 id="_maps_declarations">Maps Declarations</h4>
+<h4 id="_map_declarations">Map Declarations</h4>
+<div className="paragraph">
+<p><strong>Warning</strong> this feature is experimental and may be subject to changes.
+Stabilization is tracked in <a href="https://github.com/bpftrace/bpftrace/issues/4077">#4077</a>.</p>
+</div>
 <div className="paragraph">
 <p>Maps can also be declared in the global scope, before probes and after the config e.g.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`config = {
-    unstable_map_decl=1;
-}
-
-let @a = hash(100);
+<pre>{`let @a = hash(100);
 let @b = percpulruhash(20);
 
 BEGIN { ... }`}</pre>
@@ -1293,10 +1293,6 @@ Currently these are available in bpftrace:
 <p>Additionally, map declarations must supply a single argument: <strong>max entries</strong> e.g. <code>let @a = lruhash(100);</code>
 All maps that are not declared in the global scope utilize the default set in the config variable "max_map_keys".
 However, it&#8217;s best practice to declare maps up front as using the default can lead to lost map update events (if the map is full) or over allocation of memory if the map is intended to only store a few entries.</p>
-</div>
-<div className="paragraph">
-<p><strong>Warning</strong> this feature is experimental and may be subject to changes.
-It also requires the 'unstable_map_decl' config being set to 1. Stabilization is tracked in <a href="https://github.com/bpftrace/bpftrace/issues/4077">#4077</a>.</p>
 </div>
 <div className="paragraph">
 <p><strong>Warning</strong> The "lru" variants of hash and percpuhash evict the approximately least recently used elements. In other words, users should not rely on the accuracy on the part of the eviction algorithm. Adding a single new element may cause one or multiple elements to be deleted if the map is at capacity. <a href="https://docs.ebpf.io/linux/map-type/BPF_MAP_TYPE_LRU_HASH/">Read more about LRU internals</a>.</p>
@@ -1358,6 +1354,10 @@ This applies to both the key(s) and the value type.</p>
 <div className="sect3">
 <h4 id="_macros">Macros</h4>
 <div className="paragraph">
+<p><strong>Warning</strong> this feature is experimental and may be subject to changes.
+Stabilization is tracked in <a href="https://github.com/bpftrace/bpftrace/issues/4079">#4079</a>.</p>
+</div>
+<div className="paragraph">
 <p>bpftrace macros (as opposed to C macros) provide a way for you to structure your script.
 They can be useful when you want to factor out code into smaller, more understandable parts.
 Or if you want to share code between probes.</p>
@@ -1373,11 +1373,7 @@ The body of the macro is exactly one block expression.</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`config = {
-  unstable_macro=1;
-}
-
-macro one() {
+<pre>{`macro one() {
   1
 }
 
@@ -1419,11 +1415,7 @@ BEGIN {
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`config = {
-  unstable_macro=1;
-}
-
-macro not_expression() {
+<pre>{`macro not_expression() {
   $var = 1;                    // BAD: Not an expression
 }
 
@@ -1442,10 +1434,6 @@ BEGIN {
   wrong_parameter_type(@x);    // BAD: macro expects a scratch variable
 }`}</pre>
 </div>
-</div>
-<div className="paragraph">
-<p><strong>Warning</strong> this feature is experimental and may be subject to changes.
-It also requires the 'unstable_macro' config being set to 1. Stabilization is tracked in <a href="https://github.com/bpftrace/bpftrace/issues/4079">#4079</a>.</p>
 </div>
 </div>
 <div className="sect3">
@@ -5389,6 +5377,36 @@ Set to empty string to disable truncation trailers.</p>
 <p>Controls whether maps are printed on exit. Set to <code>0</code> in order to change the default behavior and not automatically print maps at program exit.</p>
 </div>
 </div>
+<div className="sect3">
+<h4 id="_unstable_macro">unstable_macro</h4>
+<div className="paragraph">
+<p>Default: warn</p>
+</div>
+<div className="paragraph">
+<p>Feature flag for bpftrace macros.</p>
+</div>
+<div className="paragraph">
+<p>The possible options are:
+- <code>error</code> - fail if this feature is used
+- <code>warn</code> - enable feature but print a warning
+- <code>enable</code> - enable feature</p>
+</div>
+</div>
+<div className="sect3">
+<h4 id="_unstable_map_decl">unstable_map_decl</h4>
+<div className="paragraph">
+<p>Default: warn</p>
+</div>
+<div className="paragraph">
+<p>Feature flag for map declarations.</p>
+</div>
+<div className="paragraph">
+<p>The possible options are:
+- <code>error</code> - fail if this feature is used
+- <code>warn</code> - enable feature but print a warning
+- <code>enable</code> - enable feature</p>
+</div>
+</div>
 </div>
 <div className="sect2">
 <h3 id="_environment_variables">Environment Variables</h3>
@@ -5984,6 +6002,34 @@ during comparisons, <code>printf()</code>, or other.</p>
   }
 }`}</pre>
 </div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="_unstable_features">Unstable Features</h3>
+<div className="paragraph">
+<p>Some features added to bpftrace are not yet stable.
+They are enabled by default but come with a warning if used.
+If you explicitly add the config variable to your script the warning will not be shown e.g.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`config = {
+    unstable_map_decl=enable;
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>To opt-out of these unstable features (and ensure they are not used) add the config variable and set it to <code>error</code> e.g.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`config = {
+    unstable_map_decl=error;
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Note: all unstable features are subject to change and/or removal.</p>
 </div>
 </div>
 </div>
