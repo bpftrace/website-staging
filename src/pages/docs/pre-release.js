@@ -1661,8 +1661,7 @@ To prevent printing all used maps need be cleared in the <code>END</code> probe:
 </div>
 <div className="paragraph">
 <p>These are special built-in events provided by the bpftrace runtime.
-The trigger function is called by the bpftrace runtime when the bpftrace process receives specific events, such as a <code>SIGUSR1</code> signal.
-When multiple signal handlers are attached to the same signal, only the first one is used.</p>
+The trigger function is called by the bpftrace runtime when the bpftrace process receives specific events, such as a <code>SIGUSR1</code> signal.</p>
 </div>
 <div className="listingblock">
 <div className="content">
