@@ -2685,6 +2685,13 @@ For string arguments in an action block use the <code>str()</code> call to retri
 <td className="tableblock halign-left valign-top"><p className="tableblock">ID of the processor executing the BPF program</p></td>
 </tr>
 <tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">ncpus</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Number of CPUs</p></td>
+</tr>
+<tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">curtask</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.8</p></td>
