@@ -1342,7 +1342,7 @@ tuple above:</p>
 This applies to both the key(s) and the value type.</p>
 </div>
 <div className="paragraph">
-<p>The following snippets create a map with key signature <code>(int64, string[16])</code> and a value type of <code>int64</code>:</p>
+<p>The following snippets create a map with key signature <code>(int64, string)</code> and a value type of <code>int64</code>:</p>
 </div>
 <div className="listingblock">
 <div className="content">
@@ -2665,7 +2665,7 @@ For string arguments in an action block use the <code>str()</code> call to retri
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">comm</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">string[16]</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">string</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.2</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_comm</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Name of the current thread</p></td>
@@ -5216,14 +5216,14 @@ If there are many processes running, it will consume a lot of a memory.</p>
 <p>For user space symbols, symbolicate lazily/on-demand (1) or symbolicate everything ahead of time (0).</p>
 </div>
 </div>
-</div>
-<div className="sect2">
-<h3 id="_license">license</h3>
+<div className="sect3">
+<h4 id="_license">license</h4>
 <div className="paragraph">
 <p>Default: "GPL"</p>
 </div>
 <div className="paragraph">
 <p>The license bpftrace will use to load BPF programs into the linux kernel.</p>
+</div>
 </div>
 <div className="sect3">
 <h4 id="_log_size">log_size</h4>
