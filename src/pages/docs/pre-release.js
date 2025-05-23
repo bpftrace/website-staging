@@ -1527,6 +1527,9 @@ Multiple probes can be specified as a comma (<code>,</code>) separated list:</p>
 </div>
 </div>
 <div className="paragraph">
+<p>By default, bpftrace requires all probes to attach successfully or else an error is returned. However this can be changed using the <code>missing_probes</code> config variable.</p>
+</div>
+<div className="paragraph">
 <p>Most providers also support a short name which can be used instead of the full name, e.g. <code>kprobe:f</code> and <code>k:f</code> are identical.</p>
 </div>
 <table className="tableblock frame-all grid-all stretch">
@@ -5292,12 +5295,10 @@ There is no artificial limit on what you can tune this to. But you may be wastin
 <div className="sect3">
 <h4 id="_missing_probes">missing_probes</h4>
 <div className="paragraph">
-<p>Default: <code>warn</code></p>
+<p>Default: <code>error</code></p>
 </div>
 <div className="paragraph">
-<p>Controls handling of probes with multiple kprobe or uprobe attach points which
-cannot be attached to some functions because they do not exist in the kernel or
-in the traced binary.</p>
+<p>Controls handling of probes which cannot be attached because they do not exist (in the kernel or in the traced binary) or there was an issue during attachment.</p>
 </div>
 <div className="paragraph">
 <p>The possible options are:
