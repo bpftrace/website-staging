@@ -2657,7 +2657,7 @@ For string arguments in an action block use the <code>str()</code> call to retri
 <td className="tableblock halign-left valign-top"><p className="tableblock">struct args</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">The struct of all arguments of the traced function. Available in <code>tracepoint</code>, <code>fentry</code>, <code>fexit</code>, and <code>uprobe</code> (with DWARF) probes. Use <code>args.x</code> to access argument <code>x</code> or <code>args</code> to get a record with all arguments.</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">The struct of all arguments of the traced function. Available in <code>rawtracepoint</code>, <code>tracepoint</code>, <code>fentry</code>, <code>fexit</code>, and <code>uprobe</code> (with DWARF) probes. Use <code>args.x</code> to access argument <code>x</code> or <code>args</code> to get a record with all arguments.</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">cgroup</p></td>
