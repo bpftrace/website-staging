@@ -88,7 +88,7 @@ const config = {
       navbar: {
         logo: {
           alt: 'bpftrace Logo',
-         // replace with bpftrace svg 
+         // replace with bpftrace svg
           src: 'img/bpftrace_Full_Logo-Black.svg',
         },
         items: [
@@ -104,9 +104,9 @@ const config = {
               },
               {
                 label: 'Release Schedule',
-                to: '/release-schedule'
+                href: 'https://github.com/bpftrace/bpftrace/blob/master/docs/release_process.md'
               },
-              { 
+              {
                 label: 'Tools',
                 href: 'https://github.com/bpftrace/bpftrace/blob/master/tools/README.md'
               },
