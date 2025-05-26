@@ -95,8 +95,8 @@ BEGIN {
 Getting back to our scratch variable example. If we modify the code where we don’t pass `$a` in as a parameter and instead try to reference it directly, it won’t be mutated at all e.g.
 
 ```
-macro add_one($a) {
-  $a += 1;
+macro add_one($x) {
+  $a = 1 + $x;
   $a
 }
 
@@ -108,15 +108,15 @@ BEGIN {
 }
 ```
 
-Here the macro doesn’t fail or trigger an error. Instead it creates a temporary variable which it assigns to the passed in expression (in this case `1 + 2`) and safely changes the variable name inside the macro expansion so as not to conflict with any other variables in the outer or inner scope e.g.
+Here the macro creates a temporary variable which it assigns to the passed in expression (in this case `1 + 2`) and safely changes the variable name $a inside the macro expansion so as not to conflict with any other variables in the outer or inner scope e.g.
 
 ```
 BEGIN {
   $a = 1;
 
   {
-    $_magical_prefix_a = 1 + 2;
-    $_magical_prefix_a += 1;
+    $_magical_prefix_x = 1 + 2;
+    $_magical_prefix_a = 1 + $_magical_prefix_x;
     $_magical_prefix_a
   };
 
