@@ -4824,10 +4824,10 @@ interval:s:10 {
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>void delete(map m, mapkey k)</code></p>
+<p><code>bool delete(map m, mapkey k)</code></p>
 </li>
 <li>
-<p>deprecated <code>void delete(mapkey k)</code></p>
+<p>deprecated <code>bool delete(mapkey k)</code></p>
 </li>
 </ul>
 </div>
@@ -4835,6 +4835,25 @@ interval:s:10 {
 <p>Delete a single key from a map.
 For scalar maps (e.g. no explicit keys), the key is omitted and is equivalent to calling <code>clear</code>.
 For map keys that are composed of multiple values (e.g. <code>@mymap[3, "hello"] = 1</code> - remember these values are represented as a tuple) the syntax would be: <code>delete(@mymap, (3, "hello"));</code></p>
+</div>
+<div className="paragraph">
+<p>If deletion fails (e.g. the key doesn&#8217;t exist) the function returns false (0).
+Additionally, if the return value for <code>delete</code> is discarded, and deletion fails, you will get a warning.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`@a[1] = 1;
+
+delete(@a, 1); // no warning (the key exists)
+
+if (delete(@a, 2)) { // no warning (return value is used)
+  ...
+}
+
+$did_delete = delete(@a, 2); // no warning (return value is used)
+
+delete(@a, 2); // warning (return value is discarded and the key doesn't exist)`}</pre>
+</div>
 </div>
 <div className="paragraph">
 <p>The, now deprecated, API (supported in version &#8656; 0.21.x) of passing map arguments with the key is still supported:
