@@ -2883,7 +2883,7 @@ Tracing block I/O sizes > 65536 bytes
 <div className="listingblock">
 <div className="content">
 <pre>{`# ./bsize.bt
-Attaching 2 probes...
+Attached 2 probes
 Tracing block I/O sizes > 0 bytes
 ^C
 
@@ -3735,10 +3735,10 @@ the path will be clamped by <code>size</code> otherwise <code>BPFTRACE_MAX_STRLE
 <div className="title">variants</div>
 <ul>
 <li>
-<p><code>void *percpu_kaddr(const string name)</code></p>
+<p><code>uint64 *percpu_kaddr(const string name)</code></p>
 </li>
 <li>
-<p><code>void *percpu_kaddr(const string name, int cpu)</code></p>
+<p><code>uint64 *percpu_kaddr(const string name, int cpu)</code></p>
 </li>
 </ul>
 </div>
@@ -4337,7 +4337,7 @@ interval:s:30 {
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`Attaching 3 probes...
+<pre>{`Attached 3 probes
 08:50:37: 0
 08:50:38: 1
 08:50:39: 2
@@ -5934,7 +5934,7 @@ foo.h
 
 # bpftrace -I /tmp/include program.bt
 
-Attaching 1 probe...`}</pre>
+Attached 1 probe`}</pre>
 </div>
 </div>
 <div className="paragraph">
@@ -5947,7 +5947,7 @@ Headers are included in the order they are defined, and they are included before
 <pre>{`# bpftrace --include linux/path.h --include linux/dcache.h \
     -e 'kprobe:vfs_open { printf("open path: %s\\n", str(((struct path *)arg0)->dentry->d_name.name)); }'
 
-Attaching 1 probe...
+Attached 1 probe
 open path: .com.google.Chrome.ASsbu2
 open path: .com.google.Chrome.gimc10
 open path: .com.google.Chrome.R1234s`}</pre>
@@ -5963,7 +5963,7 @@ open path: .com.google.Chrome.R1234s`}</pre>
 <div className="content">
 <pre>{`# bpftrace -v -e 'tracepoint:syscalls:sys_enter_nanosleep { printf("%s is sleeping.\\n", comm); }'
 AST node count: 7
-Attaching 1 probe...
+Attached 1 probe
 
 load tracepoint:syscalls:sys_enter_nanosleep, with BTF, with func_infos: Success
 
@@ -6158,7 +6158,7 @@ tracepoint:syscalls:sys_enter_nanosleep {
 <div className="content">
 <pre>{`# bpftrace sleepers.bt
 
-Attaching 1 probe...
+Attached 1 probe
 iscsid is sleeping.
 iscsid is sleeping.`}</pre>
 </div>
@@ -6184,7 +6184,7 @@ tracepoint:syscalls:sys_enter_nanosleep {
 <pre>{`# chmod 755 sleepers.bt
 # ./sleepers.bt
 
-Attaching 1 probe...
+Attached 1 probe
 iscsid is sleeping.
 iscsid is sleeping.`}</pre>
 </div>
