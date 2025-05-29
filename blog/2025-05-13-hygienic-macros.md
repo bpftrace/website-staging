@@ -76,7 +76,40 @@ BEGIN {
 }
 ```
 
-This also works for maps e.g.
+Expanding on that example a bit:
+
+```
+macro add_one($x) {
+  $x += 1;
+  $x
+}
+
+BEGIN {
+  $a = 1;
+  $b = add_one($a);
+
+  print($a); // prints 2
+  print($b); // prints 2
+}
+```
+
+Here we're assigning `$b` to last expression in the macro. This expands to:
+
+```
+BEGIN {
+  $a = 1;
+  $b = {
+    $a += 1;
+    $a
+  };
+
+  print($a);
+}
+```
+
+`$b` is the result of a block expression (more on this later).
+
+This explicit mutation works for maps e.g.
 
 ```
 macro add_one(@a) {
@@ -177,7 +210,7 @@ let $a = {
 // $a is 1
 ```
 
-The variable `$a` is being assigned to the last expression in the block. This proved particularly useful for macros which are defined in the bpftrace parser as:
+The variable `$a` is being assigned to the last expression in the block. So for macros, you can think of this a little like an implicit return value. Block expressions proved particularly useful for macros which are defined in the bpftrace parser as:
 
 ```
 MACRO IDENT "(" macro_args ")" block_expr
