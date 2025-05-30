@@ -2660,133 +2660,133 @@ For string arguments in an action block use the <code>str()</code> call to retri
 <td className="tableblock halign-left valign-top"><p className="tableblock">The struct of all arguments of the traced function. Available in <code>rawtracepoint</code>, <code>tracepoint</code>, <code>fentry</code>, <code>fexit</code>, and <code>uprobe</code> (with DWARF) probes. Use <code>args.x</code> to access argument <code>x</code> or <code>args</code> to get a record with all arguments.</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">cgroup</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>cgroup</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.18</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_cgroup_id</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">ID of the cgroup the current process belongs to. Only works with cgroupv2.</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">comm</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>comm</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">string</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.2</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_comm</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Name of the current thread</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">cpid</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>cpid</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint32</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Child process ID, if bpftrace is invoked with <code>-c</code></p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">cpu</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>cpu</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint32</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.1</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">raw_smp_processor_id</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">ID of the processor executing the BPF program</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">ncpus</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>ncpus</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Number of CPUs</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">curtask</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>curtask</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.8</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_task</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Pointer to <code>struct task_struct</code> of the current task</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">elapsed</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>elapsed</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">(see nsec)</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">ktime_get_ns / ktime_get_boot_ns</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Nanoseconds elapsed since bpftrace initialization, based on <code>nsecs</code></p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">func</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>func</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">string</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Name of the current function being traced (kprobes,uprobes)</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">gid</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>gid</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.2</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_uid_gid</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Group ID of the current thread, as seen from the init namespace</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">jiffies</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>jiffies</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">5.9</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_jiffies_64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Jiffies of the kernel. In 32-bit system, using this builtin might be slower.</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">numaid</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>numaid</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint32</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">5.8</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">numa_node_id</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">ID of the NUMA node executing the BPF program</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">pid</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>pid</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint32</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.2</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_pid_tgid</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Process ID of the current thread (aka thread group ID), as seen from the init namespace</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">probe</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>probe</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">string</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/na</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Name of the current probe</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">rand</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>rand</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint32</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.1</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_prandom_u32</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Random number</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">return</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>return</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">The return keyword is used to exit the current probe. This differs from exit() in that it doesn&#8217;t exit bpftrace.</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">retval</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>retval</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Value returned by the function being traced (kretprobe, uretprobe, fexit). For kretprobe and uretprobe, its type is <code>uint64</code>, but for fexit it depends. You can look up the type using <code>bpftrace -lv</code></p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">tid</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>tid</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint32</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.2</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_pid_tgid</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Thread ID of the current thread, as seen from the init namespace</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">uid</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>uid</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint64</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.2</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_uid_gid</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">User ID of the current thread, as seen from the init namespace</p></td>
 </tr>
 <tr>
-<td className="tableblock halign-left valign-top"><p className="tableblock">username</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>username</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">string</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">n/a</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">get_current_uid_gid</p></td>
