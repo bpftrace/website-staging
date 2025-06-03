@@ -51,7 +51,6 @@ Additionally, we would adopt ideas from “hygienic” macros, which for bpftrac
 ```
 macro add_one($x) {
   $x += 1;
-  $x
 }
 
 BEGIN {
@@ -69,7 +68,6 @@ BEGIN {
   $a = 1;
   {
     $a += 1;
-    $a
   };
 
   print($a);
@@ -109,12 +107,11 @@ BEGIN {
 
 `$b` is the result of a block expression (more on this later).
 
-This explicit mutation works for maps e.g.
+This explicit mutation also works for maps e.g.
 
 ```
 macro add_one(@a) {
   @a[2] = 2;
-  @a
 }
 
 BEGIN {
@@ -130,7 +127,6 @@ Getting back to our scratch variable example. If we modify the code where we don
 ```
 macro add_one($x) {
   $a = 1 + $x;
-  $a
 }
 
 BEGIN {
@@ -141,7 +137,7 @@ BEGIN {
 }
 ```
 
-Here the macro creates a temporary variable which it assigns to the passed in expression (in this case `1 + 2`) and safely changes the variable name $a inside the macro expansion so as not to conflict with any other variables in the outer or inner scope e.g.
+Here the macro creates a temporary variable which it assigns to the passed in expression (in this case `1 + 2`) and safely changes the variable name $a inside the macro expansion so as not to conflict with any other variables in other scopes e.g.
 
 ```
 BEGIN {
@@ -150,7 +146,6 @@ BEGIN {
   {
     $_magical_prefix_x = 1 + 2;
     $_magical_prefix_a = 1 + $_magical_prefix_x;
-    $_magical_prefix_a
   };
 
   print($a)
@@ -162,7 +157,6 @@ This safe replacement doesn’t work for maps, however, because maps are globall
 ```
 macro add_one(@a) {
   @a += 1;
-  @a
 }
 
 BEGIN {
@@ -184,13 +178,13 @@ function add_one($a) {
 The language, as it is today, makes this ambiguous. However, for macros, because we’re just doing a text replacement, variables and maps are always passed by reference. The “hygiene” part is to ensure that all interactions with variables and maps outside of the scope of a macro are intentional; foot-gun prevention. Inside of a macro, authors are free to declare and create new variables (but not maps), which never escape the scope of the macro e.g.
 
 ```
-macro add_one($x) {
+macro if_gt_zero($x) {
   let $y = 5;
   $x > 0 ? $x : $y
 }
 ```
 
-Now you might have noticed that the macros in the examples above all end with a bare expression:
+Now you might have noticed that some of the macros in the examples above end with a bare expression e.g.
 
 ```
 macro add_one($a) {
@@ -199,7 +193,7 @@ macro add_one($a) {
 }
 ```
 
-In this case the scratch variable `$a`. This is because bpftrace has the concept of  “block expressions”. A block expression, without macros, can look like this:
+In this case the scratch variable `$a`. This is because bpftrace has a concept of  “block expressions”. A block expression, without macros, can look like this:
 
 ```
 let $a = {
@@ -210,15 +204,7 @@ let $a = {
 // $a is 1
 ```
 
-The variable `$a` is being assigned to the last expression in the block. So for macros, you can think of this a little like an implicit return value. Block expressions proved particularly useful for macros which are defined in the bpftrace parser as:
-
-```
-MACRO IDENT "(" macro_args ")" block_expr
-```
-
-This creates an implicit scope within the macro itself so users don’t have to add additional curly braces inside their macros. It also allows bpftrace to do safe, temporary variable creation for expressions passed in as arguments (remember the `$_magical_prefix_a` variable).
-
-**Note**: assignments (e.g. `$x += 1`) should be a valid final expression in a block expression but this causes ambiguity in the parser so at the moment it’s not allowed.
+The variable `$a` is being assigned to the last expression in the block. So for macros, you can think of this a little like an implicit return value. Block expressions create a new scope within the macro itself so users don’t have to add additional curly braces inside their macros. It also allows bpftrace to do safe, temporary variable creation for expressions passed in as arguments (remember the `$_magical_prefix_a` variable).
 
 bpftrace macros also have the ability to call other macros e.g.
 
@@ -232,9 +218,7 @@ macro add_two($x) {
 }
 
 BEGIN {
-  $a = 1;
-
-  print(add_two($a)); // prints 3
+  print(add_two(1)); // prints 3
 }
 ```
 
@@ -251,7 +235,7 @@ macro add_two($x) {
 
 BEGIN {
   $a = "string";
-  add_two($a);
+  add_two("string");
 }
 ```
 
