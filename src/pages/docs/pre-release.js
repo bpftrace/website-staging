@@ -1365,8 +1365,7 @@ Or if you want to share code between probes.</p>
 <div className="paragraph">
 <p>At a high level, macros can be thought of as semantic aware text replacement.
 They accept (optional) variable, map, and some expression arguments.
-The body of the macro may only access maps and external variables passed in through the arguments, which is why these are often referred to as "hygienic macros".
-The body of the macro is exactly one block expression.</p>
+The body of the macro may only access maps and external variables passed in through the arguments, which is why these are often referred to as "hygienic macros".</p>
 </div>
 <div className="paragraph">
 <p>For example, these are valid usages of macros:</p>
@@ -1377,14 +1376,13 @@ The body of the macro is exactly one block expression.</p>
   1
 }
 
-macro add_one($other_name) {
+macro plus_one($other_name) {
   $other_name + 1
 }
 
 macro add_one_to_each($a, @b) {
   $a += 1;
   @b += 1;
-  $a + @b
 }
 
 macro side_effect($x) {
@@ -1398,11 +1396,12 @@ macro add_two($x) {
 BEGIN {
   print(one());                   // prints 1
 
-  $a = 42;
-  print(add_one($a));             // prints 43
+  $a = 10;
+  print(plus_one($a));            // prints 11
 
-  @b = 3;
-  print(add_one_to_each($a, @b)); // prints 47
+  @b = 5;
+  add_one_to_each($a, @b);
+  print($a + @b)                  // prints 17
 
   side_effect(5)                  // prints 5
 
@@ -1415,11 +1414,7 @@ BEGIN {
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`macro not_expression() {
-  $var = 1;                    // BAD: Not an expression
-}
-
-macro unhygienic_access() {
+<pre>{`macro unhygienic_access() {
   @x++                         // BAD: @x not passed in
 }
 
