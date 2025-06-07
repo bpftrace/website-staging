@@ -2595,6 +2595,11 @@ int main()
 <pre>{`# bpftrace -e 'watchpoint:increment+arg1:4:w { printf("hit!\\n"); exit() }' -c ./wpfunc`}</pre>
 </div>
 </div>
+<div className="paragraph">
+<p>Note that threads are monitored, but only for threads created after watchpoint attachment.
+The is a limitation from the kernel.
+Additionally, because of how watchpoints are implemented in bpftrace the specified function must be called at least once in the main thread in order to observe future calls to this function in child threads.</p>
+</div>
 </div>
 </div>
 </div>
