@@ -5361,10 +5361,7 @@ The tradeoff is that bpftrace will use more memory.</p>
 <div className="sect3">
 <h4 id="_show_debug_info">show_debug_info</h4>
 <div className="paragraph">
-<p>Default: 1</p>
-</div>
-<div className="paragraph">
-<p>If enabled, when printing ustack and kstack symbols bpftrace will also show (if debug info is available) symbol file and line ('bpftrace' stack mode) and a label if the function was inlined ('bpftrace' and 'perf' stack modes).
+<p>This is only available if the <a href="https://github.com/libbpf/blazesym">Blazesym</a> library is available at build time. If it is available this defaults to 1, meaning that when printing ustack and kstack symbols bpftrace will also show (if debug info is available) symbol file and line ('bpftrace' stack mode) and a label if the function was inlined ('bpftrace' and 'perf' stack modes).
 There might be a performance difference when symbolicating, which is the only reason to disable this.</p>
 </div>
 </div>
