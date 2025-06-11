@@ -673,7 +673,7 @@ Note that scientific literals are integer only due to the lack of floating point
 <div className="sect3">
 <h4 id="_for">For</h4>
 <div className="paragraph">
-<p>With Linux 5.13 and later, <code>for</code> loops can be used to iterate over elements in a map.</p>
+<p>With Linux 5.13 and later, <code>for</code> loops can be used to iterate over elements in a map, or over a range of integers, provided as two unary expressions separated by <code>..</code>.</p>
 </div>
 <div className="listingblock">
 <div className="content">
@@ -682,8 +682,18 @@ Note that scientific literals are integer only due to the lack of floating point
 }`}</pre>
 </div>
 </div>
+<div className="listingblock">
+<div className="content">
+<pre>{`for ($i : start..end) {
+  block;
+}`}</pre>
+</div>
+</div>
 <div className="paragraph">
-<p>The variable declared in the <code>for</code> loop will be initialised on each iteration with a tuple containing a key and a value from the map, i.e. <code>$kv = (key, value)</code>.</p>
+<p>The variable declared in the <code>for</code> loop will be initialised on each iteration.</p>
+</div>
+<div className="paragraph">
+<p>If the iteration is over a map, the value will be a tuple containing a key and a value from the map, i.e. <code>$kv = (key, value)</code>:</p>
 </div>
 <div className="listingblock">
 <div className="content">
@@ -695,7 +705,7 @@ for ($kv : @map) {
 </div>
 </div>
 <div className="paragraph">
-<p>When a map has multiple keys, the loop variable will be initialised with nested tuple of the form: <code>((key1, key2, &#8230;&#8203;), value)</code></p>
+<p>If a map has multiple keys, the loop variable will be initialised with nested tuple of the form: <code>((key1, key2, &#8230;&#8203;), value)</code>:</p>
 </div>
 <div className="listingblock">
 <div className="content">
@@ -707,24 +717,32 @@ for ($kv : @map) {
 }`}</pre>
 </div>
 </div>
-</div>
-<div className="sect3">
-<h4 id="_while">While</h4>
 <div className="paragraph">
-<p>Since kernel 5.3 BPF supports loops as long as the verifier can prove they&#8217;re bounded and fit within the instruction limit.</p>
-</div>
-<div className="paragraph">
-<p>In bpftrace, loops are available through the <code>while</code> statement.</p>
+<p>If an integer range is provided, the value will be an integer value for each element in the range, inclusive of the start value and exclusive of the end value:</p>
 </div>
 <div className="listingblock">
 <div className="content">
-<pre>{`while (condition) {
-  block;
+<pre>{`for ($cpu : 0..ncpus) {
+  print($cpu); // current value in range
 }`}</pre>
 </div>
 </div>
 <div className="paragraph">
-<p>Within a while-loop the following control flow statements can be used:</p>
+<p>Note that you cannot adjust the range itself after the loop has started.
+The <code>for</code> start and end values are evaluated once, not on each loop iteration.
+For example, the following will print <code>0</code> through <code>9</code>:</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`$a = 10;
+for ($i : 0..$a) {
+  print($i);
+  $a--;
+}`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>Both <code>for</code> loops support the following control flow statements:</p>
 </div>
 <table className="tableblock frame-all grid-all stretch">
 <colgroup>
@@ -734,14 +752,27 @@ for ($kv : @map) {
 <tbody>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">continue</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">skip processing of the rest of the block and jump back to the evaluation of the conditional</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">skip processing of the rest of the block and proceed to the next iteration</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">break</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Terminate the loop</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">terminate the loop</p></td>
 </tr>
 </tbody>
 </table>
+</div>
+<div className="sect3">
+<h4 id="_while">While</h4>
+<div className="paragraph">
+<p>Since kernel 5.3 BPF supports <code>while</code> loops as long as the verifier can prove they&#8217;re bounded and fit within the instruction limit.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`while (condition) {
+  block;
+}`}</pre>
+</div>
+</div>
 <div className="listingblock">
 <div className="content">
 <pre>{`interval:s:1 {
@@ -757,6 +788,25 @@ for ($kv : @map) {
 }`}</pre>
 </div>
 </div>
+<div className="paragraph">
+<p>The <code>while</code> loop supports the following control flow statements:</p>
+</div>
+<table className="tableblock frame-all grid-all stretch">
+<colgroup>
+<col />
+<col />
+</colgroup>
+<tbody>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">continue</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">skip processing of the rest of the block and return to the conditional</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">break</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">terminate the loop</p></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div className="sect3">
 <h4 id="_unroll">Unroll</h4>
