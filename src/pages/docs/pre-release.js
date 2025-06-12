@@ -2790,8 +2790,8 @@ For string arguments in an action block use the <code>str()</code> call to retri
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>pid</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint32</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.2</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">get_current_pid_tgid</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Process ID of the current thread (aka thread group ID), as seen from the init namespace</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">get_current_pid_tgid / get_ns_current_pid_tgid</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Process ID of the current thread (aka thread group ID), as seen from the PID namespace of bpftrace</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>probe</code></p></td>
@@ -2825,8 +2825,8 @@ For string arguments in an action block use the <code>str()</code> call to retri
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>tid</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint32</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">4.2</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">get_current_pid_tgid</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Thread ID of the current thread, as seen from the init namespace</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">get_current_pid_tgid / get_ns_current_pid_tgid</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Thread ID of the current thread, as seen from the PID namespace of bpftrace</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>uid</code></p></td>
@@ -2982,6 +2982,16 @@ Tracing block I/O sizes > 0 bytes
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-cat"><code>cat</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Print file content</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-pid"><code>pid</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Process ID of the current thread</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
+</tr>
+<tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-tid"><code>tid</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Thread ID of the current thread</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-cgroupid"><code>cgroupid</code></a></p></td>
@@ -3259,6 +3269,56 @@ If the file cannot be opened or read an error is printed to stderr.</p>
 55f683edf000-55f683ee2000 rw-p 00021000 08:01 1843399                    /usr/bin/ls
 55f683ee2000-55f683ee3000 rw-p 00000000 00:00 0`}</pre>
 </div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="functions-pid">pid</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>uint32 pid([curr_ns|init])</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>Returns the process ID of the current thread.
+Defaults to <code>curr_ns</code>.</p>
+</div>
+<div className="ulist">
+<ul>
+<li>
+<p><code>pid(curr_ns)</code> - The process ID as seen from the PID namespace of bpftrace.</p>
+</li>
+<li>
+<p><code>pid(init)</code> - The process ID as seen from the initial PID namespace.</p>
+</li>
+</ul>
+</div>
+</div>
+<div className="sect2">
+<h3 id="functions-tid">pid</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>uint32 tid([curr_ns|init])</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>Returns the thread ID of the current thread.
+Defaults to <code>curr_ns</code>.</p>
+</div>
+<div className="ulist">
+<ul>
+<li>
+<p><code>tid(curr_ns)</code> - The thread ID as seen from the PID namespace of bpftrace.</p>
+</li>
+<li>
+<p><code>tid(init)</code> - The thread ID as seen from the initial PID namespace.</p>
+</li>
+</ul>
 </div>
 </div>
 <div className="sect2">
