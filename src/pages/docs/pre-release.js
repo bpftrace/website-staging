@@ -516,6 +516,10 @@ the type upon declaration.</p>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Description</strong></p></td>
 </tr>
 <tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock">bool</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><code>true</code> or <code>false</code></p></td>
+</tr>
+<tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock">uint8</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Unsigned 8 bit integer</p></td>
 </tr>
@@ -5337,22 +5341,22 @@ If there are many processes running, it will consume a lot of a memory.</p>
 <div className="sect3">
 <h4 id="_cpp_demangle">cpp_demangle</h4>
 <div className="paragraph">
-<p>Default: 1</p>
+<p>Default: true</p>
 </div>
 <div className="paragraph">
 <p>C++ symbol demangling in userspace stack traces is enabled by default.</p>
 </div>
 <div className="paragraph">
-<p>This feature can be turned off by setting the value of this environment variable to <code>0</code>.</p>
+<p>This feature can be turned off by setting the value of this variable to <code>false</code>.</p>
 </div>
 </div>
 <div className="sect3">
 <h4 id="_lazy_symbolication">lazy_symbolication</h4>
 <div className="paragraph">
-<p>Default: 0</p>
+<p>Default: false</p>
 </div>
 <div className="paragraph">
-<p>For user space symbols, symbolicate lazily/on-demand (1) or symbolicate everything ahead of time (0).</p>
+<p>For user space symbols, symbolicate lazily/on-demand (<code>true</code>) or symbolicate everything ahead of time (<code>false</code>).</p>
 </div>
 </div>
 <div className="sect3">
@@ -5471,7 +5475,7 @@ The tradeoff is that bpftrace will use more memory.</p>
 <div className="sect3">
 <h4 id="_show_debug_info">show_debug_info</h4>
 <div className="paragraph">
-<p>This is only available if the <a href="https://github.com/libbpf/blazesym">Blazesym</a> library is available at build time. If it is available this defaults to 1, meaning that when printing ustack and kstack symbols bpftrace will also show (if debug info is available) symbol file and line ('bpftrace' stack mode) and a label if the function was inlined ('bpftrace' and 'perf' stack modes).
+<p>This is only available if the <a href="https://github.com/libbpf/blazesym">Blazesym</a> library is available at build time. If it is available this defaults to <code>true</code>, meaning that when printing ustack and kstack symbols bpftrace will also show (if debug info is available) symbol file and line ('bpftrace' stack mode) and a label if the function was inlined ('bpftrace' and 'perf' stack modes).
 There might be a performance difference when symbolicating, which is the only reason to disable this.</p>
 </div>
 </div>
@@ -5514,10 +5518,10 @@ Set to empty string to disable truncation trailers.</p>
 <div className="sect3">
 <h4 id="_print_maps_on_exit">print_maps_on_exit</h4>
 <div className="paragraph">
-<p>Default: 1</p>
+<p>Default: true</p>
 </div>
 <div className="paragraph">
-<p>Controls whether maps are printed on exit. Set to <code>0</code> in order to change the default behavior and not automatically print maps at program exit.</p>
+<p>Controls whether maps are printed on exit. Set to <code>false</code> in order to change the default behavior and not automatically print maps at program exit.</p>
 </div>
 </div>
 <div className="sect3">
