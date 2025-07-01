@@ -632,6 +632,15 @@ Note that scientific literals are integer only due to the lack of floating point
 <code>123UL</code>, <code>123U</code> and <code>123LL</code> all result in the same integer type with a value of <code>123</code>.</p>
 </div>
 <div className="paragraph">
+<p>These duration suffixes are also supported: <code>ns</code>, <code>us</code>, <code>ms</code>, <code>s</code>, <code>m</code>, <code>h</code>, and <code>d</code>. All get turned into integer values in nanoseconds, e.g.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`$a = 1m;
+print($a); // prints 60000000000`}</pre>
+</div>
+</div>
+<div className="paragraph">
 <p>Character literals are not supported at this time, and the corresponding ASCII code must be used instead:</p>
 </div>
 <div className="listingblock">
@@ -1803,6 +1812,9 @@ If <code>count</code> is left unspecified a default value is used.</p>
 <div className="title">variants</div>
 <ul>
 <li>
+<p><code>interval:count</code></p>
+</li>
+<li>
 <p><code>interval:us:count</code></p>
 </li>
 <li>
@@ -1826,7 +1838,8 @@ If <code>count</code> is left unspecified a default value is used.</p>
 </div>
 <div className="paragraph">
 <p>The interval probe fires at a fixed interval as specified by its time spec.
-Interval fires on one CPU at a time, unlike <a href="#probes-profile">profile</a> probes.</p>
+Interval fires on one CPU at a time, unlike <a href="#probes-profile">profile</a> probes.
+If a unit of time is not specified in the second position, the number is interpreted as nanoseconds; e.g., <code>interval:1s</code>, <code>interval:1000000000</code>, and <code>interval:s:1</code> are all equivalent.</p>
 </div>
 <div className="paragraph">
 <p>This prints the rate of syscalls per second.</p>
@@ -1834,7 +1847,7 @@ Interval fires on one CPU at a time, unlike <a href="#probes-profile">profile</a
 <div className="listingblock">
 <div className="content">
 <pre>{`tracepoint:raw_syscalls:sys_enter { @syscalls = count(); }
-interval:s:1 { print(@syscalls); clear(@syscalls); }`}</pre>
+interval:1s { print(@syscalls); clear(@syscalls); }`}</pre>
 </div>
 </div>
 </div>
@@ -2166,6 +2179,9 @@ kretprobe:d_lookup
 <div className="title">variants</div>
 <ul>
 <li>
+<p><code>profile:count</code></p>
+</li>
+<li>
 <p><code>profile:us:count</code></p>
 </li>
 <li>
@@ -2189,7 +2205,8 @@ kretprobe:d_lookup
 </div>
 <div className="paragraph">
 <p>Profile probes fire on each CPU on the specified interval.
-These operate using perf_events (a Linux kernel facility, which is also used by the perf command).</p>
+These operate using perf_events (a Linux kernel facility, which is also used by the perf command).
+If a unit of time is not specified in the second position, the number is interpreted as nanoseconds; e.g., <code>interval:1s</code>, <code>interval:1000000000</code>, and <code>interval:s:1</code> are all equivalent.</p>
 </div>
 <div className="listingblock">
 <div className="content">
