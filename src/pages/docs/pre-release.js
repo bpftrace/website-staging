@@ -307,6 +307,33 @@ This flag allows their use.</p>
 For more details see the <a href="#_verbose_output">Verbose Output</a> section.</p>
 </div>
 </div>
+<div className="sect2">
+<h3 id="_program_options">Program Options</h3>
+<div className="paragraph">
+<p>You can also pass custom options to a bpftrace program/script itself via positional or named parameters.
+Positional parameters can be placed before or after a double dash but named parameters can ONLY come after a double dash; e.g.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -e 'BEGIN { print(($1, $2, getopt("aa", 1), getopt("bb"))); }' p1 -- --aa=20 --bb p2
+
+// (p1, p2, 20, true) is printed`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>or</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre class="highlight"><code># bpftrace myscript.bt -- p1 --aa=20 --bb p2</code>`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p>In these examples there are two positional parameters (<code>p1</code>, <code>p2</code>) and two named parameters (<code>aa</code>, which is set to <code>20</code>, and <code>bb</code>, which is set to <code>true</code>).
+Named program parameters require the <code>=</code> to set their value unless they are boolean parameters (like 'bb' above).
+Read about how to access <a href="#builtins-positional-parameters">positional</a> or <a href="#functions-getopt">named</a> parameters in a bpftrace script below.</p>
+</div>
+</div>
 </div>
 </div>
 <div className="sect1">
@@ -3030,6 +3057,11 @@ Tracing block I/O sizes > 0 bytes
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
 </tr>
 <tr>
+<td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-getopt"><code>getopt</code></a></p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Get named command line option/parameter</p></td>
+<td className="tableblock halign-left valign-top"><p className="tableblock">Sync</p></td>
+</tr>
+<tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#functions-join"><code>join</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Combine an array of char* into one string and print it</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Async</p></td>
@@ -3437,6 +3469,49 @@ An optional exit code can be provided.</p>
 <pre>{`BEGIN {
   exit(1);
 }`}</pre>
+</div>
+</div>
+</div>
+<div className="sect2">
+<h3 id="functions-getopt">getopt</h3>
+<div className="ulist">
+<div className="title">variants</div>
+<ul>
+<li>
+<p><code>bool getopt(string arg_name)</code></p>
+</li>
+<li>
+<p><code>string getopt(string arg_name, string default_value)</code></p>
+</li>
+<li>
+<p><code>int getopt(string arg_name, int default_value)</code></p>
+</li>
+<li>
+<p><code>bool getopt(string arg_name, bool default_value)</code></p>
+</li>
+</ul>
+</div>
+<div className="paragraph">
+<p>Get the named command line argument/option e.g.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -e 'BEGIN { print(getopt("hello", 1)); }' -- --hello=5
+
+// 5 is printed`}</pre>
+</div>
+</div>
+<div className="paragraph">
+<p><code>getopt</code> defines the type of the argument by the default value&#8217;s type.
+If no default type is provided, the option is treated like a boolean arg e.g. <code>getopt("hello")</code> would evaluate to <code>false</code> if <code>--hello</code> is not specified on the command line or <code>true</code> if <code>--hello</code> is passed or set to one of the following values: <code>true</code>, <code>1</code>.
+Additionally, boolean args accept the following false values: <code>0</code>, <code>false</code> e.g. <code>--hello=false</code>.
+If the arg is not set on the command line, the default value is used.</p>
+</div>
+<div className="listingblock">
+<div className="content">
+<pre>{`# bpftrace -e 'BEGIN { print((getopt("aa", 10), getopt("bb", "hello"), getopt("cc"), getopt("dd", false))); }' -- --cc --bb=bye
+
+// (10, bye, 1, 0) is printed`}</pre>
 </div>
 </div>
 </div>
