@@ -1622,98 +1622,82 @@ Multiple probes can be specified as a comma (<code>,</code>) separated list:</p>
 <col />
 <col />
 <col />
-<col />
 </colgroup>
 <tbody>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Probe Name</strong></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Short Name</strong></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Description</strong></p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock"><strong>Kernel/User Level</strong></p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-begin-end"><code>BEGIN/END</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">-</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Built-in events</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-self"><code>self</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">-</p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Built-in events</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-hardware"><code>hardware</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>h</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Processor-level events</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-interval"><code>interval</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>i</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Timed output</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-iterator"><code>iter</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>it</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Iterators tracing</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-fentry"><code>fentry/fexit</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>f</code>/<code>fr</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Kernel functions tracing with BTF support</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-kprobe"><code>kprobe/kretprobe</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>k</code>/<code>kr</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Kernel function start/return</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-profile"><code>profile</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>p</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Timed sampling</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel/User</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-rawtracepoint"><code>rawtracepoint</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>rt</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Kernel static tracepoints with raw arguments</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-software"><code>software</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>s</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Kernel software events</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-tracepoint"><code>tracepoint</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>t</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Kernel static tracepoints</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-uprobe"><code>uprobe/uretprobe</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>u</code>/<code>ur</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">User-level function start/return</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">User</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-usdt"><code>usdt</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>U</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">User-level static tracepoints</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">User</p></td>
 </tr>
 <tr>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><a href="#probes-watchpoint"><code>watchpoint/asyncwatchpoint</code></a></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock"><code>w</code>/<code>aw</code></p></td>
 <td className="tableblock halign-left valign-top"><p className="tableblock">Memory watchpoints</p></td>
-<td className="tableblock halign-left valign-top"><p className="tableblock">Kernel</p></td>
 </tr>
 </tbody>
 </table>
