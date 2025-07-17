@@ -1992,6 +1992,12 @@ It can be specified as an absolute or relative path to /sys/fs/bpf.</p>
 <li>
 <p><code>fexit[:module]:fn</code></p>
 </li>
+<li>
+<p><code>fentry:bpf[:prog_id]:prog_name</code></p>
+</li>
+<li>
+<p><code>fexit:bpf[:prog_id]:prog_name</code></p>
+</li>
 </ul>
 </div>
 <div className="ulist">
@@ -2028,6 +2034,16 @@ The original names are still supported for backwards compatibility.</p>
 This removes the need for manual type casting and makes the code more resilient against small signature changes in the kernel.
 The function arguments are available in the <code>args</code> struct which can be inspected by doing verbose listing (see <a href="#_listing_probes">Listing Probes</a>).
 These arguments are also available in the return probe (<code>fexit</code>), unlike <code>kretprobe</code>.</p>
+</div>
+<div className="paragraph">
+<p>The bpf variants (e.g. <code>fentry:bpf[:prog_id]:prog_name</code>) allow attaching to running BPF programs and sub-programs.
+For example, if bpftrace was already running with a script like <code>uprobe:./testprogs/uprobe_test:uprobeFunction1 &#123; print("hello"); &#125;</code> then you could attach to this program with <code>fexit:bpf:uprobe___testprogs_uprobe_test_uprobeFunction1_1 &#123; print("bye"); &#125;</code> and this probe would execute after (because it&#8217;s <code>fexit</code>) the <code>print("hello")</code> probe executes.
+You can specify just the program name, and in this case bpftrace will attach to all running programs and sub-programs with that name.
+You can differentiate between them using the <code>probe</code> builtin.
+You can also specify the program id (e.g. <code>fentry:bpf:123:*</code>) to attach to a specific running BPF program or sub-programs called in that running BPF program.
+To see a list of running, valid BPF programs and sub-programs use <code>bpftrace -l 'fentry:bpf:*'</code>.
+Note: only BPF programs with a BTF Id can be attached to.
+Also, the <code>args</code> builtin is not yet available for this variant.</p>
 </div>
 <div className="listingblock">
 <div className="content">
