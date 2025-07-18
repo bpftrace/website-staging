@@ -12,7 +12,7 @@ Finally, note that the lab is designed to be ran stand alone and without a lectu
 
 **NOTE:** Attendees of the bpftrace Hands-on lab at the Scale 22x conference will be given access to systems with everything pre-installed.
 
-1. You must have the `bpftrace` executable installed on your system and the package name will vary slightly between distros. 
+1. You must have the `bpftrace` executable installed on your system and the package name will vary slightly between distros.
 2. Unless specified differently, all commands will be executed as the `root` user so ensure you have the appropriate access.
 3. You must also have the load generator programs available to run. [Download](/bpftrace-hol.tar.gz) and unpack the archive or [build from source](https://github.com/tyroguru/BPFTrace-hol/tree/master/CODE).
 
@@ -67,7 +67,7 @@ $ ./bpfhol
 
 Simply select the integer value corresponding to the area you have been told to run load generators for, e.g., `1` for core, `2` for syscalls, etc. If at any time you're not sure whether you already have load generators running you can simply select option `8` to kill all existing load generators that may be running.
 
-Some of the lab exercises will give you a small hint as to what bpftrace language primitive to use to solve them. If this is the case then it is generally expected that you will look up the language feature in the [docs 📖](/docs/pre-release).
+Some of the lab exercises will give you a small hint as to what bpftrace language primitive to use to solve them. If this is the case then it is generally expected that you will look up the language feature in the [docs 📖](/docs/release_023/docs).
 
 Example solutions for all lab exercises are provided in the [solutions document](./lab-solutions).
 

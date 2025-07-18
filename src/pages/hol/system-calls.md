@@ -42,7 +42,7 @@ Does `t:syscalls:sys_exit_exit` exist? If so, when will it fire?
 
 ## Syscall entry probes
 
-The arguments for a system call probe are made available through [the 📖 `args` builtin structure](/docs/pre-release#_builtins). For example, according to the man page for `write(2)`, the syscall has 3 arguments: `int fd`, `const char * buf` and `size_t count`. We can verify that with the `-lv` options to `bpftrace`:
+The arguments for a system call probe are made available through [the 📖 `args` builtin structure](/docs/release_023/stdlib#builtins). For example, according to the man page for `write(2)`, the syscall has 3 arguments: `int fd`, `const char * buf` and `size_t count`. We can verify that with the `-lv` options to `bpftrace`:
 
 ```sh
 sudo bpftrace -lv 't:syscalls:sys_enter_write'
@@ -62,7 +62,7 @@ Things to note:
 * You can ignore the `__attribute__` tag on the `buf` parameter. This is kernel implementation detail you don't need to worry about. You may not see the attribute tag on your kernel.
 * Those with a keen eye may have noted that we have an extra parameter - `int __syscall_nr`. Again, this is just an implementation detail that has been exposed to you and you'll probably have little use for it. It's the system call number assigned to this system call in the kernel (more detail in "Further Reading" - see below)
 
-To access an argument, we reference it through [the 📖 `args` builtin](/docs/pre-release#_builtins) using its name, e.g, `args.buf`. In the following example we capture the first 32KB bytes (or less) of any buffer being sent to file descriptor 2 which is usually `stderr` (although it's obviously not guaranteed to be that).
+To access an argument, we reference it through [the 📖 `args` builtin](/docs/release_023/stdlib#builtins) using its name, e.g, `args.buf`. In the following example we capture the first 32KB bytes (or less) of any buffer being sent to file descriptor 2 which is usually `stderr` (although it's obviously not guaranteed to be that).
 
 Create a new file named `write.bt` and paste this code:
 ```
@@ -105,9 +105,9 @@ The above script usually produces interesting output on a busy production system
 
 Things to note:
 
-* Recent builds of bpftrace now have Big String support which supports working with strings up to 32KB in size. The default size is still 64 bytes and therefore [the 📖 `max_strlen` tunable parameter](/docs/pre-release#_max_strlen) has been tuned to 32KB in the `config` block.
-* `char *`'s must be explicitly converted to strings using [the 📖 `str()` builtin](/docs/pre-release#functions-str).
-* [The 📖 `comm` builtin](/docs/pre-release#_builtins) gives us the name of the thread doing the write call.
+* Recent builds of bpftrace now have Big String support which supports working with strings up to 32KB in size. The default size is still 64 bytes and therefore [the 📖 `max_strlen` tunable parameter](/docs/release_023/language#max_strlen) has been tuned to 32KB in the `config` block.
+* `char *`'s must be explicitly converted to strings using [the 📖 `str()` builtin](/docs/release_023/stdlib#str).
+* [The 📖 `comm` builtin](/docs/release_023/stdlib#builtins) gives us the name of the thread doing the write call.
 
 ## Syscall return probes
 
@@ -134,7 +134,7 @@ NOTE: before attempting the tasks in this section select the `syscalls` option f
 ### Exercises 2.3: `open(2)/openat(2)`
 
 1. Write a script to show which files are being opened. (use `open(2)` only).
-1. Extend that script to show which processes are opening which file. (use `open(2)` only). 
+1. Extend that script to show which processes are opening which file. (use `open(2)` only).
 1. Change that script to only show open calls that are creating temp files (hint: use the `O_TMPFILE` flag with `openat(2)`).
 
 ### Exercises 2.4: `close(2)`
