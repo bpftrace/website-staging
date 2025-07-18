@@ -13,7 +13,7 @@
   --ifm-color-primary-light: #edc535;
   --ifm-color-primary-lighter: #eec841;
   --ifm-color-primary-lightest: #f1d366;
-  
+
   --ifm-link-color: #307D77;
   --docs-header-height: 5rem;
 }
@@ -148,6 +148,10 @@
 
 .video-list a:hover {
   text-decoration: underline;
+}
+
+.releases-dropdown {
+  color: #1c1e21;
 }
 
 @media (min-width: 997px) {
