@@ -147,15 +147,15 @@ const config = {
             type: 'dropdown',
             label: 'Docs',
             position: 'left',
-            to: '/docs/latest',
+            to: '/docs/release_023/docs',
             items: [
               {
                 label: 'pre-release',
-                to: '/docs/pre-release'
+                to: '/docs/pre-release/docs'
               },
               {
                 label: '0.23 (latest)',
-                to: '/docs/0.23'
+                to: '/docs/release_023/docs'
               },
               {
                 label: '0.22',

@@ -1,6 +1,6 @@
 # 1. Core language features
 
-In this lab we will work through some of the key features of the bpftrace tracing technology and its language. It is not an exhaustive treatment of the language but rather the key concepts. Please refer to the [docs 📖](/docs/pre-release) for details on all language features.
+In this lab we will work through some of the key features of the bpftrace tracing technology and its language. It is not an exhaustive treatment of the language but rather the key concepts. Please refer to the [docs 📖](/docs/release_023/docs) for details on all language features.
 
 **bpftrace** is specifically designed for tracing user and kernel software. Its primary purpose is to facilitate observation of software behaviour. As such, it provides a number of key language primitives that enable us to gain detailed insights into the real runtime behaviour of the code we write (which is rarely what we think it actually is!). In this section we will look at the key language primitives and some techniques which enable us to obtain fresh insights.
 
@@ -93,7 +93,7 @@ Example output:
 **Things to note**:
 
 * We changed the probe specification as we are only interested in close calls now.
-* Instead of indexing by the probe name we now index by the name of the process making the close syscall using the [📖 `comm` builtin variable](/docs/pre-release#builtins).
+* Instead of indexing by the probe name we now index by the name of the process making the close syscall using the [📖 `comm` builtin variable](/docs/release_023/stdlib#builtins).
 
 The result of this tracing iteration tell us that a process named `systemd-oomd` is making the most `close` calls so we may want to drill down this process to see where in the code these calls are being made from (Note: replace `system-oomd` in the following example with a process name from the above script invocation on **your** system!):
 
@@ -139,7 +139,7 @@ Write a script to keep count of the number of system calls each process makes. I
 
 ## Timers
 
-We often want to periodically display data held in aggregations and this can be done with [the 📖 `interval` probes](/docs/pre-release#probes-interval) which provide periodic interval timers. For example, to print the date and time every 10 seconds:
+We often want to periodically display data held in aggregations and this can be done with [the 📖 `interval` probes](/docs/release_023/language#interval) which provide periodic interval timers. For example, to print the date and time every 10 seconds:
 
 ```sh
 sudo bpftrace -e 'interval:s:10 { time("%c\n"); }'
@@ -155,9 +155,9 @@ Thu Sep 26 10:19:05 2024
 
 ### Exercises 1.3
 
-1. Expand the script written previously to print the per-process system call counts every 10 seconds (hint: use `print()`, [see 📖 Functions](/docs/pre-release#_functions)).
-1. Add the ability to only display the top 10 per process counts (hint: use `print()`, [see 📖 Functions](/docs/pre-release#_functions))
-1. Delete all per-process syscall stats every 10 secs (hint: use `clear()`, [see 📖 Functions](/docs/pre-release#_functions));
+1. Expand the script written previously to print the per-process system call counts every 10 seconds (hint: use `print()`, [see 📖 Functions](/docs/release_023/stdlib#functions)).
+1. Add the ability to only display the top 10 per process counts (hint: use `print()`, [see 📖 Functions](/docs/release_023/stdlib#functions))
+1. Delete all per-process syscall stats every 10 secs (hint: use `clear()`, [see 📖 Functions](/docs/release_023/stdlib#functions));
 1. Finally, exit the script after 3 iterations (or 30 seconds if you prefer it that way)
 
 ## Special probes
@@ -203,7 +203,7 @@ Process and thread identifiers are something we come across a lot when trying to
 - `comm`: we've met this builtin variable previously and it provides the name of the current thread.
 NOTE: threads inherit the name from their parent but many set their own thread name so threads within the same process may well have different names.
 
-`bpftrace` has many more [📖 Builtins](/docs/pre-release#_builtins) documented.
+`bpftrace` has many more [📖 Builtins](/docs/release_023/stdlib#builtins) documented.
 
 ### Exercises 1.4
 
@@ -284,7 +284,7 @@ Note that the `interval` based probes we have used previously only fire on a sin
 
 ### Exercise 1.6
 
-A [📖 `profile` probe](/docs/pre-release#probes-profile) is the same format as the `interval` probe that we have seen previously. Write a script which uses a 10 millisecond `profile` probe (`profile:ms:10`)  to count the number of times a non-root thread (`uid` != 0) was running when the probe fired. (Hints: key the map with the `cpu` builtin variable and you'll also need the `uid` builtin variable. Bonus points for use of the `if` statement instead of a predicate (it's not any better here but just provides variation!).
+A [📖 `profile` probe](/docs/release_023/language#profile) is the same format as the `interval` probe that we have seen previously. Write a script which uses a 10 millisecond `profile` probe (`profile:ms:10`)  to count the number of times a non-root thread (`uid` != 0) was running when the probe fired. (Hints: key the map with the `cpu` builtin variable and you'll also need the `uid` builtin variable. Bonus points for use of the `if` statement instead of a predicate (it's not any better here but just provides variation!).
 
 Now that we've covered some of the basic building blocks of bpftrace, we'll continue the voyage of discovery by looking at the fundamental interface between userland code and the kernel: the [system call](./system-calls).
 

@@ -6,14 +6,14 @@ import HomepageFeatures from '@site/src/components/HomepageFeatures';
 import useBaseUrl from '@docusaurus/useBaseUrl';
 
 import Heading from '@theme/Heading';
-import styles from '../index.module.css';
+import styles from '../../index.module.css';
 
 export default function Home() {
   return (
     <Layout title="docs">
 	    <div className="container docs-container padding-top--md padding-bottom--lg">
         <div id="docs-header">
-          <h1>Version: 0.23</h1>
+          <h1>The Command Line Tool (Version: 0.23)</h1>
         </div>
         <div className="row docs-row">
           <div className="col col--3">
