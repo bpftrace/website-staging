@@ -17,6 +17,11 @@ This is the home of the [bpftrace](https://bpftrace.org) website. The site itsel
 
 - If everything is OK, push your branch, create a PR and merge to master.
 
+#### Resources
+
+- [Infima](https://infima.dev/) is used for styling and components in docusaurus
+- [Docusaurus Configuration](https://docusaurus.io/docs/configuration)
+
 ## Staging
 
 A staging website exists at https://staging.bpftrace.org/ to optionally validate changes before deploying them to the main website.
